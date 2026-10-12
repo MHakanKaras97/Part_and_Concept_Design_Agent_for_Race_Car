@@ -1,4 +1,4 @@
-# Architecture — AI F1 Engineering Agent
+# Architecture — AI F1 Engineering Agent (an experimental pipeline)
 
 Last updated: 2026-10-10 (Milestone 2.0 fast mode = default path, §14; strict workflow kept behind Advanced). Original brief: `docs/dev-log/original_brief.md`.
 History: Milestone 1 (MVP 1.0) bracket slice · MVP 1.1 user-answer provenance and evidence labels · Milestone 1.2
@@ -281,6 +281,10 @@ measurement fails, everything else NOT_VERIFIED. No FIA compliance, structural a
 
 Budgets per run: 1 plan call (+1 retry, +1 after an answer), 1 call per part, ≤ 2 repairs per part; ≤ 35 Fusion
 script calls (nominal Mini F1: 4 parts + 1 assembly + 3 cameras = 8). Measured wrapper depth is stored per run.
+Measured in the recorded runs (`data/mini_f1/design_runs/`): 4-part run 5 Claude calls / 8 script calls; 18-part
+extension 10 Claude calls / 37 script calls (it hit the 35-call budget, was blocked and resumed; the budget counts
+from each start or resume; 4 parts reused, 6 mirrored with no Claude call); assembly rebuilds 0 Claude calls; each
+revision 1 Claude call / 4 script calls.
 
 ### 14.1 Coordinate frame and revision — `agent/revise.py` — IMPLEMENTED+TESTED (unit + one live test)
 

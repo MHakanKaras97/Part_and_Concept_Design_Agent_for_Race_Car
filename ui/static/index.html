@@ -120,13 +120,13 @@
     <aside class="panel">
       <div class="panel-block"><h2>Brief</h2><p id="p-brief" class="muted">No run selected.</p></div>
       <div class="panel-block"><h2>Log (last 15)</h2><ol class="log" id="log"></ol></div>
-      <div class="panel-block"><h2>Concept level</h2><p class="muted small">Geometry is a concept. FIA statuses: VERIFIED only where Fusion measured the part against an unambiguous extent rule; everything else NOT_VERIFIED. No FIA compliance, structural adequacy or race readiness is claimed.</p></div>
+      <div class="panel-block"><h2>Concept level</h2><p class="muted small">Geometry is a concept. Part checks: PASS means the Fusion read-back matches the plan. FIA: "C2.3.1 width proxy MEASURED" means Fusion measured this part within |Y| &le; 950 mm; the rule applies to the whole car, with exceptions. Every other article stays NOT_VERIFIED. Nothing here is an FIA compliance check, and no structural adequacy or race readiness is claimed.</p></div>
     </aside>
   </main>
 
   <footer class="footer">
     <span>Made by Muhammed Hakan Karas</span>
-    <span class="legend"><i class="lg verified"></i>Verified <i class="lg notver"></i>Not verified <i class="lg fail"></i>Non-compliant / failed <i class="lg assumption"></i>Assumption</span>
+    <span class="legend"><i class="lg verified"></i>Measured, matches the plan <i class="lg notver"></i>Not verified <i class="lg fail"></i>Outside the plan / failed <i class="lg assumption"></i>Assumption</span>
   </footer>
 
   <script src="/static/fast.js"></script>

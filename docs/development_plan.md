@@ -1,4 +1,4 @@
-# Development Plan — AI F1 Engineering Agent
+# Development Plan — AI F1 Engineering Agent (an experimental pipeline)
 
 Last updated: 2026-10-12 (Milestone 2.0 fast mode complete; the Mini F1 was run with real Claude reasoning, extended to
 18 parts and refined; see `docs/dev-log/`). Architecture: `docs/architecture.md`. Original brief:

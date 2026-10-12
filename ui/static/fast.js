@@ -125,7 +125,7 @@ function revisionCard(r, v, open) {
     r.neighbour_adjustments.length ? el("ul", {}, ...r.neighbour_adjustments.map((a) => el("li", {}, chip("NEIGHBOUR POSE", "t-decision"),
       ` ${a.part_id} ${fmtVec(a.position_from)} → ${fmtVec(a.position_to)} mm`, a.new_version ? ` (v${a.base_version} → v${a.new_version})` : "",
       el("div", { class: "meta", text: a.reason }))) ) : null,
-    r.mates.length ? el("div", {}, ...r.mates.map((m) => el("div", { class: "asm-row" }, chip(m.status, STATUS_CLASS[m.status]),
+    r.mates.length ? el("div", {}, ...r.mates.map((m) => el("div", { class: "asm-row" }, chip(m.label || m.status, STATUS_CLASS[m.status]),
       el("span", { text: ` ${m.title}` }), el("span", { class: "meta", text: ` before ${m.before || "—"} · ${m.measured ? JSON.stringify(m.measured) : ""} ${m.message || ""}` })))) : null,
     (r.mate_faces || []).length ? el("div", {}, el("div", { class: "meta", text: "Mate faces (advisory, from bounding boxes; the Fusion mate measurement decides)" }),
       ...r.mate_faces.map((f) => el("div", { class: "asm-row" }, chip(f.status, f.status === "PASS" ? "t-verified" : f.status === "WARNING" ? "t-assumption" : "t-notver"),
@@ -157,8 +157,8 @@ function renderRevisions(v) {
 }
 
 function partRow(p, v) {
-  const checks = el("span", { class: "chips" }, ...p.checks.map((c) => chip(c.id.replace("PART-", ""), STATUS_CLASS[c.status], `${c.id}: ${c.status} ${c.message || ""}`)));
-  const fia = el("span", { class: "chips" }, ...p.fia.map((f) => chip(`${f.article} ${f.status}`, STATUS_CLASS[f.status], `${f.note}\n\n“${f.text}”`)));
+  const checks = el("span", { class: "chips" }, ...p.checks.map((c) => chip(c.id.replace("PART-", ""), STATUS_CLASS[c.status], c.title || `${c.id}: ${c.status} ${c.message || ""}`)));
+  const fia = el("span", { class: "chips" }, ...p.fia.map((f) => chip(f.label || `${f.article} ${f.status}`, STATUS_CLASS[f.status], `${f.tooltip || f.note}\n\n“${f.text}”`)));
   const btn = el("button", { type: "button", class: "ghost small", text: "Rebuild", disabled: !p.rebuildable || v.busy || !v.terminal,
     title: "Rebuild from the stored script (no Claude call), then re-measure and re-shoot",
     onclick: async () => { try { await api(`/api/design/${v.run_id}/rebuild`, { method: "POST", body: JSON.stringify({ part_id: p.id }) }); } catch (e) { $("toolbar-note").textContent = e.message; } refresh(); } });
@@ -202,7 +202,7 @@ function renderResults(v) {
   const asm = $("assembly");
   asm.replaceChildren(
     el("div", { class: "meta", text: v.assembly_method || "" }),
-    ...v.assembly.map((a) => el("div", { class: "asm-row" }, chip(a.status, STATUS_CLASS[a.status]),
+    ...v.assembly.map((a) => el("div", { class: "asm-row" }, chip(a.label || a.status, STATUS_CLASS[a.status]),
       el("span", { text: ` ${a.title}` }), el("span", { class: "meta", text: ` ${a.measured ? JSON.stringify(a.measured) : ""} ${a.message || ""}` }))),
     ...(v.mate_faces || []).map((f) => el("div", { class: "asm-row" }, chip(f.status, f.status === "PASS" ? "t-verified" : f.status === "WARNING" ? "t-assumption" : "t-notver"),
       el("span", { text: ` mate face ${f.face}` }), el("span", { class: "meta", text: ` (advisory) ${f.note}` }))),

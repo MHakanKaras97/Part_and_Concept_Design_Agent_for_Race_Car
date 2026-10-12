@@ -10,6 +10,7 @@ from typing import Optional
 from agent.attachments import MAX_IMAGES, decode_upload
 from agent.design_run import (DEFAULT_PROJECT, TERMINAL, Orchestrator, create_assembly_rebuild, create_design_run,
                               load_design_run, record_answer, runs_dir)
+from agent.display_labels import check_label, check_title, fia_label, fia_tooltip, mate_label
 from vehicle.mirror import staleness
 from vehicle.palette import load_palette
 from vehicle.store import ProjectStore
@@ -255,10 +256,13 @@ def _part_rows(d: dict, registry: Optional[dict] = None) -> list[dict]:
                      "reuse": st.get("reuse", False), "bbox": st.get("bbox"), "dims": sp.get("dims", {}),
                      "position_mm": sp.get("position_mm"), "error": st.get("error"),
                      "attempts": [a["kind"] for a in st.get("attempts", [])],
-                     "checks": [{"id": c["check_id"], "status": c["status"], "message": c.get("message", "")}
+                     "checks": [{"id": c["check_id"], "status": c["status"], "message": c.get("message", ""),
+                                 "label": check_label(c["check_id"], c["status"]),
+                                 "title": check_title(c["check_id"], c["status"], c.get("message", ""))}
                                 for c in st.get("checks", [])],
                      "fia": [{"article": f["article"], "status": f["status"], "note": f.get("note", ""),
-                              "text": f["text"]} for f in st.get("fia", [])],
+                              "text": f["text"], "label": fia_label(f["article"], f["status"]),
+                              "tooltip": fia_tooltip(f["article"], f.get("note", ""))} for f in st.get("fia", [])],
                      "rebuildable": st["state"] == "done",
                      "revisable": st["state"] == "done" and d["status"] == "DONE",
                      "active_version": (registry.get(pid) or {}).get("active"),
@@ -286,7 +290,8 @@ def _revision_rows(d: dict) -> list[dict]:
                                                      "bbox_after")} for s in r.get("steps", [])],
                     "neighbour_adjustments": r.get("neighbour_adjustments", []),
                     "mates": [{"title": m["title"], "status": m["status"], "before": m.get("before"),
-                               "measured": m.get("measured"), "message": m.get("message", "")}
+                               "measured": m.get("measured"), "message": m.get("message", ""),
+                               "label": mate_label(m["status"], m.get("measured"), m.get("limit"))}
                               for m in r.get("mates_after", [])],
                     "mate_faces": r.get("mate_faces", []), "notes": r.get("notes", []),
                     "rollback": r.get("rollback"), "counters": r.get("counters"), "pairs": pairs,
@@ -345,7 +350,9 @@ def build_design_view(d: dict, busy: bool = False, error: Optional[str] = None,
         "render_environments": known_environments(d),
         "assumptions": (d.get("plan") or {}).get("assumptions", []),
         "assembly": [{"id": r["check_id"], "title": r["title"], "status": r["status"], "severity": r["severity"],
-                      "measured": r.get("measured"), "message": r.get("message", "")} for r in a.get("results", [])],
+                      "measured": r.get("measured"), "message": r.get("message", ""),
+                      "label": mate_label(r["status"], r.get("measured"), r.get("limit"))}
+                     for r in a.get("results", [])],
         "assembly_method": a.get("method"),
         "skipped_mates": a.get("skipped_mates", []),
         "mate_faces": a.get("mate_faces", []),

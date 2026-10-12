@@ -74,10 +74,12 @@ strict mode, its CLI, its UI, or the historical-record tests. **No code is remov
   script; every script activates/validates that document first, so the user's other documents are never written.
   Documents are never saved or closed.
 
-## Token budget
+## Call budget
 
-1 plan call + 4 part calls + ≤ 8 repairs. Static system prompt (contract + rules of the game) identical across part
-and repair calls; per-call input = part spec + ≤ 6 FIA snippets (+ compact error and failing lines for repairs).
+Planned: 1 plan call + 4 part calls + ≤ 8 repairs. Measured later in the recorded runs: 5 Claude calls for
+the 4-part run `20261010-145347`, 10 for the 18-part extension `20261010-222202` (4 parts reused, 6 derived by
+mirroring with no call), 0 for assembly rebuilds and 1 per revision. Static system prompt (contract + rules of the
+game) identical across part and repair calls; per-call input = part spec + ≤ 6 FIA snippets (+ compact error and failing lines for repairs).
 No images to Claude by default.
 
 ## Open questions recorded (not blocking)

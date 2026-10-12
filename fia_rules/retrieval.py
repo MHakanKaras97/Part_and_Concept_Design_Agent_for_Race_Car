@@ -1,4 +1,4 @@
-"""Token-cheap FIA retrieval for fast mode: a few verbatim snippets per part, never the whole regulation.
+"""FIA retrieval for fast mode: at most 6 verbatim snippets per part, never the whole regulation.
 
 Sources, in order: the structured rules (fia_rules/rules/*.yaml, verbatim requirement_text) and the extracted text
 fia_rules/source/fia_2026_section_c_iss20.txt, split into articles (page header blocks removed). Snippets are

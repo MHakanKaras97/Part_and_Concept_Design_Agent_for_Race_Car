@@ -23,6 +23,7 @@ from pydantic import ValidationError
 
 from agent import fast_config
 from agent.attachments import save_attachments
+from agent.display_labels import FIA_WIDTH_TOOLTIP, PART_CHECK_LEGEND, check_label, fia_label, mate_label
 from agent.fast_prompts import (PLAN_SYSTEM, VISUAL_SYSTEM, PartResponse, PlanResponse,
                                 VisualReviewResponse, gate_plan, kit_for_brief, part_system, part_user, plan_user,
                                 repair_user, schema)
@@ -730,10 +731,11 @@ def render_summary(d: dict) -> str:
     if d.get("answer"):
         lines += ["## Question and verbatim answer", "", f"Q: {d['answer']['question']}", "",
                   f"A: {d['answer']['answer']}", ""]
-    lines += ["## Parts", "", "| Part | State | Version | World bbox (mm) | Checks | FIA |", "|---|---|---|---|---|---|"]
+    lines += ["## Parts", "", f"Checks: {PART_CHECK_LEGEND} FIA: {FIA_WIDTH_TOOLTIP}", "",
+              "| Part | State | Version | World bbox (mm) | Checks | FIA |", "|---|---|---|---|---|---|"]
     for pid, st in d["parts"].items():
-        checks = ", ".join(f"{c['check_id']}:{c['status']}" for c in st.get("checks", []))
-        fia = ", ".join(f"{f['article']}:{f['status']}" for f in st.get("fia", []))
+        checks = ", ".join(f"{c['check_id']}:{check_label(c['check_id'], c['status'])}" for c in st.get("checks", []))
+        fia = ", ".join(fia_label(f["article"], f["status"]) for f in st.get("fia", []))
         drv = f" (derived from {st['derived_from']}, {st.get('mirror_mode')})" if st.get("derived_from") else ""
         lines.append(f"| {pid} | {st['state'].upper()}{' (reused)' if st.get('reuse') else ''}{drv} | "
                      f"{st.get('version', '-')} | {_fmt_bbox(st.get('bbox'))} | {checks or st.get('error', '-')} | "
@@ -741,7 +743,8 @@ def render_summary(d: dict) -> str:
     a = d.get("assembly") or {}
     lines += ["", "## Assembly", "", a.get("method", "-"), ""]
     for r in a.get("results", []):
-        lines.append(f"- {r['check_id']}: {r['status']} {r.get('message') or ''} {json.dumps(r.get('measured'))}")
+        lines.append(f"- {r['check_id']}: {mate_label(r['status'], r.get('measured'), r.get('limit'))} "
+                     f"{r.get('message') or ''} {json.dumps(r.get('measured'))}")
     for f in a.get("mate_faces", []):
         lines.append(f"- mate face (advisory) {f['face']}: {f['status']} - {f['note']}")
     for m in a.get("skipped_mates", []):
