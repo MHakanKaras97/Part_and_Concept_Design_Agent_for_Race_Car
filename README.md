@@ -60,7 +60,7 @@ a live Fusion. The runs are recorded in `data/mini_f1/design_runs/`.
 | 20261010-145347 (first run) | 4 | 5 | 8 | $0.36 |
 | 20261010-222202 (extension) | 18 | 10 | 37 | $1.13 |
 | 20261011-201406 (rebuild, palette, render) | 18 | 0 | 72 | – |
-| 20261012-080916 (rebuild, 3 revisions, render) | 18 | 3 | 33 | $0.79 |
+| 20261012-080916 (rebuild, 3 revisions, render) | 18 | 3 (one per revision; the rebuild itself 0) | 33 | $0.79 |
 
 ## How it fits together
 
@@ -84,7 +84,7 @@ More detail: [docs/architecture.md](docs/architecture.md). All documents: [docs/
 ## Try it without Fusion or Claude
 
 You can install the package, run the tests and browse the recorded runs without Fusion, Claude or an internet
-connection (after `pip install`). Tested on Windows with Python 3.13; the package requires Python 3.11 or newer.
+connection (after `pip install`). Tested on Windows 11 with Python 3.11 and 3.13 (the package requires 3.11+).
 
 ```bash
 git clone <this repository> race_car_agent_public
@@ -93,7 +93,7 @@ python -m venv .venv
 .venv\Scripts\activate            # Windows (PowerShell or cmd)
 # source .venv/bin/activate       # macOS / Linux
 python -m pip install -e ".[dev]"
-python -m pytest                   # about 540 tests; takes a few minutes. Live Fusion/Claude tests are skipped.
+python -m pytest                   # about 540 tests, 3-5 minutes; live Fusion/Claude tests are skipped
 python -m ui --read-only           # opens http://127.0.0.1:8765/ and shows the latest recorded run
 ```
 
@@ -116,7 +116,7 @@ python -m agent design-status      # every recorded design run with its call cou
 
 You need:
 
-- **Python 3.11+.** Tested on Windows 11 with Python 3.13.
+- **Python 3.11+.** Tested on Windows 11 with Python 3.11 and 3.13.
 - **Autodesk Fusion with its MCP server enabled**, under any licence that allows it. The agent connects to
   `http://127.0.0.1:27182/mcp`. Check the connection with `python -m agent fusion-check`. Keep the Fusion window
   visible: screenshots are taken from its viewport.
