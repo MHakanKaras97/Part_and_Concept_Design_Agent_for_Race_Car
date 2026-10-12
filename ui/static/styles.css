@@ -17,8 +17,8 @@
   --verified: #34d058;      /* verified */
   --notver: #8a96a6;        /* not verified / not applicable */
   --fail: #ff4d4f;          /* non-compliant */
-  --font: "Titillium Web", "Segoe UI", system-ui, sans-serif;
-  --mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, Menlo, "Liberation Mono", monospace;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
