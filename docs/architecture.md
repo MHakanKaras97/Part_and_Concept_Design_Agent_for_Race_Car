@@ -1,8 +1,12 @@
 # Architecture — AI F1 Engineering Agent (an experimental pipeline)
 
-Last updated: 2026-10-10 (Milestone 2.0 fast mode = default path, §14; strict workflow kept behind Advanced). Original brief: `docs/dev-log/original_brief.md`.
+Last updated: 2026-10-12 (public release: UI request checks and read-only mode, display wording; fast mode is the
+default path, §14; the strict workflow is kept behind Advanced). Original brief: `docs/dev-log/original_brief.md`.
 History: Milestone 1 (MVP 1.0) bracket slice · MVP 1.1 user-answer provenance and evidence labels · Milestone 1.2
-web UI, Claude Code reasoning backend, image attachments, per-project Fusion naming.
+web UI, Claude Code reasoning backend, image attachments, per-project Fusion naming · Milestone 2.0 fast mode, then
+the Mini F1 run with real Claude reasoning: 4 parts, extended to 18 (wheels, suspension, sidepods, engine cover, halo,
+mirrors; right-hand parts derived by mirroring), revise/revert, palette and local rendering (2026-10-10 to 10-12).
+Index of all documents: `docs/README.md`.
 
 Status legend used in this document:
 **IMPLEMENTED+TESTED** (code exists, unit and/or live tests pass) · **IMPLEMENTED** (works, not covered by automated tests) ·
@@ -132,8 +136,8 @@ Provenance tags: AI_GENERATED, RULE_CHECKED, ASSUMPTION_BASED, GEOMETRY_VALIDATE
 (R = Rz·Ry·Rx) + position; local↔VCS, bbox transform, VCS↔FIA, mm↔cm, Fusion `Matrix3D` array. Bench
 components use the identity pose. Non-identity placement (occurrence `transform2` + position snapshot) is
 IMPLEMENTED+TESTED live: exact to 0.0 mm / 0.0° for the Part 001 pose, after build, after `computeAll`, after a re-run,
-after delete + rebuild and after a parameter edit. This relies on the anchor occurrence (§2). Vehicle-level placement of
-several components is Milestone 2.
+after delete + rebuild and after a parameter edit. This relies on the anchor occurrence (§2). Several placed
+components in one design: fast mode (§14); the Mini F1 has 18.
 
 **Persistence** (`vehicle/store.py`): `data/<project>/project.json`, `components/<ID>.json`, `runs/<run>/`
 (`run.json`, `reasoning/`, `scripts/NN_build.py`, `geometry_report.json`, `screenshot.png`, `report.md`).
@@ -163,8 +167,8 @@ Atomic writes with retry on transient Windows locks.
 | `generators/l_bracket.py` — inputs model, feasibility, DFM quantities, analytic volume/bbox/holes, interfaces, structural section, Fusion script | IMPLEMENTED+TESTED (unit + live) |
 | Generated model: named component, 14 prefixed user parameters (`brk001_bracket_thickness`, …, derived `…_bend_outer_radius`), fully constrained sketches, named features (`SK_L_profile`, `EX_L_profile`, `FL_bend_inner/outer`, `SK/CUT_base_holes`, `SK/CUT_upright_holes`), cut features limited to own body, Fusion material; rebuild replaces the previous build; failure deletes partial geometry; generator 3: empty identity anchor occurrence `VCS origin` first + placement read-back that raises if Fusion ignored the move | IMPLEMENTED+TESTED (live, in throwaway tagged documents) |
 | `inspect.py` — read-only inspection: bodies (VeryHigh accuracy volume/area, bbox in world), cylinders (centre/axis/radius/concave), feature health, sketch constraint status, parameter values; the Fusion build that inspected (`fusion_version`) and the one that ran the CAD build (`build_fusion_version`), with a logged/report warning when they differ | IMPLEMENTED+TESTED (live) |
-| Multi-component assembly, joints, interference analysis | PLANNED |
-| Free-form (AI-authored) geometry scripts | PLANNED |
+| Multi-component assembly, joints, interference analysis | IMPLEMENTED+TESTED in fast mode (§14: per-pair minimum distance and interference, as-built rigid joints for planned mates); not used by the strict path |
+| Free-form (AI-authored) geometry scripts | IMPLEMENTED+TESTED in fast mode (§14: Claude writes the part body; `fusion/script_safety.py` validates it, `fusion/prelude.py` wraps it). The validator catches model mistakes; it is not a sandbox |
 
 Document policy: the agent works in the active Fusion design (creates one if none is open) and never saves or closes
 documents — the record + generator can always rebuild the model. Every design it builds in gets one empty identity
@@ -196,6 +200,10 @@ The UI is a frontend for the existing workflow, not a second implementation of i
 | `agent/service.py` `AgentService` | start a run, record a verbatim answer (`entered_via: "ui: web interface"`), advance a run in a background thread (one worker per run), choose the reasoner (`auto` = Claude Code if `claude --version` works, else file exchange; Claude Code itself falls back to file exchange per task), Fusion status (MCP handshake per poll, cached 60 s; Fusion version and active document from one script ping per (re)connection, because every script call leaks a wrapper layer in the MCP add-in), and `build_run_view()` — a view model built only from `run.json` + component records | IMPLEMENTED+TESTED |
 | `ui/server.py` | stdlib `ThreadingHTTPServer`, binds to 127.0.0.1 only; JSON API: `GET /api/status`, `GET/POST /api/runs`, `GET /api/runs/<id>`, `POST /api/runs/<id>/answer`, `POST /api/runs/<id>/advance`, `GET …/report`, `GET …/screenshot`; static files with path-traversal protection; body size limit | IMPLEMENTED+TESTED (in-process HTTP tests) |
 | `ui/static/` | one page: header (backend / reasoner / Fusion status), 8-step pipeline (REQUIREMENTS → … → REGISTERED, current step highlighted, waiting/failed states), chat with layer-tagged messages (USER REQUEST, QUESTION, USER ANSWER (verbatim), AI INTERPRETATION with quotes, ASSUMPTION, ENGINEERING DECISION with source/trace, VALIDATION evidence labels, REVIEW, RESULT), right panel (task, stage, agent status, component/revision with hole-geometry vs mating status, evidence labels, FIA status, Fusion, assumptions, report/screenshot, reasoning log); all text inserted with `textContent` | IMPLEMENTED; rendered and checked in headless Edge (no console errors); no automated JS tests |
+
+Request checks (2026-10-12): every request needs Host `127.0.0.1:<port>` or `localhost:<port>`; an `Origin` from any
+other site is refused (403); every POST needs `Content-Type: application/json` (415). `python -m ui --read-only`
+serves the recorded runs and refuses every POST (403), so nothing is started or written. IMPLEMENTED+TESTED.
 
 The composer is context-sensitive: a new request when idle (optionally with image attachments), an answer to the
 open question (one at a time, stored verbatim) when the agent waits, disabled while the agent works, "Check again"
@@ -240,7 +248,8 @@ Correcting it needs a decision: a documented data repair from the run record, or
 1. ~~Vehicle coordinate system vs FIA~~ — DECIDED 2026-10-10 (user): keep the VCS (+X front, +Y left, +Z up) with
    the tested transform to the FIA Car Coordinate System. See `docs/coordinate_system.md`.
 2. ~~Vehicle X datum~~ — DECIDED 2026-10-10 (user): VCS origin on the front-axle centreline (relation to FIA XF = 0
-   NOT_VERIFIED until wheels exist), Y = 0 plane of symmetry, Z = 0 reference plane. See `docs/coordinate_system.md`.
+   NOT_VERIFIED: the concept wheels WHL-* exist and are centred on VCS X = 0, but nothing is checked against the FIA
+   wheel definition), Y = 0 plane of symmetry, Z = 0 reference plane. See `docs/coordinate_system.md`.
 
 ## 14. Fast mode (default path) — `agent/design_run.py` — IMPLEMENTED+TESTED (Milestone 2.0)
 
@@ -271,7 +280,8 @@ progress log: `docs/dev-log/fast_mode_progress.md`; coordinates: `docs/coordinat
 | `fia_rules/retrieval.py` (verbatim snippets, extent-rule statuses) | IMPLEMENTED+TESTED |
 | `agent/fast_reasoning.py` (`claude -p --system-prompt-file … --json-schema …`, cached per call) | IMPLEMENTED+TESTED (fake runner + 2 real calls) |
 | `agent/fast_prompts.py`, `agent/design_run.py`, `agent/design_service.py`, `/api/design`, `ui/static/index.html` + `fast.js` | IMPLEMENTED+TESTED (fake Fusion + scripted Claude; page rendered in headless Edge) |
-| Full Mini F1 with real Claude reasoning | NOT RUN (by design: the user runs it from the UI) |
+| Full Mini F1 with real Claude reasoning | DONE 2026-10-10 to 10-12, started by the user from the UI; recorded runs in `data/mini_f1/design_runs/` |
+| Derived parts (`vehicle/mirror.py`: right-hand parts mirrored or yawed 180° from the left, zero Claude calls), palette (`vehicle/palette.py`, `fusion/paint.py`), local render (`agent/render_run.py`, `fusion/render*.py`) | IMPLEMENTED+TESTED (unit; live test for mirroring only; palette and render were used live in the recorded runs) |
 
 Rules kept from the strict path: Claude never calls Fusion; every script is ours or validated; no script saves or
 closes a document; model-changing scripts end normally; the user's other documents are never touched (each run has

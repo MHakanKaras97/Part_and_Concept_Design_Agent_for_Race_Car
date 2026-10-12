@@ -99,10 +99,15 @@ drafted by the same session that consumed them, and that "interface VERIFIED" ov
 - [ ] Keep an eye on the Fusion MCP add-in wrapper leak: restart Fusion before long live sessions; the canary live
   test reports when Fusion fixes the ignored-placement behaviour.
 
-## Milestone 2 — F1 Engineering Agent V2: vehicle coordinate system + interfaces (Prototype 2) — NEXT
+## Milestone 2 — F1 Engineering Agent V2: vehicle coordinate system + interfaces (Prototype 2) — PARTLY DONE, mostly superseded by Milestone 2.0
 
-1. Decide VCS vs FIA frame and the X datum (architecture §13) — **user decision**.
-2. Create a `vehicle` project (`data/<vehicle>/project.json`) with the documented datum and `docs/coordinate_system.md`.
+Status 2026-10-12: written before fast mode. Items 1–2 are done; fast mode (Milestone 2.0, below) delivered placed
+F1-like parts, planned mates measured in Fusion and part revision instead of items 3–5, without strict-path
+generators or interface records. Item 6 is open.
+
+1. Decide VCS vs FIA frame and the X datum (architecture §13) — **DONE** (user decision 2026-10-10).
+2. Create a `vehicle` project (`data/<vehicle>/project.json`) with the documented datum and `docs/coordinate_system.md`
+   — **DONE** (`data/mini_f1/`, `docs/coordinate_system.md`).
 3. An F1 mounting/interface component (e.g. front-wing mounting pylon or bulkhead mount plate) with a second
    generator; placed by `Pose` in the VCS. Non-identity placement of a single part is verified live (2026-10-10,
    with the anchor occurrence; architecture §2); a second generator must reuse the anchor + read-back.
@@ -111,6 +116,12 @@ drafted by the same session that consumed them, and that "interface VERIFIED" ov
 5. Iteration workflow on an existing component: "make it 2 mm thicker" → find component → change parameter →
    rebuild → revalidate → new revision → change report (`python -m agent revise <component> "..."`).
 6. Optional: API reasoning backend (same `ReasoningBackend` interface; the UI and engine need no change).
+
+## Milestones 3–6 (original plan, strict path)
+
+Status 2026-10-12: fast mode built concept versions of all these parts (18 in the Mini F1) from AI-written scripts.
+The strict-path items below (deterministic generators, interface records, FIA geometric checkers beyond the per-part
+C2.3.1 width proxy, vehicle-level FIA layout checks) are still open.
 
 ## Milestone 3 — Nose (Prototype 3)
 
@@ -187,3 +198,12 @@ This public repository is a clean copy with a fresh history; development continu
 Since then: the first real Mini F1 run (4 parts, 2026-10-10), a pose correction, the extension to 18 parts with
 derived (mirrored) right-hand parts, part revision/revert, colour palette, local rendering and a refinement pass on
 9 components (2026-10-12). Details: `docs/dev-log/`. Next: more render angles, FIA reference-volume checks.
+
+## Public release, step 3 (2026-10-12)
+
+- [x] README for students and researchers; `docs/README.md` index; `docs/LEARNING_GUIDE.md`.
+- [x] UI server: Host / Origin / Content-Type checks; `--read-only` mode for browsing the recorded runs; no external
+  font request.
+- [x] Display wording: measured results are labelled as measurements ("C2.3.1 width proxy MEASURED", PASS,
+  CONTACT_MEASURED, …); stored statuses unchanged.
+- [x] The empty screenshot of the f1_parts example run was removed (the run is kept).

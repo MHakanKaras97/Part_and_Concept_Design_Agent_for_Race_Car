@@ -40,7 +40,9 @@ Resulting relation (applies to directions; tested in `tests/test_transforms.py`)
 
 - VCS = FIA axes rotated 180° about Z (`vehicle/transforms.vcs_to_fia`).
 - VCS X = 0 (front-axle centreline) corresponds to the FIA plane **XF = 0** only when the front wheel origins of
-  C2.1.3 lie on the axle centreline — **NOT_VERIFIED** (no wheels are modelled yet).
+  C2.1.3 lie on the axle centreline — **NOT_VERIFIED** (the concept wheels WHL-FL/FR are centred on VCS X = 0, but
+  they are not checked against the FIA wheel definition).
 - VCS Y = 0 and FIA Plane Y = 0 are both the plane of symmetry.
 - VCS Z = 0 (project reference plane) vs FIA Plane Z = 0 (bottom of the sprung part, C2.2 a): treated as the
-  same plane by project convention — **NOT_VERIFIED** (no sprung-part/plank geometry exists to measure it).
+  same plane by project convention — **NOT_VERIFIED** (the concept floor FLR-001 starts at VCS Z = 0, but no plank
+  or sprung-part reference is modelled to measure it).
