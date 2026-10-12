@@ -1,0 +1,262 @@
+{
+  "run_id": "20261005-203018-design-a-machined-alumin",
+  "seq": 1,
+  "kind": "analysis",
+  "instructions": "# Role\n\nYou are the reasoning component of an AI Engineering Agent. You do not draw CAD and you do not\ncompute checks yourself: Python performs calculations, rule checks and registration, and Fusion 360\nbuilds and measures geometry. Your job is engineering judgement: interpret, identify gaps, state\nassumptions, plan, and decide on revisions.\n\nRules that always apply:\n- Answer with ONE JSON object that validates against the response schema. No prose outside it.\n- Never invent requirements, regulations or rule values. Only rules listed in the context exist.\n- Never claim FIA compliance, structural safety, race-readiness or production readiness.\n- Do not silently invent critical information. Anything not stated by the user is either a\n  missing-information item (ASK) or an explicit assumption (A-id) - never a hidden default.\n- Every numeric design value must trace to requirement ids (R..), assumption ids (A..),\n  user answers (M..) or rule ids. Units: mm, deg, N, kg.\n- Be concise and specific; write for an engineer reviewing your reasoning later.\n\n\n# Task: requirement analysis\n\nFrom the user's request (and any answers the user has already given, see context.user_answers):\n\n1. Choose `component_type` from context.generators (or \"unsupported\" if none fits).\n2. Extract `requirements` (R01, R02, ...). Use the generator's `required_info` keys as `key` where\n   the requirement covers that topic; other keys are allowed. `source`: USER for stated facts,\n   USER_ANSWER for facts from user answers, DERIVED for direct consequences (explain in text).\n3. For every `required_info` key NOT covered by a requirement, add a `missing_information` item\n   (M01, ...) with the same `key`:\n   - criticality CRITICAL  -> the design or interfaces cannot be trusted without it -> resolution ASK\n     (the project policy forbids assuming CRITICAL items) and give a precise `question`.\n   - IMPORTANT / MINOR     -> resolution ASSUME is allowed; reference an assumption via `assumption_id`.\n   Also flag any other gap you consider important.\n4. List `assumptions` (A01, ...) with rationale and impact. Include scope assumptions (e.g.\n   concept-level design, nominal geometry, no FEA) so they are visible in the report.\n\nPrefer asking over assuming when an answer would materially change the geometry or interfaces.\n",
+  "context": {
+    "request": "Design a machined aluminium L-bracket to mount a 2 kg sensor box to a flat plate with four M6 bolts.",
+    "project": {
+      "schema_version": 1,
+      "id": "prototype_bench",
+      "name": "Prototype bench",
+      "kind": "bench",
+      "description": "Stand-alone components used to develop and prove the agent workflow (Prototype 1+).",
+      "coordinate_system": "VCS: +X front, +Y left, +Z up, mm (see docs/architecture.md)",
+      "regulation": null,
+      "policy": {
+        "critical_missing_info_must_be_asked": true,
+        "max_revision_loops": 3
+      },
+      "created": "2026-10-05T17:30:18+00:00"
+    },
+    "existing_components": [],
+    "user_answers": {},
+    "generators": {
+      "l_bracket": {
+        "description": "Generator: machined L-bracket (Prototype 1).",
+        "processes": [
+          "machined"
+        ],
+        "required_info": {
+          "function": "What the bracket connects/supports and how it is oriented",
+          "material": "Bracket material",
+          "manufacturing_process": "How the bracket is made (this generator supports: machined)",
+          "base_fastener": "Fastener size and count through the base leg",
+          "upright_fastener": "Fastener size and count through the upright leg",
+          "load": "Load case: supported mass or force, direction, dynamic/safety factor",
+          "envelope": "Available space / size limits for the bracket"
+        }
+      }
+    },
+    "feedback": null
+  },
+  "response_schema": {
+    "$defs": {
+      "Assumption": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "pattern": "^A\\d{2,3}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "impact": {
+            "default": "",
+            "title": "Impact",
+            "type": "string"
+          },
+          "affects": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Affects",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "rationale"
+        ],
+        "title": "Assumption",
+        "type": "object"
+      },
+      "MissingInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "pattern": "^M\\d{2,3}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "topic": {
+            "title": "Topic",
+            "type": "string"
+          },
+          "why_it_matters": {
+            "title": "Why It Matters",
+            "type": "string"
+          },
+          "criticality": {
+            "enum": [
+              "CRITICAL",
+              "IMPORTANT",
+              "MINOR"
+            ],
+            "title": "Criticality",
+            "type": "string"
+          },
+          "resolution": {
+            "enum": [
+              "ASK",
+              "ASSUME"
+            ],
+            "title": "Resolution",
+            "type": "string"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Question"
+          },
+          "assumption_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Assumption Id"
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Answer"
+          }
+        },
+        "required": [
+          "id",
+          "key",
+          "topic",
+          "why_it_matters",
+          "criticality",
+          "resolution"
+        ],
+        "title": "MissingInfo",
+        "type": "object"
+      },
+      "Requirement": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "pattern": "^R\\d{2,3}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "value": {
+            "default": null,
+            "title": "Value"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Unit"
+          },
+          "source": {
+            "default": "USER",
+            "enum": [
+              "USER",
+              "DERIVED",
+              "USER_ANSWER"
+            ],
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "key",
+          "text"
+        ],
+        "title": "Requirement",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "component_type": {
+        "description": "Generator id that fits the request, e.g. 'l_bracket', or 'unsupported'",
+        "title": "Component Type",
+        "type": "string"
+      },
+      "summary": {
+        "title": "Summary",
+        "type": "string"
+      },
+      "requirements": {
+        "items": {
+          "$ref": "#/$defs/Requirement"
+        },
+        "title": "Requirements",
+        "type": "array"
+      },
+      "missing_information": {
+        "items": {
+          "$ref": "#/$defs/MissingInfo"
+        },
+        "title": "Missing Information",
+        "type": "array"
+      },
+      "assumptions": {
+        "items": {
+          "$ref": "#/$defs/Assumption"
+        },
+        "title": "Assumptions",
+        "type": "array"
+      }
+    },
+    "required": [
+      "component_type",
+      "summary",
+      "requirements",
+      "missing_information",
+      "assumptions"
+    ],
+    "title": "AnalysisResponse",
+    "type": "object"
+  }
+}

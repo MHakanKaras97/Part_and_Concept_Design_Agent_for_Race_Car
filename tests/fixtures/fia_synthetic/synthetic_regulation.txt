@@ -1,0 +1,83 @@
+SYNTHETIC TEST FIXTURE - invented text, not FIA regulation text. Only the layout (page markers, header block,
+article ids on their own line followed by a title) mimics the extracted regulation, so that retrieval can be
+tested without the real document. Article ids and titles are reused as labels; every sentence is made up.
+
+===== PAGE 1 =====
+SECTION C: TECHNICAL REGULATIONS
+C1
+Synthetic regulation for tests
+©2026 Synthetic fixture, not FIA
+0
+C
+Synthetic regulation (test fixture)
+
+===== PAGE 2 =====
+SECTION C: TECHNICAL REGULATIONS
+C2
+©2026 Synthetic fixture, not FIA
+0
+C
+Contents
+C3.10.1
+Front Wing Profiles
+C12.2.1
+Survival Cell
+This contents page lists Front Wing, Rear Wing and Survival Cell articles and must never be used as a snippet.
+
+===== PAGE 7 =====
+SECTION C: TECHNICAL REGULATIONS
+C7
+©2026 Synthetic fixture, not FIA
+0
+C
+C2.3.1
+Overall width
+Synthetic sentence: the test car is narrower than a made-up limit, which keeps this article long enough to parse.
+C2.3.3
+Synthetic placeholder
+A synthetic placeholder article without any part keyword, kept here so that unrelated articles exist in the text.
+
+===== PAGE 8 =====
+SECTION C: TECHNICAL REGULATIONS
+C8
+©2026 Synthetic fixture, not FIA
+0
+C
+C3.5.4
+Floor Bodywork
+Invented text: the synthetic Floor Bodywork and the synthetic Diffuser of the test car stay inside a box of 1000mm
+by 500mm in this fixture. The Plank and the Floor Fence are invented words here as well.
+C3.10.1
+Front Wing Profiles
+Invented text: the synthetic Front Wing Profiles of the test car lie within a made-up region 300mm deep. Each FW
+element in this fixture is fictional, and the Front Wing Endplate is described only to give the scorer keywords.
+C3.11.1
+Rear Wing Profiles
+Invented text: the synthetic Rear Wing Profiles sit in a made-up region 200mm tall. The Rear Wing Endplate and the
+Beam Wing of this fixture are fictional, as is every RW dimension written here.
+
+===== PAGE 9 =====
+SECTION C: TECHNICAL REGULATIONS
+C9
+©2026 Synthetic fixture, not FIA
+0
+C
+C12.2.1
+Survival Cell
+Invented text: the synthetic Survival Cell of the test car encloses a made-up Cockpit opening 600mm long. The
+monocoque of this fixture is fictional.
+C12.2.2
+Survival Cell extent
+Invented text: a second synthetic Survival Cell article, so that the monocoque gets two excerpts; the Front Impact
+Structure ahead of it is 400mm long in this made-up fixture.
+
+===== PAGE 10 =====
+SECTION C: TECHNICAL REGULATIONS
+C10
+©2026 Synthetic fixture, not FIA
+0
+C
+C18.1.1
+Synthetic appendix list
+Front Wing, Rear Wing, Floor, Survival Cell, Cockpit, Diffuser: an invented appendix list that mentions every
+keyword and must still never be retrieved, because appendix lists are excluded.

@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Secrets / local config
+.env
+.env.*
+*.key
+secrets/
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Local Fusion artifacts (exports, backups) — CAD source of truth is data/ + generators
+*.f3d
+*.f3z
+*.step
+*.stp
+*.stl
+*.bak
+
+# Scratch
+tmp/
+scratch/
+
+# FIA regulation (not redistributed; install with scripts/fetch_fia_source.py)
+fia_rules/source/*.pdf
+fia_rules/source/*.txt

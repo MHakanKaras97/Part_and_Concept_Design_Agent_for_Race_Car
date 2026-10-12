@@ -1,0 +1,1999 @@
+{
+  "run_id": "20261010-105534-part-001-f1-front-wing-m",
+  "project_id": "f1_parts",
+  "request": "PART 001 — F1 Front Wing Mounting Bracket\n\nAmaç:\nÖn kanadın araç üzerindeki yapısal bağlantısını temsil eden, parametrik ve üretilebilir bir mounting bracket oluşturmak.\n\nBu ilk parça bir F1-inspired engineering demonstrator olacak.\nGerçek FIA homologasyon parçası olduğunu iddia etme.\nBoyutları ve geometrik kuralları proje kapsamında tanımlanmış mühendislik varsayımları olarak kabul et.\n\nParça şu özellikleri göstermeli:\n- rigid mounting bracket\n- iki ana bağlantı bölgesi\n- bolt holes\n- yeterli malzeme kalınlığı\n- fillet'ler\n- açıkça tanımlanmış parametrik ölçüler\n- simetrik olmayan / yönü belli bir geometri\n- Fusion assembly içerisinde anlamlı bir coordinate frame\n- daha sonra başka F1 parçalarıyla assembly oluşturulabilecek şekilde tasarlanmış olması\n\nInitial Part Parameters:\nOverall length: 120 mm\nOverall width: 70 mm\nBase thickness: 12 mm\nVertical support thickness: 10 mm\nSupport height: 65 mm\n\nMounting holes:\n- 2 × Ø10 mm base mounting holes\n- 2 × Ø8 mm front-wing mounting holes\n\nMinimum fillet:\nR5 mm\n\nCoordinate System:\nX: part longitudinal direction\nY: part lateral direction\nZ: vertical direction\nOrigin için şimdilik mevcut generator origin'ini koru.\n\nPlacement:\nPosition:\nX = 500 mm\nY = -250 mm\nZ = 150 mm\n\nRotation:\nRoll = 15°\nPitch = 35°\nYaw = 60°",
+  "created": "2026-10-10T07:55:34+00:00",
+  "status": "COMPLETED",
+  "stage": "REPORT",
+  "seq": 4,
+  "loops": 1,
+  "feedback": null,
+  "user_answers": {},
+  "analysis": {
+    "component_type": "l_bracket",
+    "summary": "PART 001 is an F1-inspired front-wing mounting bracket for a concept-level demonstrator. It does not claim FIA homologation. It maps to the l_bracket generator: a base leg holds 2 x Ø10 holes for the vehicle-side mount and an upright support holds 2 x Ø8 holes for the front-wing mount. The user gave the main dimensions (120 x 70 mm envelope, 12 mm base, 10 mm upright, 65 mm support height), a minimum R5 fillet, the local frame axes, the instruction to keep the generator origin, and the placement pose (500, -250, 150 mm; roll 15, pitch 35, yaw 60 deg). The user also said to treat dimensions and geometric rules as project engineering assumptions. For that reason the gaps that do not change the given geometry are assumed and labelled, not asked: material, manufacturing process, hole positions and edge distances, how the holes map to fasteners, and the rotation convention. No load case was given. Structural checks will therefore be NOT_RUN, not passed, until the user supplies a load.",
+    "requirements": [
+      {
+        "id": "R01",
+        "key": "function",
+        "text": "The part is a rigid mounting bracket representing the structural connection of the front wing to the vehicle. It must be parametric and manufacturable.",
+        "value": null,
+        "unit": null,
+        "source": "USER_REQUEST",
+        "quote": "Ön kanadın araç üzerindeki yapısal bağlantısını temsil eden, parametrik ve üretilebilir bir mounting bracket oluşturmak.",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R02",
+        "key": "scope_no_homologation_claim",
+        "text": "The part is an F1-inspired engineering demonstrator. It must not be presented as a real FIA-homologated part.",
+        "value": null,
+        "unit": null,
+        "source": "USER_REQUEST",
+        "quote": "Gerçek FIA homologasyon parçası olduğunu iddia etme.",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R03",
+        "key": "scope_dimensions_as_assumptions",
+        "text": "Dimensions and geometric rules are to be treated as engineering assumptions defined within the project scope.",
+        "value": null,
+        "unit": null,
+        "source": "USER_REQUEST",
+        "quote": "Boyutları ve geometrik kuralları proje kapsamında tanımlanmış mühendislik varsayımları olarak kabul et.",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R04",
+        "key": "function_two_mounting_zones",
+        "text": "The bracket must have two main connection zones.",
+        "value": null,
+        "unit": null,
+        "source": "USER_REQUEST",
+        "quote": "iki ana bağlantı bölgesi",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R05",
+        "key": "envelope",
+        "text": "Overall bracket length (local X, longitudinal) is 120 mm.",
+        "value": 120,
+        "unit": "mm",
+        "source": "USER_REQUEST",
+        "quote": "Overall length: 120 mm",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R06",
+        "key": "envelope",
+        "text": "Overall bracket width (local Y, lateral) is 70 mm.",
+        "value": 70,
+        "unit": "mm",
+        "source": "USER_REQUEST",
+        "quote": "Overall width: 70 mm",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R07",
+        "key": "base_thickness",
+        "text": "Base leg thickness is 12 mm.",
+        "value": 12,
+        "unit": "mm",
+        "source": "USER_REQUEST",
+        "quote": "Base thickness: 12 mm",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R08",
+        "key": "upright_thickness",
+        "text": "Vertical support (upright) thickness is 10 mm.",
+        "value": 10,
+        "unit": "mm",
+        "source": "USER_REQUEST",
+        "quote": "Vertical support thickness: 10 mm",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R09",
+        "key": "envelope",
+        "text": "Support height (local Z) is 65 mm.",
+        "value": 65,
+        "unit": "mm",
+        "source": "USER_REQUEST",
+        "quote": "Support height: 65 mm",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R10",
+        "key": "base_fastener",
+        "text": "The base leg has 2 mounting holes of diameter 10 mm (vehicle-side connection).",
+        "value": {
+          "count": 2,
+          "diameter": 10
+        },
+        "unit": "mm",
+        "source": "USER_REQUEST",
+        "quote": "2 × Ø10 mm base mounting holes",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R11",
+        "key": "upright_fastener",
+        "text": "The upright has 2 front-wing mounting holes of diameter 8 mm.",
+        "value": {
+          "count": 2,
+          "diameter": 8
+        },
+        "unit": "mm",
+        "source": "USER_REQUEST",
+        "quote": "2 × Ø8 mm front-wing mounting holes",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R12",
+        "key": "min_fillet",
+        "text": "The minimum fillet radius is 5 mm.",
+        "value": 5,
+        "unit": "mm",
+        "source": "USER_REQUEST",
+        "quote": "R5 mm",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R13",
+        "key": "orientation_asymmetric",
+        "text": "The geometry must be non-symmetric, with a clearly identifiable orientation.",
+        "value": null,
+        "unit": null,
+        "source": "USER_REQUEST",
+        "quote": "simetrik olmayan / yönü belli bir geometri",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R14",
+        "key": "local_frame_x",
+        "text": "Local X is the part's longitudinal direction.",
+        "value": null,
+        "unit": null,
+        "source": "USER_REQUEST",
+        "quote": "X: part longitudinal direction",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R15",
+        "key": "local_frame_y",
+        "text": "Local Y is the part's lateral direction.",
+        "value": null,
+        "unit": null,
+        "source": "USER_REQUEST",
+        "quote": "Y: part lateral direction",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R16",
+        "key": "local_frame_z",
+        "text": "Local Z is the vertical direction.",
+        "value": null,
+        "unit": null,
+        "source": "USER_REQUEST",
+        "quote": "Z: vertical direction",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R17",
+        "key": "local_origin",
+        "text": "Keep the existing generator origin as the part origin for now.",
+        "value": null,
+        "unit": null,
+        "source": "USER_REQUEST",
+        "quote": "Origin için şimdilik mevcut generator origin'ini koru.",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R18",
+        "key": "placement_x",
+        "text": "Placement position X is 500 mm.",
+        "value": 500,
+        "unit": "mm",
+        "source": "USER_REQUEST",
+        "quote": "X = 500 mm",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R19",
+        "key": "placement_y",
+        "text": "Placement position Y is -250 mm.",
+        "value": -250,
+        "unit": "mm",
+        "source": "USER_REQUEST",
+        "quote": "Y = -250 mm",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R20",
+        "key": "placement_z",
+        "text": "Placement position Z is 150 mm.",
+        "value": 150,
+        "unit": "mm",
+        "source": "USER_REQUEST",
+        "quote": "Z = 150 mm",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R21",
+        "key": "placement_roll",
+        "text": "Placement roll is 15 deg.",
+        "value": 15,
+        "unit": "deg",
+        "source": "USER_REQUEST",
+        "quote": "Roll = 15°",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R22",
+        "key": "placement_pitch",
+        "text": "Placement pitch is 35 deg.",
+        "value": 35,
+        "unit": "deg",
+        "source": "USER_REQUEST",
+        "quote": "Pitch = 35°",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R23",
+        "key": "placement_yaw",
+        "text": "Placement yaw is 60 deg.",
+        "value": 60,
+        "unit": "deg",
+        "source": "USER_REQUEST",
+        "quote": "Yaw = 60°",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      },
+      {
+        "id": "R24",
+        "key": "assembly_ready",
+        "text": "The part must be designed so it can later be assembled with other F1 parts, with a meaningful coordinate frame inside the Fusion assembly.",
+        "value": null,
+        "unit": null,
+        "source": "USER_REQUEST",
+        "quote": "daha sonra başka F1 parçalarıyla assembly oluşturulabilecek şekilde tasarlanmış olması",
+        "answer_id": null,
+        "derived_from": [],
+        "attachment_id": null,
+        "image_evidence": null,
+        "interpreted_by": "AI"
+      }
+    ],
+    "missing_information": [
+      {
+        "id": "M01",
+        "key": "material",
+        "topic": "Bracket material",
+        "why_it_matters": "Material drives mass, machinability and any later structural check. The user-given geometry does not depend on it.",
+        "criticality": "IMPORTANT",
+        "resolution": "ASSUME",
+        "question": null,
+        "assumption_id": "A02",
+        "follows_up": null
+      },
+      {
+        "id": "M02",
+        "key": "manufacturing_process",
+        "topic": "Manufacturing process",
+        "why_it_matters": "The request asks for a manufacturable part but names no process. The process sets the allowed features and fillet rules; the generator supports only machined.",
+        "criticality": "IMPORTANT",
+        "resolution": "ASSUME",
+        "question": null,
+        "assumption_id": "A03",
+        "follows_up": null
+      },
+      {
+        "id": "M03",
+        "key": "load",
+        "topic": "Load case (force/mass, direction, dynamic or safety factor)",
+        "why_it_matters": "Without a load case no structural check can be evaluated. Checks will be NOT_RUN rather than passed. The given dimensions are not changed by this gap.",
+        "criticality": "IMPORTANT",
+        "resolution": "ASSUME",
+        "question": null,
+        "assumption_id": "A04",
+        "follows_up": null
+      }
+    ],
+    "assumptions": [
+      {
+        "id": "A01",
+        "text": "Scope: concept-level demonstrator with nominal geometry only. No FEA, no tolerancing, no FIA compliance, structural-safety or race-readiness claim.",
+        "rationale": "Stated by the user (R02, R03) and by project policy.",
+        "impact": "All results are indicative, for demonstration and assembly-framework purposes.",
+        "affects": [
+          "R01",
+          "R02",
+          "R03"
+        ]
+      },
+      {
+        "id": "A02",
+        "text": "Material is assumed to be a machinable high-strength aluminium alloy (7075-T6 class) until the user specifies otherwise.",
+        "rationale": "A common choice for machined motorsport brackets. The user did not specify a material.",
+        "impact": "Affects only mass properties and any later strength check, not the geometry.",
+        "affects": [
+          "M01"
+        ]
+      },
+      {
+        "id": "A03",
+        "text": "The part is assumed to be machined from billet (the only process the l_bracket generator supports).",
+        "rationale": "The user asked for a manufacturable part without naming a process.",
+        "impact": "Internal corners use fillets of at least the R12 minimum. No draft or casting features.",
+        "affects": [
+          "M02",
+          "R12"
+        ]
+      },
+      {
+        "id": "A04",
+        "text": "No load case is defined. Load-dependent structural checks are reported as NOT_RUN, not as passed.",
+        "rationale": "The user gave no load, and loads must not be invented.",
+        "impact": "Strength and stiffness of the bracket are unverified until the user supplies a load case.",
+        "affects": [
+          "M03"
+        ]
+      },
+      {
+        "id": "A05",
+        "text": "The Ø10 and Ø8 values are treated as finished hole diameters. Bolt thread, grade and clearance class are not specified.",
+        "rationale": "The user specified holes, not fasteners (R10, R11).",
+        "impact": "Fastener selection and hole fit must be confirmed before interfacing with real parts.",
+        "affects": [
+          "R10",
+          "R11"
+        ]
+      },
+      {
+        "id": "A06",
+        "text": "Hole positions, spacing and edge distances follow the l_bracket generator's parametric defaults. Each pair is placed in its own leg, and the values are exposed as named parameters.",
+        "rationale": "Not given by the user. R03 allows project-defined geometric assumptions.",
+        "impact": "Mating F1 parts must later adopt or re-parameterise these interface positions.",
+        "affects": [
+          "R10",
+          "R11",
+          "R24"
+        ]
+      },
+      {
+        "id": "A07",
+        "text": "Base holes (R10) form the vehicle/chassis-side connection zone. Upright holes (R11) form the front-wing connection zone. Together they satisfy the two connection zones of R04.",
+        "rationale": "Follows from the hole labels in the request.",
+        "impact": "Defines which leg faces which mating part in later assemblies.",
+        "affects": [
+          "R04",
+          "R10",
+          "R11"
+        ]
+      },
+      {
+        "id": "A08",
+        "text": "The L-profile (a base leg with an upright at one end) provides the required directional asymmetry along local X.",
+        "rationale": "R13 asks for an orientation-defined geometry. The l_bracket form is inherently asymmetric along its longitudinal axis.",
+        "impact": "No additional asymmetric features are added unless requested.",
+        "affects": [
+          "R13"
+        ]
+      },
+      {
+        "id": "A09",
+        "text": "Roll, pitch and yaw are applied about X, Y and Z respectively, using the project's standard pose convention (VCS: +X front, +Y left, +Z up). The position is the placement of the generator origin.",
+        "rationale": "The user did not state a rotation order. The project convention is used for consistency with other parts.",
+        "impact": "A different rotation order would yield a different final orientation.",
+        "affects": [
+          "R18",
+          "R19",
+          "R20",
+          "R21",
+          "R22",
+          "R23",
+          "R17"
+        ]
+      }
+    ]
+  },
+  "plan": {
+    "generator": "l_bracket",
+    "component_name": "PART 001 - F1 front wing mounting bracket",
+    "steps": [
+      "Map the user envelope (R05-R09) to the l_bracket parameters: base leg 120 mm along X, upright 65 mm along Z, width 70 mm along Y, base 12 mm, upright 10 mm thick.",
+      "Set the inner bend fillet to the user minimum of R5 (R12). Check it against DFM-MACH-INNER-RADIUS-MIN (>= 3 mm) and DFM-DFMEA-FATIGUE-FILLET (5/12 = 0.42 >= 0.2).",
+      "Place the 2 x Ø10 base holes (vehicle side, A07) as 1 row x 2 columns, and the 2 x Ø8 upright holes (front-wing side) as 1 row x 2 columns. Check GL-HOLE-EDGE-DISTANCE (>= 1.5 d) and clearance to the bend fillet.",
+      "Assign fastener designations to the user hole diameters (A10). The user diameters are kept. The STD-ISO273-MEDIUM mismatch is reported as advisory, not hidden.",
+      "Check feasibility and DFM in Python: minimum wall 10 mm >= 2 mm (DFM-MACH-WALL-MIN), hole edge distances and fillet ratios.",
+      "Build the parametric model in Fusion with the generator origin kept (R17). Apply the user pose (R18-R23) with R = Rz(60)*Ry(35)*Rx(15) (A09), then read the placement back.",
+      "Measure the geometry in Fusion: bounding box, thicknesses, hole diameters and positions, fillet radius, and mass with AL7075-T6.",
+      "Report the structural check as NOT_RUN, because no load case was given (A04)."
+    ],
+    "parameters": {
+      "leg_base_length": {
+        "value": 120.0,
+        "unit": "mm",
+        "source": "USER",
+        "trace": [
+          "R05",
+          "R14"
+        ],
+        "rationale": "The user's overall length of 120 mm along local X. The base leg runs x = 0..120."
+      },
+      "leg_upright_height": {
+        "value": 65.0,
+        "unit": "mm",
+        "source": "USER",
+        "trace": [
+          "R09",
+          "R16"
+        ],
+        "rationale": "The user's support height of 65 mm along local Z, measured from the base bottom face z = 0."
+      },
+      "bracket_width": {
+        "value": 70.0,
+        "unit": "mm",
+        "source": "USER",
+        "trace": [
+          "R06",
+          "R15"
+        ],
+        "rationale": "The user's overall width of 70 mm along local Y, symmetric about y = 0."
+      },
+      "bracket_thickness": {
+        "value": 12.0,
+        "unit": "mm",
+        "source": "USER",
+        "trace": [
+          "R07"
+        ],
+        "rationale": "The user's base thickness of 12 mm. This is well above the 2 mm minimum wall in DFM-MACH-WALL-MIN."
+      },
+      "upright_thickness": {
+        "value": 10.0,
+        "unit": "mm",
+        "source": "USER",
+        "trace": [
+          "R08"
+        ],
+        "rationale": "The user's vertical support thickness of 10 mm. It is given explicitly because it differs from the 12 mm base thickness."
+      },
+      "bend_inner_radius": {
+        "value": 5.0,
+        "unit": "mm",
+        "source": "USER",
+        "trace": [
+          "R12",
+          "A03",
+          "DFM-MACH-INNER-RADIUS-MIN",
+          "DFM-DFMEA-FATIGUE-FILLET"
+        ],
+        "rationale": "The user minimum of R5. It meets the >= 3 mm end-mill rule and the fatigue ratio 5/12 = 0.42 >= 0.2. The generator sets the outer fillet to 5 + 12 = 17 mm."
+      },
+      "base_hole_diameter": {
+        "value": 10.0,
+        "unit": "mm",
+        "source": "USER",
+        "trace": [
+          "R10",
+          "A05",
+          "A10"
+        ],
+        "rationale": "The user's Ø10 finished hole. It is kept as given, although it is the ISO 273 coarse clearance for M8, not the medium value of 9.0 (advisory STD-ISO273-MEDIUM)."
+      },
+      "base_hole_rows": {
+        "value": 1.0,
+        "unit": "count",
+        "source": "ASSUMPTION",
+        "trace": [
+          "R10",
+          "A06"
+        ],
+        "rationale": "The two base holes are set as one row across the width (1 x 2 = 2 holes, R10)."
+      },
+      "base_hole_cols": {
+        "value": 2.0,
+        "unit": "count",
+        "source": "ASSUMPTION",
+        "trace": [
+          "R10",
+          "A06"
+        ],
+        "rationale": "Two columns symmetric about y = 0 give the 2 holes of R10 and a lateral bolt spread against roll moments."
+      },
+      "base_hole_x0": {
+        "value": 75.0,
+        "unit": "mm",
+        "source": "ASSUMPTION",
+        "trace": [
+          "A06",
+          "GL-HOLE-EDGE-DISTANCE",
+          "R05"
+        ],
+        "rationale": "The row sits on the free part of the base, well clear of the bend fillet end at x = 15 (gap of 55 mm to the hole edge leaves room for the bolt head and tool). The distance to the free end x = 120 is 45 mm >= 15 mm (1.5 d)."
+      },
+      "base_hole_pitch_x": {
+        "value": 30.0,
+        "unit": "mm",
+        "source": "ASSUMPTION",
+        "trace": [
+          "A06"
+        ],
+        "rationale": "Ignored by the generator because there is only 1 row. Placeholder value only."
+      },
+      "base_hole_pitch_y": {
+        "value": 36.0,
+        "unit": "mm",
+        "source": "ASSUMPTION",
+        "trace": [
+          "A06",
+          "GL-HOLE-EDGE-DISTANCE",
+          "R06"
+        ],
+        "rationale": "Holes at y = +/-18. Side edge distance is 35 - 18 = 17 mm >= 15 mm (1.5 x 10)."
+      },
+      "upright_hole_diameter": {
+        "value": 8.0,
+        "unit": "mm",
+        "source": "USER",
+        "trace": [
+          "R11",
+          "A05",
+          "A10"
+        ],
+        "rationale": "The user's Ø8 finished hole. It is kept as given, although it is a large clearance for M6 and not an ISO 273 medium value (advisory STD-ISO273-MEDIUM)."
+      },
+      "upright_hole_rows": {
+        "value": 1.0,
+        "unit": "count",
+        "source": "ASSUMPTION",
+        "trace": [
+          "R11",
+          "A06"
+        ],
+        "rationale": "One row across the width gives 1 x 2 = 2 holes (R11)."
+      },
+      "upright_hole_cols": {
+        "value": 2.0,
+        "unit": "count",
+        "source": "ASSUMPTION",
+        "trace": [
+          "R11",
+          "A06"
+        ],
+        "rationale": "Two columns symmetric about y = 0 for the front-wing interface."
+      },
+      "upright_hole_z0": {
+        "value": 45.0,
+        "unit": "mm",
+        "source": "ASSUMPTION",
+        "trace": [
+          "A06",
+          "GL-HOLE-EDGE-DISTANCE",
+          "R09"
+        ],
+        "rationale": "The distance to the top edge z = 65 is 20 mm >= 12 mm (1.5 x 8). The hole is 28 mm above the inner fillet end at z = 17, which leaves bolt-head and tool access."
+      },
+      "upright_hole_pitch_z": {
+        "value": 20.0,
+        "unit": "mm",
+        "source": "ASSUMPTION",
+        "trace": [
+          "A06"
+        ],
+        "rationale": "Ignored by the generator because there is only 1 row. Placeholder value only."
+      },
+      "upright_hole_pitch_y": {
+        "value": 36.0,
+        "unit": "mm",
+        "source": "ASSUMPTION",
+        "trace": [
+          "A06",
+          "GL-HOLE-EDGE-DISTANCE",
+          "R06"
+        ],
+        "rationale": "Holes at y = +/-18, matching the base pattern. Side edge distance is 17 mm >= 12 mm (1.5 x 8)."
+      }
+    },
+    "design_inputs": {
+      "base_fastener": "M8",
+      "upright_fastener": "M6",
+      "base_mates_with": "vehicle-side mounting structure (chassis/nose), base bottom face z=0 (A07)",
+      "upright_mates_with": "front wing mounting pylon/interface, upright outer face x=0 (A07)"
+    },
+    "manufacturing": {
+      "process": "machined",
+      "material": "AL7075-T6"
+    },
+    "load_case": {
+      "description": "No load case was given by the user (M03/A04). Force and lever arm are set to 0 as a 'no load' marker, so STR-PLATE-BENDING is reported as NOT_RUN, not passed. The safety factor of 1.0 is a placeholder only and is not evaluated.",
+      "force_n": 0.0,
+      "lever_arm_mm": 0.0,
+      "required_safety_factor": 1.0,
+      "trace": [
+        "M03",
+        "A04",
+        "A11"
+      ]
+    },
+    "new_assumptions": [
+      {
+        "id": "A10",
+        "text": "Fastener designations: M8 for the Ø10 base holes and M6 for the Ø8 upright holes. The user's hole diameters are kept as the finished diameters.",
+        "rationale": "The generator requires a fastener string (the previous plan failed with base_fastener/upright_fastener = None). Ø10 is the ISO 273 coarse clearance for M8. Ø8 is the nearest usable clearance for M6. The user specified holes, not bolts (A05).",
+        "impact": "STD-ISO273-MEDIUM will flag an advisory mismatch. The bolt size and fit must be confirmed by the user before mating with real parts.",
+        "affects": [
+          "R10",
+          "R11",
+          "A05"
+        ]
+      },
+      {
+        "id": "A11",
+        "text": "The load case is entered as force 0 N and lever arm 0 mm with a placeholder safety factor of 1.0. This only signals 'no load defined'.",
+        "rationale": "The schema requires a load case, but no load was given and loads must not be invented (A04).",
+        "impact": "The structural check is NOT_RUN. Strength is unverified until the user supplies a load.",
+        "affects": [
+          "M03",
+          "A04"
+        ]
+      }
+    ],
+    "verification_plan": [
+      "Fusion measurement: bounding box in the local frame is 120 x 70 x 65 mm (R05, R06, R09). Base thickness is 12 mm and upright thickness is 10 mm (R07, R08).",
+      "Fusion measurement: 2 x Ø10 base holes at x = 75, y = +/-18 and 2 x Ø8 upright holes at z = 45, y = +/-18. Count and diameters match R10 and R11.",
+      "Fusion measurement: inner bend fillet R5 is present (R12).",
+      "Rule check: DFM-MACH-WALL-MIN (10 mm >= 2 mm), DFM-MACH-INNER-RADIUS-MIN (5 >= 3), DFM-DFMEA-FATIGUE-FILLET (0.42 >= 0.2), GL-HOLE-EDGE-DISTANCE (min ratio 17/10 = 1.7 >= 1.5).",
+      "Rule check: STD-ISO273-MEDIUM is expected to give an ADVISORY mismatch for M8/Ø10 and M6/Ø8. The user diameters are retained (A10).",
+      "Placement read-back: the occurrence transform equals position (500, -250, 150) mm and R = Rz(60)*Ry(35)*Rx(15) (R18-R23, A09).",
+      "Mass from Fusion volume x 2810 kg/m3 (AL7075-T6, A02). Indicative only.",
+      "Hand calculation: STR-PLATE-BENDING is NOT_RUN because there is no load case (A04). No structural-safety claim is made (A01)."
+    ],
+    "placement": {
+      "position_mm": [
+        500.0,
+        -250.0,
+        150.0
+      ],
+      "rotation_deg": [
+        15.0,
+        35.0,
+        60.0
+      ],
+      "source": "USER",
+      "trace": [
+        "R17",
+        "R18",
+        "R19",
+        "R20",
+        "R21",
+        "R22",
+        "R23",
+        "A09"
+      ],
+      "rationale": "The user-stated pose of the generator origin, applied as R = Rz(yaw)*Ry(pitch)*Rx(roll) per the project convention."
+    }
+  },
+  "assumptions": [
+    {
+      "id": "A01",
+      "text": "Scope: concept-level demonstrator with nominal geometry only. No FEA, no tolerancing, no FIA compliance, structural-safety or race-readiness claim.",
+      "rationale": "Stated by the user (R02, R03) and by project policy.",
+      "impact": "All results are indicative, for demonstration and assembly-framework purposes.",
+      "affects": [
+        "R01",
+        "R02",
+        "R03"
+      ]
+    },
+    {
+      "id": "A02",
+      "text": "Material is assumed to be a machinable high-strength aluminium alloy (7075-T6 class) until the user specifies otherwise.",
+      "rationale": "A common choice for machined motorsport brackets. The user did not specify a material.",
+      "impact": "Affects only mass properties and any later strength check, not the geometry.",
+      "affects": [
+        "M01"
+      ]
+    },
+    {
+      "id": "A03",
+      "text": "The part is assumed to be machined from billet (the only process the l_bracket generator supports).",
+      "rationale": "The user asked for a manufacturable part without naming a process.",
+      "impact": "Internal corners use fillets of at least the R12 minimum. No draft or casting features.",
+      "affects": [
+        "M02",
+        "R12"
+      ]
+    },
+    {
+      "id": "A04",
+      "text": "No load case is defined. Load-dependent structural checks are reported as NOT_RUN, not as passed.",
+      "rationale": "The user gave no load, and loads must not be invented.",
+      "impact": "Strength and stiffness of the bracket are unverified until the user supplies a load case.",
+      "affects": [
+        "M03"
+      ]
+    },
+    {
+      "id": "A05",
+      "text": "The Ø10 and Ø8 values are treated as finished hole diameters. Bolt thread, grade and clearance class are not specified.",
+      "rationale": "The user specified holes, not fasteners (R10, R11).",
+      "impact": "Fastener selection and hole fit must be confirmed before interfacing with real parts.",
+      "affects": [
+        "R10",
+        "R11"
+      ]
+    },
+    {
+      "id": "A06",
+      "text": "Hole positions, spacing and edge distances follow the l_bracket generator's parametric defaults. Each pair is placed in its own leg, and the values are exposed as named parameters.",
+      "rationale": "Not given by the user. R03 allows project-defined geometric assumptions.",
+      "impact": "Mating F1 parts must later adopt or re-parameterise these interface positions.",
+      "affects": [
+        "R10",
+        "R11",
+        "R24"
+      ]
+    },
+    {
+      "id": "A07",
+      "text": "Base holes (R10) form the vehicle/chassis-side connection zone. Upright holes (R11) form the front-wing connection zone. Together they satisfy the two connection zones of R04.",
+      "rationale": "Follows from the hole labels in the request.",
+      "impact": "Defines which leg faces which mating part in later assemblies.",
+      "affects": [
+        "R04",
+        "R10",
+        "R11"
+      ]
+    },
+    {
+      "id": "A08",
+      "text": "The L-profile (a base leg with an upright at one end) provides the required directional asymmetry along local X.",
+      "rationale": "R13 asks for an orientation-defined geometry. The l_bracket form is inherently asymmetric along its longitudinal axis.",
+      "impact": "No additional asymmetric features are added unless requested.",
+      "affects": [
+        "R13"
+      ]
+    },
+    {
+      "id": "A09",
+      "text": "Roll, pitch and yaw are applied about X, Y and Z respectively, using the project's standard pose convention (VCS: +X front, +Y left, +Z up). The position is the placement of the generator origin.",
+      "rationale": "The user did not state a rotation order. The project convention is used for consistency with other parts.",
+      "impact": "A different rotation order would yield a different final orientation.",
+      "affects": [
+        "R18",
+        "R19",
+        "R20",
+        "R21",
+        "R22",
+        "R23",
+        "R17"
+      ]
+    },
+    {
+      "id": "A10",
+      "text": "Fastener designations: M8 for the Ø10 base holes and M6 for the Ø8 upright holes. The user's hole diameters are kept as the finished diameters.",
+      "rationale": "The generator requires a fastener string (the previous plan failed with base_fastener/upright_fastener = None). Ø10 is the ISO 273 coarse clearance for M8. Ø8 is the nearest usable clearance for M6. The user specified holes, not bolts (A05).",
+      "impact": "STD-ISO273-MEDIUM will flag an advisory mismatch. The bolt size and fit must be confirmed by the user before mating with real parts.",
+      "affects": [
+        "R10",
+        "R11",
+        "A05"
+      ]
+    },
+    {
+      "id": "A11",
+      "text": "The load case is entered as force 0 N and lever arm 0 mm with a placeholder safety factor of 1.0. This only signals 'no load defined'.",
+      "rationale": "The schema requires a load case, but no load was given and loads must not be invented (A04).",
+      "impact": "The structural check is NOT_RUN. Strength is unverified until the user supplies a load.",
+      "affects": [
+        "M03",
+        "A04"
+      ]
+    }
+  ],
+  "precheck": [
+    {
+      "check_id": "DFM-MACH-WALL-MIN",
+      "title": "Minimum machinable wall thickness",
+      "category": "MANUFACTURING",
+      "scope": "MANUFACTURING_RULE",
+      "claim": "Design value of 'wall_thickness' satisfies rule DFM-MACH-WALL-MIN as transcribed (transcription NOT_VERIFIED).",
+      "status": "ASSUMPTION",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": 10.0,
+      "limit": ">= 2.0",
+      "unit": "mm",
+      "rule_id": "DFM-MACH-WALL-MIN",
+      "message": "Passes; rule transcription not yet human-verified."
+    },
+    {
+      "check_id": "DFM-MACH-INNER-RADIUS-MIN",
+      "title": "Minimum internal corner radius (end-mill access)",
+      "category": "MANUFACTURING",
+      "scope": "MANUFACTURING_RULE",
+      "claim": "Design value of 'internal_corner_radius' satisfies rule DFM-MACH-INNER-RADIUS-MIN as transcribed (transcription NOT_VERIFIED).",
+      "status": "ASSUMPTION",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": 5.0,
+      "limit": ">= 3.0",
+      "unit": "mm",
+      "rule_id": "DFM-MACH-INNER-RADIUS-MIN",
+      "message": "Passes; rule transcription not yet human-verified."
+    },
+    {
+      "check_id": "DFM-DFMEA-FATIGUE-FILLET",
+      "title": "Fatigue - internal fillet radius relative to wall thickness",
+      "category": "MANUFACTURING",
+      "scope": "MANUFACTURING_RULE",
+      "claim": "Design value of 'fillet_to_thickness_ratio' satisfies rule DFM-DFMEA-FATIGUE-FILLET as transcribed (transcription NOT_VERIFIED).",
+      "status": "ASSUMPTION",
+      "severity": "ADVISORY",
+      "method": "PARAMETER_CHECK",
+      "measured": 0.4167,
+      "limit": ">= 0.2",
+      "unit": null,
+      "rule_id": "DFM-DFMEA-FATIGUE-FILLET",
+      "message": "Passes; rule transcription not yet human-verified."
+    },
+    {
+      "check_id": "STD-ISO273-MEDIUM",
+      "title": "Clearance hole diameter for metric bolts (ISO 273, medium series)",
+      "category": "MANUFACTURING",
+      "scope": "MANUFACTURING_RULE",
+      "claim": "Design value of 'clearance_holes' satisfies rule STD-ISO273-MEDIUM as transcribed (transcription NOT_VERIFIED).",
+      "status": "NON_COMPLIANT",
+      "severity": "ADVISORY",
+      "method": "PARAMETER_CHECK",
+      "measured": [
+        {
+          "item": "M8",
+          "value": 10.0
+        },
+        {
+          "item": "M6",
+          "value": 8.0
+        }
+      ],
+      "limit": {
+        "M3": 3.4,
+        "M4": 4.5,
+        "M5": 5.5,
+        "M6": 6.6,
+        "M8": 9.0,
+        "M10": 11.0,
+        "M12": 13.5
+      },
+      "unit": "mm",
+      "rule_id": "STD-ISO273-MEDIUM",
+      "message": "M8: 10.0 (table 9.0); M6: 8.0 (table 6.6)"
+    },
+    {
+      "check_id": "GL-HOLE-EDGE-DISTANCE",
+      "title": "Bolt hole centre to free edge distance",
+      "category": "MANUFACTURING",
+      "scope": "MANUFACTURING_RULE",
+      "claim": "Design value of 'hole_edge_distance_ratio' satisfies rule GL-HOLE-EDGE-DISTANCE as transcribed (transcription NOT_VERIFIED).",
+      "status": "ASSUMPTION",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": 1.7,
+      "limit": ">= 1.5",
+      "unit": null,
+      "rule_id": "GL-HOLE-EDGE-DISTANCE",
+      "message": "Passes; rule transcription not yet human-verified."
+    },
+    {
+      "check_id": "STR-PLATE-BENDING",
+      "title": "Hand calc: leg bending stress",
+      "category": "STRUCTURAL",
+      "scope": "STRUCTURAL_CHECK",
+      "claim": "Hand calculation not run: the plan has no load case (zero force or lever arm).",
+      "status": "NOT_VERIFIED",
+      "severity": "ADVISORY",
+      "method": "NOT_RUN",
+      "measured": {
+        "force_N": 0.0,
+        "lever_arm_mm": 0.0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": "No load case given - plate bending hand calculation not run; the part's strength is not checked."
+    }
+  ],
+  "component_id": "BRK-001",
+  "cad": {
+    "ok": true,
+    "result": {
+      "component_name": "f1parts BRK-001 PART 001 - F1 front wing mounting bracket",
+      "body_name": "BRK-001_body",
+      "document": "Untitled",
+      "created_document": true,
+      "fusion_version": "2705.1.30",
+      "material": null,
+      "warnings": []
+    },
+    "script": "scripts/01_build.py"
+  },
+  "geometry": {
+    "found": true,
+    "component_name": "f1parts BRK-001 PART 001 - F1 front wing mounting bracket",
+    "document": "Untitled",
+    "fusion_version": "2705.1.30",
+    "build_fusion_version": "2705.1.30",
+    "bodies": [
+      {
+        "name": "BRK-001_body",
+        "is_solid": true,
+        "volume_mm3": 131043.89281828213,
+        "area_mm2": 29807.132439785186,
+        "bbox_min": [
+          473.319848,
+          -271.403429,
+          73.750402
+        ],
+        "bbox_max": [
+          608.404675,
+          -120.692019,
+          208.851033
+        ],
+        "material": "Steel",
+        "cylinders": [
+          {
+            "center": [
+              536.273422,
+              -245.239635,
+              181.789586
+            ],
+            "axis": [
+              0.409576022,
+              0.70940648,
+              -0.573576436
+            ],
+            "radius": 4.0,
+            "concave": true
+          },
+          {
+            "center": [
+              508.83098,
+              -223.224679,
+              189.422024
+            ],
+            "axis": [
+              0.409576022,
+              0.70940648,
+              -0.573576436
+            ],
+            "radius": 4.0,
+            "concave": true
+          },
+          {
+            "center": [
+              544.439423,
+              -207.801992,
+              103.165549
+            ],
+            "axis": [
+              0.501160015,
+              0.350396518,
+              0.791240115
+            ],
+            "radius": 5.0,
+            "concave": true
+          },
+          {
+            "center": [
+              516.996981,
+              -185.787036,
+              110.797986
+            ],
+            "axis": [
+              0.501160015,
+              0.350396518,
+              0.791240115
+            ],
+            "radius": 5.0,
+            "concave": true
+          },
+          {
+            "center": [
+              515.482513,
+              -231.983349,
+              153.700283
+            ],
+            "axis": [
+              -0.762290051,
+              0.611526554,
+              0.21201215
+            ],
+            "radius": 17.0,
+            "concave": false
+          },
+          {
+            "center": [
+              514.663361,
+              -233.402162,
+              154.847435
+            ],
+            "axis": [
+              -0.762290051,
+              0.611526554,
+              0.21201215
+            ],
+            "radius": 5.0,
+            "concave": true
+          }
+        ],
+        "bbox_local_min": [
+          0.0,
+          -35.0,
+          0.0
+        ],
+        "bbox_local_max": [
+          120.0,
+          35.0,
+          65.0
+        ],
+        "vertices_local": [
+          [
+            10.0,
+            -18.0,
+            49.0
+          ],
+          [
+            0.0,
+            -18.0,
+            49.0
+          ],
+          [
+            10.0,
+            18.0,
+            49.0
+          ],
+          [
+            0.0,
+            18.0,
+            49.0
+          ],
+          [
+            70.0,
+            -18.0,
+            12.0
+          ],
+          [
+            70.0,
+            -18.0,
+            0.0
+          ],
+          [
+            70.0,
+            18.0,
+            12.0
+          ],
+          [
+            70.0,
+            18.0,
+            0.0
+          ],
+          [
+            0.0,
+            35.0,
+            17.0
+          ],
+          [
+            17.0,
+            35.0,
+            0.0
+          ],
+          [
+            17.0,
+            -35.0,
+            0.0
+          ],
+          [
+            0.0,
+            -35.0,
+            17.0
+          ],
+          [
+            0.0,
+            -35.0,
+            65.0
+          ],
+          [
+            0.0,
+            35.0,
+            65.0
+          ],
+          [
+            120.0,
+            -35.0,
+            0.0
+          ],
+          [
+            120.0,
+            -35.0,
+            12.0
+          ],
+          [
+            15.0,
+            -35.0,
+            12.0
+          ],
+          [
+            10.0,
+            -35.0,
+            17.0
+          ],
+          [
+            10.0,
+            -35.0,
+            65.0
+          ],
+          [
+            15.0,
+            35.0,
+            12.0
+          ],
+          [
+            10.0,
+            35.0,
+            17.0
+          ],
+          [
+            120.0,
+            35.0,
+            12.0
+          ],
+          [
+            120.0,
+            35.0,
+            0.0
+          ],
+          [
+            10.0,
+            35.0,
+            65.0
+          ]
+        ],
+        "vertices_world": [
+          [
+            542.373822,
+            -236.743984,
+            179.218783
+          ],
+          [
+            538.278062,
+            -243.838049,
+            184.954547
+          ],
+          [
+            514.93138,
+            -214.729028,
+            186.85122
+          ],
+          [
+            510.83562,
+            -221.823093,
+            192.586984
+          ],
+          [
+            548.405463,
+            -207.144266,
+            115.528312
+          ],
+          [
+            542.391542,
+            -211.349024,
+            106.033431
+          ],
+          [
+            520.963021,
+            -185.12931,
+            123.16075
+          ],
+          [
+            514.949101,
+            -189.334068,
+            113.665868
+          ],
+          [
+            481.839568,
+            -222.63983,
+            170.871507
+          ],
+          [
+            480.282641,
+            -216.53666,
+            147.669626
+          ],
+          [
+            533.642944,
+            -259.343519,
+            132.828775
+          ],
+          [
+            535.199872,
+            -265.446689,
+            156.030657
+          ],
+          [
+            559.255553,
+            -248.627656,
+            194.010182
+          ],
+          [
+            505.895249,
+            -205.820797,
+            208.851033
+          ],
+          [
+            575.829274,
+            -186.274652,
+            73.750402
+          ],
+          [
+            581.843195,
+            -182.069894,
+            83.245284
+          ],
+          [
+            538.837712,
+            -256.557574,
+            143.47081
+          ],
+          [
+            539.295632,
+            -258.352624,
+            150.294892
+          ],
+          [
+            563.351313,
+            -241.533591,
+            188.274418
+          ],
+          [
+            485.477409,
+            -213.750715,
+            158.31166
+          ],
+          [
+            485.935329,
+            -215.545765,
+            165.135743
+          ],
+          [
+            528.482891,
+            -139.263035,
+            98.086134
+          ],
+          [
+            522.468971,
+            -143.467793,
+            88.591253
+          ],
+          [
+            509.991009,
+            -198.726732,
+            203.115268
+          ]
+        ]
+      }
+    ],
+    "features": [
+      {
+        "name": "SK_L_profile",
+        "type": "Sketch",
+        "health": "HEALTHY",
+        "message": ""
+      },
+      {
+        "name": "EX_L_profile",
+        "type": "ExtrudeFeature",
+        "health": "HEALTHY",
+        "message": ""
+      },
+      {
+        "name": "FL_bend_inner",
+        "type": "FilletFeature",
+        "health": "HEALTHY",
+        "message": ""
+      },
+      {
+        "name": "FL_bend_outer",
+        "type": "FilletFeature",
+        "health": "HEALTHY",
+        "message": ""
+      },
+      {
+        "name": "SK_base_holes",
+        "type": "Sketch",
+        "health": "HEALTHY",
+        "message": ""
+      },
+      {
+        "name": "CUT_base_holes",
+        "type": "ExtrudeFeature",
+        "health": "HEALTHY",
+        "message": ""
+      },
+      {
+        "name": "SK_upright_holes",
+        "type": "Sketch",
+        "health": "HEALTHY",
+        "message": ""
+      },
+      {
+        "name": "CUT_upright_holes",
+        "type": "ExtrudeFeature",
+        "health": "HEALTHY",
+        "message": ""
+      }
+    ],
+    "sketches": [
+      {
+        "name": "SK_L_profile",
+        "fully_constrained": true,
+        "profiles": 1
+      },
+      {
+        "name": "SK_base_holes",
+        "fully_constrained": true,
+        "profiles": 2
+      },
+      {
+        "name": "SK_upright_holes",
+        "fully_constrained": true,
+        "profiles": 2
+      }
+    ],
+    "parameters": {
+      "f1parts_brk001_leg_base_length": {
+        "value_mm": 120.0,
+        "expression": "120.0 mm",
+        "unit": "mm"
+      },
+      "f1parts_brk001_leg_upright_height": {
+        "value_mm": 65.0,
+        "expression": "65.0 mm",
+        "unit": "mm"
+      },
+      "f1parts_brk001_bracket_width": {
+        "value_mm": 70.0,
+        "expression": "70.0 mm",
+        "unit": "mm"
+      },
+      "f1parts_brk001_bracket_thickness": {
+        "value_mm": 12.0,
+        "expression": "12.0 mm",
+        "unit": "mm"
+      },
+      "f1parts_brk001_upright_thickness": {
+        "value_mm": 10.0,
+        "expression": "10.0 mm",
+        "unit": "mm"
+      },
+      "f1parts_brk001_bend_inner_radius": {
+        "value_mm": 5.0,
+        "expression": "5.0 mm",
+        "unit": "mm"
+      },
+      "f1parts_brk001_base_hole_diameter": {
+        "value_mm": 10.0,
+        "expression": "10.0 mm",
+        "unit": "mm"
+      },
+      "f1parts_brk001_base_hole_x0": {
+        "value_mm": 75.0,
+        "expression": "75.0 mm",
+        "unit": "mm"
+      },
+      "f1parts_brk001_base_hole_pitch_x": {
+        "value_mm": 30.0,
+        "expression": "30.0 mm",
+        "unit": "mm"
+      },
+      "f1parts_brk001_base_hole_pitch_y": {
+        "value_mm": 36.0,
+        "expression": "36.0 mm",
+        "unit": "mm"
+      },
+      "f1parts_brk001_upright_hole_diameter": {
+        "value_mm": 8.0,
+        "expression": "8.0 mm",
+        "unit": "mm"
+      },
+      "f1parts_brk001_upright_hole_z0": {
+        "value_mm": 45.0,
+        "expression": "45.0 mm",
+        "unit": "mm"
+      },
+      "f1parts_brk001_upright_hole_pitch_z": {
+        "value_mm": 20.0,
+        "expression": "20.0 mm",
+        "unit": "mm"
+      },
+      "f1parts_brk001_upright_hole_pitch_y": {
+        "value_mm": 36.0,
+        "expression": "36.0 mm",
+        "unit": "mm"
+      },
+      "f1parts_brk001_bend_outer_radius": {
+        "value_mm": 17.0,
+        "expression": "f1parts_brk001_bend_inner_radius + max(f1parts_brk001_bracket_thickness; f1parts_brk001_upright_thickness)",
+        "unit": "mm"
+      }
+    },
+    "occurrence_transform": [
+      0.409576022144496,
+      -0.7622900509629655,
+      0.5011600146531751,
+      500.0,
+      0.7094064799162224,
+      0.6115265542060114,
+      0.35039651789622067,
+      -250.0,
+      -0.573576436351046,
+      0.21201214989665462,
+      0.7912401152362238,
+      150.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "pending_snapshot": false
+  },
+  "validation": [
+    {
+      "check_id": "PROC-CAD-BUILD",
+      "title": "Fusion CAD build completed",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The generated Fusion script ran to completion without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "GEO-BODY-COUNT",
+      "title": "Expected number of solid bodies",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "Fusion reports the designed number of bodies, all solid.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": 1,
+      "limit": 1,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "GEO-FEATURE-HEALTH",
+      "title": "All timeline features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "Every Fusion timeline feature of the component computed without warning or error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": "8/8 healthy",
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "GEO-SKETCH-CONSTRAINED",
+      "title": "All sketches fully constrained",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "Every sketch is fully constrained (geometry fully driven by dimensions/constraints).",
+      "status": "VERIFIED",
+      "severity": "ADVISORY",
+      "method": "FUSION_MEASUREMENT",
+      "measured": "3/3",
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "GEO-BBOX",
+      "title": "Bounding box matches design (component frame)",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "Fusion-measured overall extents in the component's own frame equal the designed extents (overall size only; independent of placement).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "min": [
+          0.0,
+          -35.0,
+          0.0
+        ],
+        "max": [
+          120.0,
+          35.0,
+          65.0
+        ]
+      },
+      "limit": {
+        "min": [
+          0.0,
+          -35.0,
+          0.0
+        ],
+        "max": [
+          120.0,
+          35.0,
+          65.0
+        ],
+        "tol_mm": 0.001
+      },
+      "unit": "mm",
+      "rule_id": null,
+      "message": "max deviation 0.00e+00 mm"
+    },
+    {
+      "check_id": "GEO-VOLUME",
+      "title": "Volume matches analytic model",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "Fusion-measured volume equals the generator's analytic volume (consistency with design intent).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": 131043.893,
+      "limit": "131043.893 ± 1e-04 rel",
+      "unit": "mm3",
+      "rule_id": null,
+      "message": "relative deviation 8.88e-16"
+    },
+    {
+      "check_id": "GEO-PARAM-SYNC",
+      "title": "Fusion user parameters equal the component record",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Fusion holds the parameter values of the record (does not by itself prove the geometry follows them).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": "15/15",
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "GEO-PLACEMENT",
+      "title": "Component placed at the planned pose",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform equals the planned pose (position + rotation), nothing is pending, and every world-space body vertex equals the planned pose applied to its local vertex.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          500.0,
+          -250.0,
+          150.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0,
+        "vertices_checked": 24,
+        "max_vertex_dev_mm": 6.503961262668462e-07,
+        "pending_snapshot": false
+      },
+      "limit": {
+        "position_mm": [
+          500.0,
+          -250.0,
+          150.0
+        ],
+        "rotation_deg": [
+          15.0,
+          35.0,
+          60.0
+        ],
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": "placement verified (24 vertices, max deviation 6.5e-07 mm)"
+    },
+    {
+      "check_id": "IFC-HOLE-GEOMETRY",
+      "title": "Own mounting holes: diameter, axis and position as designed",
+      "category": "INTERFACE",
+      "scope": "HOLE_GEOMETRY",
+      "claim": "This component's own mounting holes exist in Fusion with the designed diameter, axis and position. Says nothing about the mating part.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": "4/4 holes matched",
+      "limit": "position/diameter tol 0.001 mm",
+      "unit": "mm",
+      "rule_id": null,
+      "message": "All own mounting holes found in Fusion geometry."
+    },
+    {
+      "check_id": "IFC-MATING@IF-BASE",
+      "title": "Mating fit of IF-BASE with vehicle-side mounting structure (chassis/nose), base bottom face z=0 (A07)",
+      "category": "INTERFACE",
+      "scope": "MATING_INTERFACE",
+      "claim": "Whether the mating part's holes/faces coincide with this interface. Not checked: the mating part is not modelled in the project.",
+      "status": "NOT_VERIFIED",
+      "severity": "ADVISORY",
+      "method": "NOT_RUN",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": "Mating part geometry not available; fit, hole alignment and clearance are not verified."
+    },
+    {
+      "check_id": "IFC-MATING@IF-UPRIGHT",
+      "title": "Mating fit of IF-UPRIGHT with front wing mounting pylon/interface, upright outer face x=0 (A07)",
+      "category": "INTERFACE",
+      "scope": "MATING_INTERFACE",
+      "claim": "Whether the mating part's holes/faces coincide with this interface. Not checked: the mating part is not modelled in the project.",
+      "status": "NOT_VERIFIED",
+      "severity": "ADVISORY",
+      "method": "NOT_RUN",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": "Mating part geometry not available; fit, hole alignment and clearance are not verified."
+    },
+    {
+      "check_id": "DFM-MACH-WALL-MIN",
+      "title": "Minimum machinable wall thickness",
+      "category": "MANUFACTURING",
+      "scope": "MANUFACTURING_RULE",
+      "claim": "Design value of 'wall_thickness' satisfies rule DFM-MACH-WALL-MIN as transcribed (transcription NOT_VERIFIED).",
+      "status": "ASSUMPTION",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": 10.0,
+      "limit": ">= 2.0",
+      "unit": "mm",
+      "rule_id": "DFM-MACH-WALL-MIN",
+      "message": "Passes; rule transcription not yet human-verified."
+    },
+    {
+      "check_id": "DFM-MACH-INNER-RADIUS-MIN",
+      "title": "Minimum internal corner radius (end-mill access)",
+      "category": "MANUFACTURING",
+      "scope": "MANUFACTURING_RULE",
+      "claim": "Design value of 'internal_corner_radius' satisfies rule DFM-MACH-INNER-RADIUS-MIN as transcribed (transcription NOT_VERIFIED).",
+      "status": "ASSUMPTION",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": 5.0,
+      "limit": ">= 3.0",
+      "unit": "mm",
+      "rule_id": "DFM-MACH-INNER-RADIUS-MIN",
+      "message": "Passes; rule transcription not yet human-verified."
+    },
+    {
+      "check_id": "DFM-DFMEA-FATIGUE-FILLET",
+      "title": "Fatigue - internal fillet radius relative to wall thickness",
+      "category": "MANUFACTURING",
+      "scope": "MANUFACTURING_RULE",
+      "claim": "Design value of 'fillet_to_thickness_ratio' satisfies rule DFM-DFMEA-FATIGUE-FILLET as transcribed (transcription NOT_VERIFIED).",
+      "status": "ASSUMPTION",
+      "severity": "ADVISORY",
+      "method": "PARAMETER_CHECK",
+      "measured": 0.4167,
+      "limit": ">= 0.2",
+      "unit": null,
+      "rule_id": "DFM-DFMEA-FATIGUE-FILLET",
+      "message": "Passes; rule transcription not yet human-verified."
+    },
+    {
+      "check_id": "STD-ISO273-MEDIUM",
+      "title": "Clearance hole diameter for metric bolts (ISO 273, medium series)",
+      "category": "MANUFACTURING",
+      "scope": "MANUFACTURING_RULE",
+      "claim": "Design value of 'clearance_holes' satisfies rule STD-ISO273-MEDIUM as transcribed (transcription NOT_VERIFIED).",
+      "status": "NON_COMPLIANT",
+      "severity": "ADVISORY",
+      "method": "PARAMETER_CHECK",
+      "measured": [
+        {
+          "item": "M8",
+          "value": 10.0
+        },
+        {
+          "item": "M6",
+          "value": 8.0
+        }
+      ],
+      "limit": {
+        "M3": 3.4,
+        "M4": 4.5,
+        "M5": 5.5,
+        "M6": 6.6,
+        "M8": 9.0,
+        "M10": 11.0,
+        "M12": 13.5
+      },
+      "unit": "mm",
+      "rule_id": "STD-ISO273-MEDIUM",
+      "message": "M8: 10.0 (table 9.0); M6: 8.0 (table 6.6)"
+    },
+    {
+      "check_id": "GL-HOLE-EDGE-DISTANCE",
+      "title": "Bolt hole centre to free edge distance",
+      "category": "MANUFACTURING",
+      "scope": "MANUFACTURING_RULE",
+      "claim": "Design value of 'hole_edge_distance_ratio' satisfies rule GL-HOLE-EDGE-DISTANCE as transcribed (transcription NOT_VERIFIED).",
+      "status": "ASSUMPTION",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": 1.7,
+      "limit": ">= 1.5",
+      "unit": null,
+      "rule_id": "GL-HOLE-EDGE-DISTANCE",
+      "message": "Passes; rule transcription not yet human-verified."
+    },
+    {
+      "check_id": "STR-PLATE-BENDING",
+      "title": "Hand calc: leg bending stress",
+      "category": "STRUCTURAL",
+      "scope": "STRUCTURAL_CHECK",
+      "claim": "Hand calculation not run: the plan has no load case (zero force or lever arm).",
+      "status": "NOT_VERIFIED",
+      "severity": "ADVISORY",
+      "method": "NOT_RUN",
+      "measured": {
+        "force_N": 0.0,
+        "lever_arm_mm": 0.0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": "No load case given - plate bending hand calculation not run; the part's strength is not checked."
+    },
+    {
+      "check_id": "STR-ADEQUACY",
+      "title": "Overall structural adequacy",
+      "category": "STRUCTURAL",
+      "scope": "STRUCTURAL_ADEQUACY",
+      "claim": "Whether the part is structurally adequate in service. Not established: only one simplified hand calculation was run.",
+      "status": "NOT_VERIFIED",
+      "severity": "ADVISORY",
+      "method": "NOT_RUN",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": "Not analysed: bolt loads/prying, base-leg bending, fatigue, stress concentration, FEA."
+    },
+    {
+      "check_id": "FIA-APPLICABILITY",
+      "title": "FIA rules for this component",
+      "category": "FIA",
+      "scope": "FIA",
+      "claim": "None of the structured FIA rules in the project targets this component type. No FIA compliance statement of any kind.",
+      "status": "NOT_APPLICABLE",
+      "severity": "ADVISORY",
+      "method": "NOT_RUN",
+      "measured": "6 structured FIA rules loaded; 0 apply to 'l_bracket'",
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": "No structured FIA rule applies to this component type; no FIA claim is made."
+    }
+  ],
+  "reviews": [
+    {
+      "decision": "ACCEPT",
+      "rationale": "ACCEPT. There are no blocking failures, and every BLOCKING check that Fusion measured is VERIFIED.\n\n**Fusion measurements**\n- The build ran without error. Fusion reports 1 solid body, and all 8 timeline features are healthy.\n- The bounding box is 0..120 x -35..35 x 0..65 mm, with zero deviation (R05, R06, R09).\n- The volume matches the analytic model, which includes the 12 mm base, the 10 mm upright and the R5 / R17 bend fillets (relative deviation 8.9e-16). This confirms R07, R08 and R12 indirectly. No separate fillet-radius measurement was reported.\n- All 15 parameters are in sync.\n- All 4 holes match in diameter, axis and position: 2 x Ø10 at x = 75, y = ±18 and 2 x Ø8 at z = 45, y = ±18 (R10, R11).\n- Placement is verified at (500, -250, 150) mm with R = Rz(60)·Ry(35)·Rx(15) (A09). The rotation deviation is 0, and the largest vertex deviation is 6.5e-7 mm (R17-R23).\n- The sketches are fully constrained.\n\n**Advisory findings that remain open**\n1. STD-ISO273-MEDIUM is NON_COMPLIANT. Ø10 vs 9.0 for M8, and Ø8 vs 6.6 for M6. The user gave these hole diameters, and they are kept on purpose (A05, A10). Changing them to the ISO values would override R10 and R11. The bolt size and fit must be confirmed by the user.\n2. DFM-MACH-WALL-MIN, DFM-MACH-INNER-RADIUS-MIN, DFM-DFMEA-FATIGUE-FILLET and GL-HOLE-EDGE-DISTANCE all pass on value. Their status is ASSUMPTION because the rule transcriptions have not been checked by a person.\n3. STR-PLATE-BENDING and STR-ADEQUACY are NOT_RUN because no load case was given (A04, A11). Strength and stiffness are unverified, and no structural-safety claim is made.\n4. IFC-MATING for IF-BASE and IF-UPRIGHT is NOT_RUN because the mating parts are not modelled. The interface positions are project assumptions (A06, A07).\n5. The CAD result reports material = null, so no material was assigned in Fusion. Any mass is indicative only: 131043.9 mm³ x 2810 kg/m³ ≈ 0.368 kg (A02).\n6. FIA-APPLICABILITY is NOT_APPLICABLE. No FIA compliance, race-readiness or production-readiness claim is made (A01).\n\nThe result meets the user's stated envelope, holes, fillet minimum, coordinate frame and pose for a concept-level demonstrator.",
+      "parameter_changes": {},
+      "new_assumptions": []
+    }
+  ],
+  "iterations": [
+    {
+      "loop": 1,
+      "reason": "plan_gate",
+      "findings": [
+        "invalid generator inputs: 2 validation errors for BracketInputs\nbase_fastener\n  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nupright_fastener\n  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type"
+      ],
+      "time": "2026-10-10T07:57:25+00:00"
+    }
+  ],
+  "pending": null,
+  "events": [
+    {
+      "time": "2026-10-10T07:55:34+00:00",
+      "stage": "ANALYSIS",
+      "message": "Run created"
+    },
+    {
+      "time": "2026-10-10T07:56:31+00:00",
+      "stage": "ANALYSIS",
+      "message": "Reasoning 01_analysis answered via claude_code (claude-opus-5-5)"
+    },
+    {
+      "time": "2026-10-10T07:56:31+00:00",
+      "stage": "ANALYSIS",
+      "message": "Analysis accepted: 24 requirements, 9 assumptions"
+    },
+    {
+      "time": "2026-10-10T07:57:25+00:00",
+      "stage": "PLAN",
+      "message": "Reasoning 02_plan answered via claude_code (claude-opus-5-5)"
+    },
+    {
+      "time": "2026-10-10T07:57:25+00:00",
+      "stage": "PLAN",
+      "message": "plan_gate: 1 finding(s) -> back to PLAN (loop 1/3)"
+    },
+    {
+      "time": "2026-10-10T07:58:17+00:00",
+      "stage": "PLAN",
+      "message": "Reasoning 03_plan answered via claude_code (claude-opus-5-5)"
+    },
+    {
+      "time": "2026-10-10T07:58:17+00:00",
+      "stage": "PLAN",
+      "message": "Plan accepted"
+    },
+    {
+      "time": "2026-10-10T07:58:17+00:00",
+      "stage": "PRECHECK",
+      "message": "Pre-CAD checks: 6 results, no blocking failures"
+    },
+    {
+      "time": "2026-10-10T07:58:31+00:00",
+      "stage": "CAD",
+      "message": "CAD built: f1parts BRK-001 PART 001 - F1 front wing mounting bracket"
+    },
+    {
+      "time": "2026-10-10T07:58:32+00:00",
+      "stage": "INSPECT",
+      "message": "Inspection complete (read-only)"
+    },
+    {
+      "time": "2026-10-10T07:58:32+00:00",
+      "stage": "VALIDATE",
+      "message": "Validation: 19 results, 0 blocking failure(s)"
+    },
+    {
+      "time": "2026-10-10T07:58:47+00:00",
+      "stage": "REVIEW",
+      "message": "Reasoning 04_review answered via claude_code (claude-opus-5-5)"
+    },
+    {
+      "time": "2026-10-10T07:58:47+00:00",
+      "stage": "REVIEW",
+      "message": "Review: ACCEPT"
+    },
+    {
+      "time": "2026-10-10T07:58:47+00:00",
+      "stage": "REGISTER",
+      "message": "Registered BRK-001 rev 1"
+    },
+    {
+      "time": "2026-10-10T07:58:47+00:00",
+      "stage": "REPORT",
+      "message": "Report written; run COMPLETED"
+    }
+  ],
+  "attachments": [],
+  "rejections": 0,
+  "registered": {
+    "id": "BRK-001",
+    "revision": 1
+  }
+}

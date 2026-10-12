@@ -1,0 +1,286 @@
+{
+  "record_type": "part",
+  "id": "RWG-001",
+  "name": "Rear wing",
+  "role": "rear wing: main plane, flap, endplates, central support",
+  "version": 1,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "RWG-001",
+    "name": "Rear wing",
+    "role": "rear wing: main plane, flap, endplates, central support",
+    "notes": "Main plane chord 350 at Z ~870-905, X -4400 to -4050, span 1000 between endplates; one flap chord 200 above/behind with slot gap (Z ~930-1000). Two endplates 20 thick, Z 700-1100, X -4450 to -3950 at Y ±500..±520. Two simplified support plates (20 thick in Y, centred Y=±100) from front face at X=-3700 (touching monocoque rear face, Z 400-730 region) sweeping rearward up to the main plane underside. Clear of floor diffuser (max Z 230).",
+    "dims": {
+      "span": 1040.0,
+      "main_plane_chord": 350.0,
+      "flap_chord": 200.0,
+      "element_thickness": 35.0,
+      "endplate_height": 400.0,
+      "endplate_thickness": 20.0,
+      "support_spacing": 200.0,
+      "support_thickness": 20.0
+    },
+    "position_mm": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      -4450.0,
+      -520.0,
+      400.0
+    ],
+    "envelope_max": [
+      -3700.0,
+      520.0,
+      1100.0
+    ],
+    "fia_refs_used": [
+      "C2.3.1",
+      "C3.11.1",
+      "C3.11.4"
+    ],
+    "reuse": false
+  },
+  "script_body": "def build(part):\n    span = part.p[\"span\"]\n    ept = part.p[\"endplate_thickness\"]\n    st = part.p[\"support_thickness\"]\n    sy = part.p[\"support_spacing\"] / 2.0\n\n    # Main plane (leading edge at front, +X)\n    sk = part.sketch(part.plane(\"y\", 0), \"SK_mainplane\")\n    mp = [(-4050, 885), (-4080, 898), (-4200, 905), (-4400, 900), (-4400, 894),\n          (-4250, 872), (-4120, 870), (-4070, 875)]\n    part.polygon(sk, [(x, 0, z) for x, z in mp])\n    part.extrude(part.profile(sk), \"span\", \"EX_mainplane\", symmetric=True)\n\n    # Flap above/behind with slot gap\n    skf = part.sketch(part.plane(\"y\", 0), \"SK_flap\")\n    fp = [(-4250, 932), (-4265, 950), (-4350, 975), (-4450, 1000), (-4450, 985),\n          (-4350, 948), (-4280, 930)]\n    part.polygon(skf, [(x, 0, z) for x, z in fp])\n    part.extrude(part.profile(skf), \"span\", \"EX_flap\", op=\"join\", symmetric=True)\n\n    # Endplates\n    yin = span / 2.0 - ept\n    ep = [(-4450, 700), (-3950, 700), (-3950, 1100), (-4450, 1100)]\n    skl = part.sketch(part.plane(\"y\", yin), \"SK_endplate_L\")\n    part.polygon(skl, [(x, yin, z) for x, z in ep])\n    part.extrude(part.profile(skl), ept, \"EX_endplate_L\", op=\"join\")\n    skr = part.sketch(part.plane(\"y\", -yin), \"SK_endplate_R\")\n    part.polygon(skr, [(x, -yin, z) for x, z in ep])\n    part.extrude(part.profile(skr), -ept, \"EX_endplate_R\", op=\"join\")\n\n    # Support plates sweeping from monocoque rear face up to main plane underside\n    sp = [(-3700, 400), (-3700, 500), (-4100, 888), (-4300, 888), (-4300, 830), (-3800, 400)]\n    for nm, yc in ((\"L\", sy), (\"R\", -sy)):\n        sks = part.sketch(part.plane(\"y\", yc), \"SK_support_\" + nm)\n        part.polygon(sks, [(x, yc, z) for x, z in sp])\n        part.extrude(part.profile(sks), st, \"EX_support_\" + nm, op=\"join\", symmetric=True)\n",
+  "script_sha256": "bd3f509710d58f7bc743b9005603c7e7341174953ca0ca89757ae0728581e92a",
+  "params": {
+    "span": 1040.0,
+    "main_plane_chord": 350.0,
+    "flap_chord": 200.0,
+    "element_thickness": 35.0,
+    "endplate_height": 400.0,
+    "endplate_thickness": 20.0,
+    "support_spacing": 200.0,
+    "support_thickness": 20.0
+  },
+  "pose": {
+    "position": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      -4450.0,
+      -520.0,
+      400.0
+    ],
+    [
+      -3700.0,
+      520.0,
+      1100.0
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 25064048.3
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 12,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          -4450.0,
+          -520.0,
+          400.0
+        ],
+        [
+          -3700.0,
+          520.0,
+          1100.0
+        ]
+      ],
+      "limit": {
+        "min": [
+          -4450.0,
+          -520.0,
+          400.0
+        ],
+        "max": [
+          -3700.0,
+          520.0,
+          1100.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "span": 1040.0,
+        "main_plane_chord": 350.0,
+        "flap_chord": 200.0,
+        "element_thickness": 35.0,
+        "endplate_height": 400.0,
+        "endplate_thickness": 20.0,
+        "support_spacing": 200.0,
+        "support_thickness": 20.0
+      },
+      "limit": {
+        "span": 1040.0,
+        "main_plane_chord": 350.0,
+        "flap_chord": 200.0,
+        "element_thickness": 35.0,
+        "endplate_height": 400.0,
+        "endplate_thickness": 20.0,
+        "support_spacing": 200.0,
+        "support_thickness": 20.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [
+    {
+      "article": "C2.3.1",
+      "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+      "page": 10,
+      "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+      "status": "VERIFIED",
+      "note": "measured max |Y| = 520.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+    },
+    {
+      "article": "C3.11.1",
+      "text": "C3.11.1 Rear Wing Profiles \"Rear Wing Profiles\" Bodywork must: a. lie in its entirety within RV-RW-PROFILES. b. comprise of up to three, non-intersecting, simply connected volumes. c. when assessing each volume independently, contain no more than two sections in any Z-Plane and a single section in any X and Y -Plane. d. in any Y-Plane, within 40mm of the rearmost point of the forwardmost section,",
+      "page": 37,
+      "sha256": "deeccd613ef6fd6ff63b02f8467d883a89dd02cf4e3bcd89537b0f2ae1d3f0f9",
+      "status": "NOT_VERIFIED",
+      "note": "no automated check for this article at concept level"
+    },
+    {
+      "article": "C3.11.4",
+      "text": "C3.11.4 Rear Wing Pylon \"Rear Wing Pylon\" Bodywork must: a. lie in its entirety within RV-RW-PYLON. b. in any Z-Plane: i. have a total area no greater than 5000 mm2, except for regions within 30mm of Exhaust Tailpipe. ii. have a section thickness less than 25mm when measured in the Y direction, except for regions inside of RV-TAILPIPE. Furthermore: c. no part of Rear Wing Profiles may be obscured",
+      "page": 39,
+      "sha256": "2d17e4a866a3950f1690bbc9d251f4d74cf1d1b217e247311f89dd87193e0e87",
+      "status": "NOT_VERIFIED",
+      "note": "no automated check for this article at concept level"
+    }
+  ],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 RWG-001 Rear wing",
+    "param_prefix": "mf1_rwg001",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-10T11:56:17+00:00"
+  },
+  "run_id": "20261010-145347-create-a-coherent-parametric-min",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T11:56:17+00:00",
+      "run_id": "20261010-145347-create-a-coherent-parametric-min",
+      "script_sha256": "bd3f509710d58f7bc743b9005603c7e7341174953ca0ca89757ae0728581e92a",
+      "summary": "built by fast mode",
+      "kind": "",
+      "instruction": ""
+    }
+  ],
+  "revision": {}
+}

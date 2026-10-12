@@ -1,0 +1,14 @@
+{
+  "name": "revise_FLR-001",
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "duration_s": 61.8,
+  "num_turns": 2,
+  "input_tokens": 2,
+  "output_tokens": 6073,
+  "cache_read_input_tokens": 4294,
+  "cache_creation_input_tokens": 4690,
+  "reported_cost_usd": 0.1598468,
+  "system_prompt": "system_04df1ee4531f.md"
+}

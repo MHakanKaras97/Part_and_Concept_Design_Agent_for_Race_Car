@@ -1,0 +1,631 @@
+{
+  "parts": [
+    {
+      "id": "MON-001",
+      "name": "Monocoque",
+      "role": "survival cell / chassis tub with nose and cockpit opening",
+      "reuse": true,
+      "dims": {
+        "length": 4250,
+        "rear_width": 900,
+        "nose_tip_width": 150,
+        "rear_height": 700,
+        "nose_tip_height": 150,
+        "cockpit_rim_height": 60,
+        "cockpit_opening_length": 800,
+        "cockpit_opening_width": 500
+      },
+      "envelope_min": [
+        -3700,
+        -450,
+        30
+      ],
+      "envelope_max": [
+        550,
+        450,
+        790
+      ],
+      "fia_refs_used": [],
+      "notes": "Reused exactly as registered (v3). Do not rebuild, move or modify."
+    },
+    {
+      "id": "FWG-001",
+      "name": "Front wing",
+      "role": "front wing: main plane, flap(s), endplates; ahead of the front axle",
+      "reuse": true,
+      "dims": {
+        "span": 1800,
+        "main_plane_chord": 350,
+        "flap_chord": 180,
+        "element_thickness": 30,
+        "endplate_height": 280,
+        "endplate_thickness": 20,
+        "mount_width": 120,
+        "mount_length": 150
+      },
+      "envelope_min": [
+        550,
+        -900,
+        50
+      ],
+      "envelope_max": [
+        1150,
+        900,
+        330
+      ],
+      "fia_refs_used": [],
+      "notes": "Reused exactly as registered (v3). Do not rebuild, move or modify."
+    },
+    {
+      "id": "FLR-001",
+      "name": "Floor",
+      "role": "floor plate under the car with rear diffuser ramp",
+      "reuse": true,
+      "dims": {
+        "length": 3900,
+        "width": 1600,
+        "thickness": 30,
+        "diffuser_length": 600,
+        "diffuser_width": 1000,
+        "diffuser_exit_height": 230,
+        "edge_chamfer": 20,
+        "rear_half_width": 520
+      },
+      "envelope_min": [
+        -4300,
+        -800,
+        0
+      ],
+      "envelope_max": [
+        -400,
+        800,
+        230
+      ],
+      "fia_refs_used": [],
+      "notes": "Reused exactly as registered (v2). Do not rebuild, move or modify."
+    },
+    {
+      "id": "RWG-001",
+      "name": "Rear wing",
+      "role": "rear wing: main plane, flap, endplates, central support",
+      "reuse": true,
+      "dims": {
+        "span": 1040,
+        "main_plane_chord": 350,
+        "flap_chord": 200,
+        "element_thickness": 35,
+        "endplate_height": 400,
+        "endplate_thickness": 20,
+        "support_spacing": 200,
+        "support_thickness": 20
+      },
+      "envelope_min": [
+        -4450,
+        -520,
+        400
+      ],
+      "envelope_max": [
+        -3700,
+        520,
+        1100
+      ],
+      "fia_refs_used": [],
+      "notes": "Reused exactly as registered (v2). Do not rebuild, move or modify."
+    },
+    {
+      "id": "WHL-FL",
+      "name": "Wheel front left",
+      "role": "front-left wheel and tyre on the front axle (X=0), +Y side",
+      "dims": {
+        "diameter": 720,
+        "width": 300,
+        "shoulder_radius": 40,
+        "rim_diameter": 460,
+        "rim_recess_depth": 25,
+        "hub_radius": 90,
+        "hub_length": 60
+      },
+      "position_mm": [
+        0,
+        800,
+        360
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "envelope_min": [
+        -360,
+        590,
+        0
+      ],
+      "envelope_max": [
+        360,
+        950,
+        720
+      ],
+      "fia_refs_used": [],
+      "notes": "Axle along the part-local Y axis through the local origin (wheel centre); rotationally symmetric about it. Tyre cylinder r=360 from y=-150 (inner face) to y=+150 (outer face), rounded shoulders r=40. Outboard (+Y) rim face recessed 25 mm, rim disc dia 460 (silver), tyre near-black. Hub boss on the inboard (-Y) side: r=90 from y=-150 to y=-210, flat end face at y=-210 (suspension contact plane). One connected solid."
+    },
+    {
+      "id": "WHL-FR",
+      "name": "Wheel front right",
+      "role": "front-right wheel and tyre on the front axle (X=0), -Y side",
+      "mirror_of": "WHL-FL",
+      "mirror_mode": "yaw180"
+    },
+    {
+      "id": "WHL-RL",
+      "name": "Wheel rear left",
+      "role": "rear-left wheel and tyre on the rear axle, +Y side",
+      "dims": {
+        "diameter": 740,
+        "width": 380,
+        "shoulder_radius": 45,
+        "rim_diameter": 480,
+        "rim_recess_depth": 25,
+        "hub_radius": 90,
+        "hub_length": 60
+      },
+      "position_mm": [
+        -3400,
+        760,
+        370
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "envelope_min": [
+        -3770,
+        510,
+        0
+      ],
+      "envelope_max": [
+        -3030,
+        950,
+        740
+      ],
+      "fia_refs_used": [],
+      "notes": "Axle along the part-local Y axis through the local origin (wheel centre); rotationally symmetric about it. Tyre cylinder r=370 from y=-190 (inner face) to y=+190 (outer face), rounded shoulders r=45. Outboard (+Y) rim face recessed 25 mm, rim disc dia 480 (silver), tyre near-black. Hub boss on the inboard (-Y) side: r=90 from y=-190 to y=-250, flat end face at y=-250 (suspension contact plane). One connected solid."
+    },
+    {
+      "id": "WHL-RR",
+      "name": "Wheel rear right",
+      "role": "rear-right wheel and tyre on the rear axle, -Y side",
+      "mirror_of": "WHL-RL",
+      "mirror_mode": "yaw180"
+    },
+    {
+      "id": "SUF-L",
+      "name": "Front suspension left",
+      "role": "front-left suspension links: monocoque to WHL-FL",
+      "dims": {
+        "beam_section": 30,
+        "upper_outboard_z_offset": 60,
+        "lower_outboard_z_offset": -60,
+        "inboard_front_x": 85,
+        "inboard_rear_x": -280,
+        "inboard_span_y": 440,
+        "pushrod_section": 25
+      },
+      "position_mm": [
+        0,
+        590,
+        360
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "envelope_min": [
+        -310,
+        148,
+        103
+      ],
+      "envelope_max": [
+        108,
+        590,
+        437
+      ],
+      "fia_refs_used": [
+        "C2.3.1"
+      ],
+      "notes": "Origin = hub-boss end plane at wheel centre. 30 mm square beams, dark grey, one solid. Lower wishbone: outboard node (0,0,-60), inboard legs to (85,-440,-240) and (-280,-375,-240). Upper wishbone: outboard node (0,0,+60), legs to (85,-440,-180) and (-280,-375,-180). Outboard ends cut flat on plane y=0 (within r=90 of origin, touching hub boss). Inboard ends cut on Y-planes, ~10 mm into monocoque wall. Pushrod 25 mm square from lower outboard node (0,-30,-60) to upper wishbone near (-100,-330,-175)."
+    },
+    {
+      "id": "SUF-R",
+      "name": "Front suspension right",
+      "role": "front-right suspension links: monocoque to WHL-FR",
+      "mirror_of": "SUF-L",
+      "mirror_mode": "mirror"
+    },
+    {
+      "id": "SUR-L",
+      "name": "Rear suspension left",
+      "role": "rear-left suspension links: car body to WHL-RL",
+      "dims": {
+        "beam_section": 30,
+        "upper_outboard_z_offset": 60,
+        "lower_outboard_z_offset": -60,
+        "inboard_leg_x_offset": 110,
+        "inboard_span_y": 74,
+        "upper_inboard_z_offset": 100,
+        "lower_inboard_z_offset": -170,
+        "pushrod_section": 25
+      },
+      "position_mm": [
+        -3400,
+        510,
+        370
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "envelope_min": [
+        -3545,
+        434,
+        183
+      ],
+      "envelope_max": [
+        -3255,
+        510,
+        487
+      ],
+      "fia_refs_used": [
+        "C2.3.1"
+      ],
+      "notes": "Origin = hub-boss end plane at wheel centre. 30 mm square beams, dark grey, one solid. Lower wishbone: outboard node (0,0,-60), legs to (+110,-74,-170) and (-110,-74,-170). Upper: outboard node (0,0,+60), legs to (+110,-74,+100) and (-110,-74,+100). Outboard ends cut flat on plane y=0 inside r=90 (touching hub boss). Inboard ends cut on plane y=-74, ~10 mm into monocoque side wall; keep all inboard material within x -150..+150. Pushrod 25 mm square from lower outboard node to upper wishbone inboard region."
+    },
+    {
+      "id": "SUR-R",
+      "name": "Rear suspension right",
+      "role": "rear-right suspension links: car body to WHL-RR",
+      "mirror_of": "SUR-L",
+      "mirror_mode": "mirror"
+    },
+    {
+      "id": "SDP-L",
+      "name": "Sidepod left",
+      "role": "left sidepod bodywork with radiator inlet, beside the monocoque",
+      "dims": {
+        "length": 2250,
+        "max_outer_half_width": 700,
+        "rear_outer_half_width": 540,
+        "max_height": 390,
+        "top_fillet": 40,
+        "inlet_width": 200,
+        "inlet_height": 150,
+        "inlet_depth": 120
+      },
+      "position_mm": [
+        -700,
+        0,
+        30
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "envelope_min": [
+        -2950,
+        280,
+        30
+      ],
+      "envelope_max": [
+        -700,
+        700,
+        420
+      ],
+      "fia_refs_used": [
+        "C2.3.1"
+      ],
+      "notes": "Loft of sections from x=0 (front) to x=-2250 (rear), flat bottom on z=0. Inner wall y: 280 @x0, 372 @x-700, 426 @x-1900, 431 @x-2250. Outer wall y: 660 @x0, 700 @x-500, linear to 540 @x-2250. Top z: 370 @x0, 390 @x-1100, 270 @x-2250; 40 mm top fillets. Front face pocket 200(y) x 150(z) x 120 deep centred y=470, z=220. Outer lower undercut: inset 60 mm, 120 high, keep bottom face continuous. Red as monocoque. One solid."
+    },
+    {
+      "id": "SDP-R",
+      "name": "Sidepod right",
+      "role": "right sidepod bodywork with radiator inlet, beside the monocoque",
+      "mirror_of": "SDP-L",
+      "mirror_mode": "mirror"
+    },
+    {
+      "id": "ENG-001",
+      "name": "Engine cover",
+      "role": "power unit / engine cover behind the cockpit, above the floor",
+      "dims": {
+        "airbox_length": 250,
+        "airbox_width": 280,
+        "airbox_top_height": 320,
+        "spine_length": 900,
+        "spine_width": 80,
+        "spine_rear_height": 120,
+        "intake_width": 180,
+        "intake_height": 140
+      },
+      "position_mm": [
+        -2450,
+        0,
+        680
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "envelope_min": [
+        -3600,
+        -140,
+        680
+      ],
+      "envelope_max": [
+        -2450,
+        140,
+        1000
+      ],
+      "fia_refs_used": [
+        "C2.3.1"
+      ],
+      "notes": "Base plane z=0 (embeds into monocoque top). Airbox x 0..-250, |y|<=140, height to z=320, rounded edges; front intake opening 180 wide x 140 high, 100 deep, centred z=230 in the front face (x=0). Shark-fin spine |y|<=40 from x=-250 to x=-1150, top falling linearly from z=320 to z=120 at x=-1150. Airbox and spine one fused solid, red as monocoque. Keep x>=-1150 (clear of rear wing)."
+    },
+    {
+      "id": "HAL-001",
+      "name": "Halo",
+      "role": "halo cockpit protection hoop over the cockpit opening",
+      "dims": {
+        "bar_thickness": 40,
+        "hoop_top_height": 160,
+        "rear_foot_half_spacing": 280,
+        "hoop_length": 880,
+        "pillar_width": 60
+      },
+      "position_mm": [
+        -1470,
+        0,
+        740
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "envelope_min": [
+        -2350,
+        -300,
+        740
+      ],
+      "envelope_max": [
+        -1440,
+        300,
+        900
+      ],
+      "fia_refs_used": [
+        "C2.3.1"
+      ],
+      "notes": "Origin = front pillar foot centre on rim plane. Two side bars 40 mm section: rear feet centred (-860,±280,0), rising to hoop centreline z=140 (top surface z=160), running forward at |y|<=280 and curving inward to meet at (~-90,0,140). Front pillar 60 wide x 40 from that junction down to foot centred (0,0,0). Feet bottoms flat exactly on z=0. Dark grey, one solid."
+    },
+    {
+      "id": "MIR-L",
+      "name": "Mirror left",
+      "role": "left rear-view mirror housing on its stalk beside the cockpit",
+      "dims": {
+        "housing_length": 40,
+        "housing_width": 160,
+        "housing_height": 80,
+        "stalk_length": 94,
+        "stalk_width": 30,
+        "stalk_height": 20
+      },
+      "position_mm": [
+        -1700,
+        560,
+        540
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "envelope_min": [
+        -1720,
+        386,
+        500
+      ],
+      "envelope_max": [
+        -1680,
+        640,
+        580
+      ],
+      "fia_refs_used": [
+        "C2.3.1"
+      ],
+      "notes": "Origin = housing centre. Housing box x -20..20, y -80..80, z -40..40, small edge fillets. Stalk 30(x) x 20(z) from y=-80 inboard to y=-174, base embedded ~10 mm into monocoque side. Black. One solid; keep clear of halo and sidepod."
+    },
+    {
+      "id": "MIR-R",
+      "name": "Mirror right",
+      "role": "right rear-view mirror housing on its stalk beside the cockpit",
+      "mirror_of": "MIR-L",
+      "mirror_mode": "mirror"
+    }
+  ],
+  "mates": [
+    {
+      "a": "MON-001",
+      "b": "FLR-001",
+      "expect": "touching"
+    },
+    {
+      "a": "FWG-001",
+      "b": "MON-001",
+      "expect": "touching"
+    },
+    {
+      "a": "RWG-001",
+      "b": "MON-001",
+      "expect": "touching"
+    },
+    {
+      "a": "WHL-FL",
+      "b": "WHL-FR",
+      "expect": "clear",
+      "value_mm": 20
+    },
+    {
+      "a": "WHL-RL",
+      "b": "WHL-RR",
+      "expect": "clear",
+      "value_mm": 20
+    },
+    {
+      "a": "WHL-FL",
+      "b": "SUF-L",
+      "expect": "touching"
+    },
+    {
+      "a": "WHL-RL",
+      "b": "SUR-L",
+      "expect": "touching"
+    },
+    {
+      "a": "SUF-L",
+      "b": "MON-001",
+      "expect": "overlap",
+      "value_mm": 20
+    },
+    {
+      "a": "SUR-L",
+      "b": "MON-001",
+      "expect": "overlap",
+      "value_mm": 20
+    },
+    {
+      "a": "SUF-L",
+      "b": "SUF-R",
+      "expect": "clear",
+      "value_mm": 20
+    },
+    {
+      "a": "SUR-L",
+      "b": "SUR-R",
+      "expect": "clear",
+      "value_mm": 20
+    },
+    {
+      "a": "SDP-L",
+      "b": "FLR-001",
+      "expect": "touching"
+    },
+    {
+      "a": "SDP-L",
+      "b": "MON-001",
+      "expect": "overlap",
+      "value_mm": 25
+    },
+    {
+      "a": "SDP-L",
+      "b": "SDP-R",
+      "expect": "clear",
+      "value_mm": 20
+    },
+    {
+      "a": "ENG-001",
+      "b": "MON-001",
+      "expect": "overlap",
+      "value_mm": 60
+    },
+    {
+      "a": "ENG-001",
+      "b": "RWG-001",
+      "expect": "clear",
+      "value_mm": 20
+    },
+    {
+      "a": "ENG-001",
+      "b": "HAL-001",
+      "expect": "clear",
+      "value_mm": 20
+    },
+    {
+      "a": "HAL-001",
+      "b": "MON-001",
+      "expect": "touching"
+    },
+    {
+      "a": "MIR-L",
+      "b": "MON-001",
+      "expect": "overlap",
+      "value_mm": 15
+    },
+    {
+      "a": "MIR-L",
+      "b": "HAL-001",
+      "expect": "clear",
+      "value_mm": 20
+    },
+    {
+      "a": "MIR-L",
+      "b": "SDP-L",
+      "expect": "clear",
+      "value_mm": 20
+    },
+    {
+      "a": "MIR-L",
+      "b": "MIR-R",
+      "expect": "clear",
+      "value_mm": 20
+    },
+    {
+      "a": "WHL-FL",
+      "b": "FWG-001",
+      "expect": "clear",
+      "value_mm": 20
+    },
+    {
+      "a": "WHL-FL",
+      "b": "FLR-001",
+      "expect": "clear",
+      "value_mm": 20
+    },
+    {
+      "a": "WHL-RL",
+      "b": "RWG-001",
+      "expect": "clear",
+      "value_mm": 20
+    },
+    {
+      "a": "WHL-RL",
+      "b": "FLR-001",
+      "expect": "clear",
+      "value_mm": 20
+    },
+    {
+      "a": "WHL-RL",
+      "b": "SDP-L",
+      "expect": "clear",
+      "value_mm": 20
+    },
+    {
+      "a": "SUR-L",
+      "b": "RWG-001",
+      "expect": "clear",
+      "value_mm": 20
+    }
+  ],
+  "assumptions": [
+    "Sidepod outer wall at the front face (X=-700) is |Y|=660, widening to 700 at X=-1200.",
+    "Monocoque side walls are treated as vertical at the brief's half-widths; suspension and mirror inboard ends are embedded about 10 mm based on those values.",
+    "Wheel rim disc diameter is 460 front / 480 rear with a 25 mm recess; tyre shoulder radii are 40 / 45 mm.",
+    "Suspension outboard nodes sit 60 mm above and below the wheel centre at X of the axle; pushrod section is 25 mm square, joining the lower outboard node to the upper wishbone.",
+    "Halo hoop centreline is at Z 880 (top surface Z 900); the front pillar section is 60 x 40 mm.",
+    "Airbox intake opening is 180 x 140 mm and 100 mm deep; the spine is 80 mm wide, with its top falling linearly from Z 1000 to Z 800.",
+    "Sidepod inlet pocket is centred at |Y| 470, Z 250; the outer lower undercut is 60 mm deep and 120 mm high; top fillet is 40 mm.",
+    "Mirror stalk section is 30 x 20 mm with its base at |Y| about 386, where the monocoque half-width is about 396 at X -1700."
+  ]
+}

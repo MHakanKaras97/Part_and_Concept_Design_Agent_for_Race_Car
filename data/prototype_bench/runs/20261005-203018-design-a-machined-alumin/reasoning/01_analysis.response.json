@@ -1,0 +1,26 @@
+{
+  "component_type": "l_bracket",
+  "summary": "Machined aluminium L-bracket: base leg bolted to a flat plate with four M6 bolts, upright leg carries a 2 kg sensor box. The sensor-box interface (fastener size and hole pattern) is not specified and defines the upright geometry, so it must be asked.",
+  "requirements": [
+    {"id": "R01", "key": "function", "text": "Mount a sensor box to a flat plate: base leg on the plate, sensor box on the upright leg.", "source": "USER"},
+    {"id": "R02", "key": "load", "text": "Supported payload: sensor box mass 2 kg.", "value": 2, "unit": "kg", "source": "USER"},
+    {"id": "R03", "key": "base_fastener", "text": "Bracket fixed to the plate with four M6 bolts.", "value": "4 x M6", "source": "USER"},
+    {"id": "R04", "key": "manufacturing_process", "text": "Machined part.", "value": "machined", "source": "USER"},
+    {"id": "R05", "key": "material", "text": "Aluminium (alloy and temper not specified).", "value": "aluminium", "source": "USER"},
+    {"id": "R06", "key": "cad", "text": "Parametric, editable Fusion model with named parameters and features.", "source": "DERIVED"}
+  ],
+  "missing_information": [
+    {"id": "M01", "key": "upright_fastener", "topic": "Sensor-box mounting interface", "why_it_matters": "Fastener size, count and hole pattern of the sensor box define the upright leg holes, its minimum width/height and the interface. A wrong guess makes the bracket unusable.", "criticality": "CRITICAL", "resolution": "ASK", "question": "How is the sensor box fastened to the bracket upright: fastener size, number of fasteners and hole pattern (e.g. 4 x M5 on a 36 mm (width) x 28 mm (height) rectangle), and roughly how far is the box's centre of mass from its mounting face?"},
+    {"id": "M02", "key": "material_alloy", "topic": "Aluminium alloy/temper", "why_it_matters": "Yield strength used in the hand calculation.", "criticality": "IMPORTANT", "resolution": "ASSUME", "assumption_id": "A02"},
+    {"id": "M03", "key": "load_dynamic", "topic": "Dynamic load factor / environment", "why_it_matters": "A 2 kg static mass says nothing about vibration or shock; sizing needs a design load.", "criticality": "IMPORTANT", "resolution": "ASSUME", "assumption_id": "A03"},
+    {"id": "M04", "key": "envelope", "topic": "Available space", "why_it_matters": "Limits leg lengths and width.", "criticality": "IMPORTANT", "resolution": "ASSUME", "assumption_id": "A04"},
+    {"id": "M05", "key": "plate_hole_pattern", "topic": "Hole pattern in the flat plate", "why_it_matters": "If the plate is pre-drilled the base holes must match it.", "criticality": "IMPORTANT", "resolution": "ASSUME", "assumption_id": "A05"}
+  ],
+  "assumptions": [
+    {"id": "A01", "text": "Concept-level design: nominal geometry, no tolerancing, no FEA/fatigue analysis; sizing by hand calculation only.", "rationale": "Prototype 1 scope (root.txt §19).", "impact": "Results are not a structural sign-off.", "affects": ["all"]},
+    {"id": "A02", "text": "Material is aluminium 6061-T6 (material id AL6061-T6).", "rationale": "Most common general-purpose machining alloy; user said 'aluminium' only.", "impact": "Yield strength 276 MPa (handbook, not verified) used in the bending check.", "affects": ["material", "load_case"]},
+    {"id": "A03", "text": "Design load = 2 kg x 5 g = 98.1 N acting perpendicular to the upright mounting face's offset (worst-case bending of the upright), required safety factor on yield 2.0.", "rationale": "No environment given; 5 g covers handling, shock and vibration typical of vehicle-mounted equipment at concept level.", "impact": "Drives plate thickness; must be confirmed for the real environment.", "affects": ["load_case", "bracket_thickness"]},
+    {"id": "A04", "text": "No hard envelope limit; keep the bracket compact (each leg < 100 mm, width <= 70 mm).", "rationale": "Envelope not stated.", "impact": "Leg lengths/width chosen from hole layout and edge-distance rules only.", "affects": ["leg_base_length", "leg_upright_height", "bracket_width"]},
+    {"id": "A05", "text": "The flat plate will be drilled to match the bracket; base holes in a 2 x 2 rectangular pattern with ISO 273 medium clearance (6.6 mm).", "rationale": "No plate pattern given.", "impact": "Base hole pattern is defined by the bracket and must be transferred to the plate.", "affects": ["base_hole_*"]}
+  ]
+}

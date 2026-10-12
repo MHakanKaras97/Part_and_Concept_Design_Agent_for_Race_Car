@@ -1,0 +1,343 @@
+{
+  "record_type": "part",
+  "id": "HAL-001",
+  "name": "Halo",
+  "role": "halo cockpit protection hoop over the cockpit opening",
+  "version": 1,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "HAL-001",
+    "name": "Halo",
+    "role": "halo cockpit protection hoop over the cockpit opening",
+    "notes": "Dark grey single solid. U-hoop of 40 mm bars: rear feet at local (-860, +/-280, 0) rising to a hoop top at Z ~160 (bar centre) curving round to the front at local X ~-80, Y 0; central front pillar from the hoop down to its foot at local (0,0,0). All foot bottoms flat on local Z=0 (rim top plane), inside the rim ring, touching the monocoque.",
+    "dims": {
+      "bar_thickness": 40.0,
+      "top_height": 160.0,
+      "rear_foot_x_offset": 860.0,
+      "rear_foot_half_span": 280.0,
+      "pillar_width": 40.0
+    },
+    "position_mm": [
+      -1470.0,
+      0.0,
+      740.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      -2350.0,
+      -300.0,
+      740.0
+    ],
+    "envelope_max": [
+      -1450.0,
+      300.0,
+      920.0
+    ],
+    "fia_refs_used": [
+      "C2.3.1"
+    ],
+    "reuse": false,
+    "mirror_of": null,
+    "mirror_mode": null
+  },
+  "script_body": "import math\n\ndef build(part):\n    t = part.p[\"bar_thickness\"]\n    zt = part.p[\"top_height\"]\n    xr = -part.p[\"rear_foot_x_offset\"]\n    hs = part.p[\"rear_foot_half_span\"]\n    pw = part.p[\"pillar_width\"]\n    h = t / 2.0\n    z0 = zt - h\n    z1 = zt + h\n    xc = -350.0\n    xfront = -80.0\n    xback = xr - h\n    ax_o = (xfront + h) - xc\n    ax_i = (xfront - h) - xc\n    ay_o = hs + h\n    ay_i = hs - h\n    n = 12\n    pts = [(xback, ay_o, z0)]\n    for i in range(n + 1):\n        a = math.radians(90.0 - 180.0 * i / n)\n        pts.append((xc + ax_o * math.cos(a), ay_o * math.sin(a), z0))\n    pts.append((xback, -ay_o, z0))\n    pts.append((xback, -ay_i, z0))\n    for i in range(n + 1):\n        a = math.radians(-90.0 + 180.0 * i / n)\n        pts.append((xc + ax_i * math.cos(a), ay_i * math.sin(a), z0))\n    pts.append((xback, ay_i, z0))\n    sk = part.sketch(part.plane(\"z\", z0, \"PL_hoop\"), \"SK_hoop\")\n    part.polygon(sk, pts)\n    part.extrude(part.profile(sk), z1 - z0, \"EX_hoop\")\n\n    for s, nm in ((1, \"L\"), (-1, \"R\")):\n        skf = part.sketch(part.plane(\"z\", 0, \"PL_foot_\" + nm), \"SK_foot_\" + nm)\n        yc = s * hs\n        part.polygon(skf, [(xr - h, yc - h, 0), (xr + h, yc - h, 0),\n                           (xr + h, yc + h, 0), (xr - h, yc + h, 0)])\n        part.extrude(part.profile(skf), z1, \"EX_foot_\" + nm, op=\"join\")\n\n    pp = pw / 2.0\n    skp = part.sketch(part.plane(\"y\", 0, \"PL_pillar\"), \"SK_pillar\")\n    part.polygon(skp, [(-pp, 0, 0), (pp, 0, 0), (xfront + h, 0, z1),\n                       (xfront - h, 0, z1), (xfront - h, 0, z0 + 10.0)])\n    part.extrude(part.profile(skp), pw, \"EX_pillar\", op=\"join\", symmetric=True)\n",
+  "script_sha256": "1f1459978eb2c970d2608f16c46233f4438f6c630617e159404491ef53d7c5e1",
+  "params": {
+    "bar_thickness": 40.0,
+    "top_height": 160.0,
+    "rear_foot_x_offset": 860.0,
+    "rear_foot_half_span": 280.0,
+    "pillar_width": 40.0
+  },
+  "pose": {
+    "position": [
+      -1470.0,
+      0.0,
+      740.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      -2350.0,
+      -300.0,
+      740.0
+    ],
+    [
+      -1450.0,
+      300.0,
+      920.0
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 3785667.5
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 8,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          -2350.0,
+          -300.0,
+          740.0
+        ],
+        [
+          -1450.0,
+          300.0,
+          920.0
+        ]
+      ],
+      "limit": {
+        "min": [
+          -2350.0,
+          -300.0,
+          740.0
+        ],
+        "max": [
+          -1450.0,
+          300.0,
+          920.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FRAME",
+      "title": "Geometry in the part-local frame",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part's local bbox (built at identity) lies in the planned envelope taken back into the part frame by the inverse pose.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bbox_local": [
+          [
+            -880.0,
+            -300.0,
+            0.0
+          ],
+          [
+            20.0,
+            300.0,
+            180.0
+          ]
+        ]
+      },
+      "limit": {
+        "expected_local": [
+          [
+            -880.0,
+            -300.0,
+            0.0
+          ],
+          [
+            20.0,
+            300.0,
+            180.0
+          ]
+        ],
+        "world_envelope": [
+          [
+            -2350.0,
+            -300.0,
+            740.0
+          ],
+          [
+            -1450.0,
+            300.0,
+            920.0
+          ]
+        ],
+        "tol_mm": 5.0,
+        "frame_mode": "part_local"
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          -1470.0,
+          0.0,
+          740.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "bar_thickness": 40.0,
+        "top_height": 160.0,
+        "rear_foot_x_offset": 860.0,
+        "rear_foot_half_span": 280.0,
+        "pillar_width": 40.0
+      },
+      "limit": {
+        "bar_thickness": 40.0,
+        "top_height": 160.0,
+        "rear_foot_x_offset": 860.0,
+        "rear_foot_half_span": 280.0,
+        "pillar_width": 40.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [
+    {
+      "article": "C2.3.1",
+      "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+      "page": 10,
+      "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+      "status": "VERIFIED",
+      "note": "measured max |Y| = 300.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+    }
+  ],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 HAL-001 Halo",
+    "param_prefix": "mf1_hal001",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-10T19:28:56+00:00"
+  },
+  "run_id": "20261010-222202-extend-the-existing-mini-f1-asse",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T19:28:56+00:00",
+      "run_id": "20261010-222202-extend-the-existing-mini-f1-asse",
+      "script_sha256": "1f1459978eb2c970d2608f16c46233f4438f6c630617e159404491ef53d7c5e1",
+      "summary": "built by fast mode",
+      "kind": "",
+      "instruction": ""
+    }
+  ],
+  "revision": {},
+  "derived": {},
+  "geometry": {
+    "volume_mm3": 3785667.450104,
+    "solids": 1,
+    "lumps": 1,
+    "bbox_local": [
+      [
+        -880.0,
+        -300.0,
+        0.0
+      ],
+      [
+        20.0,
+        300.0,
+        180.0
+      ]
+    ],
+    "bbox_world": [
+      [
+        -2350.0,
+        -300.0,
+        740.0
+      ],
+      [
+        -1450.0,
+        300.0,
+        920.0
+      ]
+    ]
+  }
+}

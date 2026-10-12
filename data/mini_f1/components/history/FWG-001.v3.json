@@ -1,0 +1,384 @@
+{
+  "record_type": "part",
+  "id": "FWG-001",
+  "name": "Front wing",
+  "role": "front wing: main plane, flap(s), endplates; ahead of the front axle",
+  "version": 3,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "FWG-001",
+    "name": "Front wing",
+    "role": "front wing: main plane, flap(s), endplates; ahead of the front axle",
+    "notes": "Main plane (chord 350, 30 thick) spanning 1800 at low Z (~70-100) at front X 800-1150; two flaps chord 180 stacked rearward/upward with small slot gaps, giving up to three sections per Y-plane. Two vertical endplates (20 thick, 280 high, Z 50-330) at Y=±880..±900. Central mount/pylon block Y ±60, from flap/main plane rearward to X=550, Z 100-230, its rear face touching the monocoque nose tip face (no overlap).",
+    "dims": {
+      "span": 1800.0,
+      "main_plane_chord": 350.0,
+      "flap_chord": 180.0,
+      "element_thickness": 30.0,
+      "endplate_height": 280.0,
+      "endplate_thickness": 20.0,
+      "mount_width": 120.0,
+      "mount_length": 150.0
+    },
+    "position_mm": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      550.0,
+      -900.0,
+      50.0
+    ],
+    "envelope_max": [
+      1150.0,
+      900.0,
+      330.0
+    ],
+    "fia_refs_used": [
+      "C2.3.1",
+      "C3.10.1"
+    ],
+    "reuse": false,
+    "mirror_of": null,
+    "mirror_mode": null
+  },
+  "script_body": "def build(part):\n    S = part.p[\"span\"]\n    T = part.p[\"endplate_thickness\"]\n    yi = S / 2 - T\n    pl0 = part.plane(\"y\", 0)\n\n    def wing(name, pts, op):\n        sk = part.sketch(pl0, \"SK_\" + name)\n        part.polygon(sk, [(x, 0, z) for (x, z) in pts])\n        part.extrude(part.profile(sk), \"span\", \"EX_\" + name, op=op, symmetric=True)\n\n    main = [(1150, 85), (1130, 98), (1060, 100), (950, 98), (850, 93), (800, 90),\n            (800, 84), (900, 75), (1000, 70), (1100, 72), (1140, 78)]\n    wing(\"main_plane\", main, \"new\")\n\n    flap1 = [(860, 115), (840, 130), (780, 138), (720, 140), (680, 142),\n             (680, 134), (740, 122), (800, 108), (845, 104)]\n    wing(\"flap1\", flap1, \"join\")\n\n    flap2 = [(740, 160), (720, 175), (660, 183), (600, 185), (560, 187),\n             (560, 179), (620, 167), (680, 153), (725, 149)]\n    wing(\"flap2\", flap2, \"join\")\n\n    # Endplates\n    ep = [(555, 50), (1150, 50), (1150, 250), (1080, 330), (555, 330)]\n    skr = part.sketch(part.plane(\"y\", yi), \"SK_endplate_L\")\n    part.polygon(skr, [(x, yi, z) for (x, z) in ep])\n    part.extrude(part.profile(skr), T, \"EX_endplate_L\", op=\"join\")\n    skl = part.sketch(part.plane(\"y\", -yi), \"SK_endplate_R\")\n    part.polygon(skl, [(x, -yi, z) for (x, z) in ep])\n    part.extrude(part.profile(skl), -T, \"EX_endplate_R\", op=\"join\")\n\n    # Central mount / pylon block\n    skm = part.sketch(pl0, \"SK_mount\")\n    part.polygon(skm, [(550, 0, 100), (900, 0, 95), (900, 0, 160), (750, 0, 230), (550, 0, 230)])\n    part.extrude(part.profile(skm), \"mount_width\", \"EX_mount\", op=\"join\", symmetric=True)\n",
+  "script_sha256": "670aca01b2b61b8742841209352697fdb0e6b5901323e1dce37963f3f539bfbe",
+  "params": {
+    "span": 1800.0,
+    "main_plane_chord": 350.0,
+    "flap_chord": 180.0,
+    "element_thickness": 30.0,
+    "endplate_height": 280.0,
+    "endplate_thickness": 20.0,
+    "mount_width": 120.0,
+    "mount_length": 150.0
+  },
+  "pose": {
+    "position": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      550.0,
+      -900.0,
+      50.0
+    ],
+    [
+      1150.0,
+      900.0,
+      330.0
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 36374566.7
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 12,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          550.0,
+          -900.0,
+          50.0
+        ],
+        [
+          1150.0,
+          900.0,
+          330.0
+        ]
+      ],
+      "limit": {
+        "min": [
+          550.0,
+          -900.0,
+          50.0
+        ],
+        "max": [
+          1150.0,
+          900.0,
+          330.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FRAME",
+      "title": "Geometry in the part-local frame",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part's local bbox (built at identity) lies in the planned envelope taken back into the part frame by the inverse pose.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bbox_local": [
+          [
+            550.0,
+            -900.0,
+            50.0
+          ],
+          [
+            1150.0,
+            900.0,
+            330.0
+          ]
+        ]
+      },
+      "limit": {
+        "expected_local": [
+          [
+            550.0,
+            -900.0,
+            50.0
+          ],
+          [
+            1150.0,
+            900.0,
+            330.0
+          ]
+        ],
+        "world_envelope": [
+          [
+            550.0,
+            -900.0,
+            50.0
+          ],
+          [
+            1150.0,
+            900.0,
+            330.0
+          ]
+        ],
+        "tol_mm": 5.0,
+        "frame_mode": "part_local"
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "span": 1800.0,
+        "main_plane_chord": 350.0,
+        "flap_chord": 180.0,
+        "element_thickness": 30.0,
+        "endplate_height": 280.0,
+        "endplate_thickness": 20.0,
+        "mount_width": 120.0,
+        "mount_length": 150.0
+      },
+      "limit": {
+        "span": 1800.0,
+        "main_plane_chord": 350.0,
+        "flap_chord": 180.0,
+        "element_thickness": 30.0,
+        "endplate_height": 280.0,
+        "endplate_thickness": 20.0,
+        "mount_width": 120.0,
+        "mount_length": 150.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [
+    {
+      "article": "C2.3.1",
+      "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+      "page": 10,
+      "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+      "status": "VERIFIED",
+      "note": "measured max |Y| = 900.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+    },
+    {
+      "article": "C3.10.1",
+      "text": "C3.10.1 Front Wing Profiles \"Front Wing Profiles\" Bodywork is exempt from C3.2.4 (b) but must: a. lie in its entirety within RV-FW-PROFILES. b. comprise of up to three, non-intersecting, simply connected volumes. c. have up to three sections in any Y-Plane. d. when viewed from above, fully obscure RS-FW-PROFILES. In any Y-Plane: e. the rearmost point of every section must be visible when viewed",
+      "page": 30,
+      "sha256": "e7e56d8e71ac240e04850bd83fa449729214ce5bcfa66aa0bca6e0fc153d2c01",
+      "status": "NOT_VERIFIED",
+      "note": "no automated check for this article at concept level"
+    }
+  ],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 FWG-001 Front wing",
+    "param_prefix": "mf1_fwg001",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-10T16:58:27+00:00"
+  },
+  "run_id": "20261010-194639-rebuild-assembly-of-20261010-151",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T11:55:25+00:00",
+      "run_id": "20261010-145347-create-a-coherent-parametric-min",
+      "script_sha256": "670aca01b2b61b8742841209352697fdb0e6b5901323e1dce37963f3f539bfbe",
+      "summary": "built by fast mode",
+      "kind": "",
+      "instruction": ""
+    },
+    {
+      "version": 2,
+      "date": "2026-10-10T16:49:46+00:00",
+      "run_id": "20261010-194639-rebuild-assembly-of-20261010-151",
+      "script_sha256": "670aca01b2b61b8742841209352697fdb0e6b5901323e1dce37963f3f539bfbe",
+      "summary": "span 1800 -> 1700 mm; wings and endplates follow the span parameter, so Y extents are now ±850 (endplates at Y ±830..±850)",
+      "kind": "revise",
+      "instruction": "make the span 1700 mm"
+    },
+    {
+      "version": 3,
+      "date": "2026-10-10T16:58:27+00:00",
+      "run_id": "20261010-194639-rebuild-assembly-of-20261010-151",
+      "script_sha256": "670aca01b2b61b8742841209352697fdb0e6b5901323e1dce37963f3f539bfbe",
+      "summary": "reverted to v1",
+      "kind": "revert",
+      "instruction": "revert FWG-001 to v1"
+    }
+  ],
+  "revision": {
+    "revision_id": "R06",
+    "run_id": "20261010-194639-rebuild-assembly-of-20261010-151",
+    "kind": "revert",
+    "instruction": "revert FWG-001 to v1",
+    "change_summary": "reverted to v1",
+    "assumptions": [],
+    "spec_delta": {
+      "reverted_from": 1
+    },
+    "base_version": 2,
+    "neighbour_pose_changes": [],
+    "reason": null,
+    "mates": [
+      {
+        "check_id": "MATE-FWG-001-MON-001",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "touching",
+          "gap_mm": 0.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      }
+    ],
+    "frame_mode": "part_local",
+    "frame_validation": {
+      "status": "VERIFIED",
+      "message": ""
+    }
+  },
+  "derived": {},
+  "geometry": {}
+}

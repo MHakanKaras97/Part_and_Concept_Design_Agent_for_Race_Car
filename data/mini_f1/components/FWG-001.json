@@ -1,0 +1,453 @@
+{
+  "record_type": "part",
+  "id": "FWG-001",
+  "name": "Front wing",
+  "role": "front wing: main plane, flap(s), endplates; ahead of the front axle",
+  "version": 5,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "FWG-001",
+    "name": "Front wing",
+    "role": "front wing: main plane, flap(s), endplates; ahead of the front axle",
+    "notes": "Main plane (chord 350, 30 thick) spanning 1800 at low Z (~70-100) at front X 800-1150; two flaps chord 180 stacked rearward/upward with small slot gaps, giving up to three sections per Y-plane. Two vertical endplates (20 thick, 280 high, Z 50-330) at Y=±880..±900. Central mount/pylon block Y ±60, from flap/main plane rearward to X=550, Z 100-230, its rear face touching the monocoque nose tip face (no overlap).",
+    "dims": {
+      "span": 1800.0,
+      "main_plane_chord": 350.0,
+      "flap_chord": 180.0,
+      "element_thickness": 30.0,
+      "endplate_height": 280.0,
+      "endplate_thickness": 20.0,
+      "mount_width": 120.0,
+      "mount_length": 150.0
+    },
+    "position_mm": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      550.0,
+      -900.0,
+      50.0
+    ],
+    "envelope_max": [
+      1150.0,
+      900.0,
+      330.0
+    ],
+    "fia_refs_used": [
+      "C2.3.1",
+      "C3.10.1"
+    ],
+    "reuse": false,
+    "mirror_of": null,
+    "mirror_mode": null
+  },
+  "script_body": "import math\nimport adsk.core\nimport adsk.fusion\n\n\ndef foil(xle, zle, c, th, a_deg, m, dz=0.0):\n    a = math.radians(a_deg)\n    dxc, dzc = -math.cos(a), math.sin(a)\n    nx, nz = math.sin(a), math.cos(a)\n    ts = [0.03, 0.1, 0.25, 0.45, 0.7, 1.0]\n\n    def p(t, sgn):\n        yt = 5 * th * c * (0.2969 * math.sqrt(t) - 0.126 * t - 0.3516 * t ** 2\n                           + 0.2843 * t ** 3 - 0.1036 * t ** 4)\n        yt = max(yt, 2.0)\n        yc = -4 * m * c * t * (1 - t)\n        s = t * c\n        w = yc + sgn * yt\n        return (xle + s * dxc + w * nx, zle + dz + s * dzc + w * nz)\n\n    up = [p(t, 1) for t in reversed(ts)]\n    lo = [p(t, -1) for t in ts]\n    return up + [(xle, zle + dz)] + lo\n\n\ndef chain(specs, k, lift):\n    # stacked elements: each flap LE placed relative to the previous TE (constant slot gap)\n    out = []\n    xle, zle = 1150.0, 80.0\n    for (c0, th, a, m, ox, oz) in specs:\n        c = c0 * k\n        out.append((xle, zle, c, th, a, m, lift))\n        r = math.radians(a)\n        xle = xle - c * math.cos(r) + ox\n        zle = zle + c * math.sin(r) + oz\n    return out\n\n\ndef tilt(part, body, yp, ang, name):\n    ents = adsk.core.ObjectCollection.create()\n    ents.add(body)\n    mf = part.comp.features.moveFeatures\n    mi = mf.createInput2(ents)\n    tr = adsk.core.Matrix3D.create()\n    tr.setToRotation(ang, adsk.core.Vector3D.create(1, 0, 0), pt(0, yp, 330))\n    mi.defineAsFreeMove(tr)\n    mv = mf.add(mi)\n    mv.name = name\n\n\ndef build(part):\n    S = part.p[\"span\"]\n    T = part.p[\"endplate_thickness\"]\n    Cm = part.p[\"main_plane_chord\"]\n    Cf = part.p[\"flap_chord\"]\n    tm = part.p[\"element_thickness\"]\n    pl0 = part.plane(\"y\", 0)\n\n    # (chord, thickness ratio, angle, camber, next LE dx-overlap, next LE dz-gap)\n    specs = [(Cm, tm / Cm, 5.0, 0.04, 24.0, 20.0),\n             (Cf, 18.0 / Cf, 16.0, 0.05, 24.0, 16.0),\n             (0.72 * Cf, 0.1, 28.0, 0.05, 0.0, 0.0)]\n    names = [\"main_plane\", \"flap1\", \"flap2\"]\n    tips = [852.0, 864.0, 874.0]      # tip stations end inside the canted endplates\n    yc = 200.0                        # flat centre section half-width\n    yo = S / 2 * 0.75                 # outwash starts at outer 25 %\n\n    def kf(y):\n        return 1.0 - 0.25 * (y - yc) / 700.0\n\n    def lf(y):\n        return 30.0 * max(0.0, (y - yo) / (S / 2 - yo)) ** 2\n\n    centre = chain(specs, 1.0, 0.0)\n    for i in range(3):\n        name = names[i]\n        xle, zle, c, th, a, m, dz = centre[i]\n        sk = part.sketch(pl0, \"SK_\" + name)\n        part.polygon(sk, [(x, 0, z) for (x, z) in foil(xle, zle, c, th, a, m)])\n        part.extrude(part.profile(sk), 2 * yc + 10, \"EX_\" + name,\n                     op=(\"new\" if i == 0 else \"join\"), symmetric=True)\n        for side, tag in ((1, \"L\"), (-1, \"R\")):\n            profs = []\n            for j, yy in enumerate([yc, yo, 785.0, tips[i]]):\n                e = chain(specs, kf(yy), lf(yy))[i]\n                pts = [(x, side * yy, z) for (x, z) in foil(*e)]\n                profs.append(part.section(\"y\", side * yy, pts, \"SK_%s_%s%d\" % (name, tag, j)))\n            part.loft(profs, \"LF_\" + name + \"_\" + tag, op=\"join\")\n\n    # Slim raised centre section under the pylon\n    xle, zle, c, th, a, m, dz = centre[0]\n    skc = part.sketch(pl0, \"SK_centre_raise\")\n    part.polygon(skc, [(x, 0, z) for (x, z) in foil(xle, zle, c, th, a, m, 10.0)])\n    part.extrude(part.profile(skc), 200.0, \"EX_centre_raise\", op=\"join\", symmetric=True)\n\n    # Endplates: curved outline, canted 9 deg outward about the top inner edge\n    th_c = math.radians(9.0)\n    yp = S / 2 - T * math.cos(th_c)   # top outer edge lands at |Y| = S/2\n    ep = [(555, 100), (610, 50), (1110, 50), (1150, 90), (1150, 170), (1080, 200),\n          (980, 235), (880, 265), (780, 295), (690, 318), (620, 329), (595, 330),\n          (570, 326), (555, 312)]\n    bodies = part.comp.bRepBodies\n    skr = part.sketch(part.plane(\"y\", yp), \"SK_endplate_L\")\n    part.polygon(skr, [(x, yp, z) for (x, z) in ep])\n    part.extrude(part.profile(skr), T, \"EX_endplate_L\", op=\"new\")\n    epl = bodies.item(bodies.count - 1)\n    tilt(part, epl, yp, -th_c, \"MV_endplate_L_cant\")\n    skl = part.sketch(part.plane(\"y\", -yp), \"SK_endplate_R\")\n    part.polygon(skl, [(x, -yp, z) for (x, z) in ep])\n    part.extrude(part.profile(skl), -T, \"EX_endplate_R\", op=\"new\")\n    epr = bodies.item(bodies.count - 1)\n    tilt(part, epr, -yp, th_c, \"MV_endplate_R_cant\")\n\n    tools = adsk.core.ObjectCollection.create()\n    for i in range(1, bodies.count):\n        tools.add(bodies.item(i))\n    cfs = part.comp.features.combineFeatures\n    ci = cfs.createInput(bodies.item(0), tools)\n    ci.operation = adsk.fusion.FeatureOperations.JoinFeatureOperation\n    cb = cfs.add(ci)\n    cb.name = \"CB_endplates\"\n\n    # Small angled footplates along the endplate lower edges\n    plf = part.plane(\"x\", 865.0)\n    foot = [(840.0, 52.0), (886.0, 50.0), (888.0, 56.0), (842.0, 62.0)]\n    for side, tag in ((1, \"L\"), (-1, \"R\")):\n        skf = part.sketch(plf, \"SK_footplate_\" + tag)\n        part.polygon(skf, [(865.0, side * y, z) for (y, z) in foot])\n        part.extrude(part.profile(skf), 470.0, \"EX_footplate_\" + tag, op=\"join\", symmetric=True)\n\n    # Central mount / pylon block (unchanged)\n    skm = part.sketch(pl0, \"SK_mount\")\n    part.polygon(skm, [(550, 0, 100), (900, 0, 95), (900, 0, 160), (750, 0, 230), (550, 0, 230)])\n    part.extrude(part.profile(skm), \"mount_width\", \"EX_mount\", op=\"join\", symmetric=True)\n",
+  "script_sha256": "2129d5bc47006cc9adc56b793699d275d8d373bc61e44ea92bd0d72a9fda19fb",
+  "params": {
+    "span": 1800.0,
+    "main_plane_chord": 350.0,
+    "flap_chord": 180.0,
+    "element_thickness": 30.0,
+    "endplate_height": 280.0,
+    "endplate_thickness": 20.0,
+    "mount_width": 120.0,
+    "mount_length": 150.0
+  },
+  "pose": {
+    "position": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      550.0,
+      -900.0,
+      50.0
+    ],
+    [
+      1150.0,
+      900.0,
+      330.0
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 25353147.6
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 51,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          550.0,
+          -900.0,
+          50.0
+        ],
+        [
+          1150.0,
+          900.0,
+          330.0
+        ]
+      ],
+      "limit": {
+        "min": [
+          550.0,
+          -900.0,
+          50.0
+        ],
+        "max": [
+          1150.0,
+          900.0,
+          330.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FRAME",
+      "title": "Geometry in the part-local frame",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part's local bbox (built at identity) lies in the planned envelope taken back into the part frame by the inverse pose.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bbox_local": [
+          [
+            550.0,
+            -900.0,
+            50.0
+          ],
+          [
+            1150.0,
+            900.0,
+            330.0
+          ]
+        ]
+      },
+      "limit": {
+        "expected_local": [
+          [
+            550.0,
+            -900.0,
+            50.0
+          ],
+          [
+            1150.0,
+            900.0,
+            330.0
+          ]
+        ],
+        "world_envelope": [
+          [
+            550.0,
+            -900.0,
+            50.0
+          ],
+          [
+            1150.0,
+            900.0,
+            330.0
+          ]
+        ],
+        "tol_mm": 5.0,
+        "frame_mode": "part_local"
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "span": 1800.0,
+        "main_plane_chord": 350.0,
+        "flap_chord": 180.0,
+        "element_thickness": 30.0,
+        "endplate_height": 280.0,
+        "endplate_thickness": 20.0,
+        "mount_width": 120.0,
+        "mount_length": 150.0
+      },
+      "limit": {
+        "span": 1800.0,
+        "main_plane_chord": 350.0,
+        "flap_chord": 180.0,
+        "element_thickness": 30.0,
+        "endplate_height": 280.0,
+        "endplate_thickness": 20.0,
+        "mount_width": 120.0,
+        "mount_length": 150.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [
+    {
+      "article": "C2.3.1",
+      "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+      "page": 10,
+      "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+      "status": "VERIFIED",
+      "note": "measured max |Y| = 900.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+    },
+    {
+      "article": "C3.10.1",
+      "text": "C3.10.1 Front Wing Profiles \"Front Wing Profiles\" Bodywork is exempt from C3.2.4 (b) but must: a. lie in its entirety within RV-FW-PROFILES. b. comprise of up to three, non-intersecting, simply connected volumes. c. have up to three sections in any Y-Plane. d. when viewed from above, fully obscure RS-FW-PROFILES. In any Y-Plane: e. the rearmost point of every section must be visible when viewed",
+      "page": 30,
+      "sha256": "e7e56d8e71ac240e04850bd83fa449729214ce5bcfa66aa0bca6e0fc153d2c01",
+      "status": "NOT_VERIFIED",
+      "note": "no automated check for this article at concept level"
+    }
+  ],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 FWG-001 Front wing",
+    "param_prefix": "mf1_fwg001",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-12T04:45:45+00:00"
+  },
+  "run_id": "20261012-073006-rebuild-assembly-of-20261011-201",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T11:55:25+00:00",
+      "run_id": "20261010-145347-create-a-coherent-parametric-min",
+      "script_sha256": "670aca01b2b61b8742841209352697fdb0e6b5901323e1dce37963f3f539bfbe",
+      "summary": "built by fast mode",
+      "kind": "",
+      "instruction": ""
+    },
+    {
+      "version": 2,
+      "date": "2026-10-10T16:49:46+00:00",
+      "run_id": "20261010-194639-rebuild-assembly-of-20261010-151",
+      "script_sha256": "670aca01b2b61b8742841209352697fdb0e6b5901323e1dce37963f3f539bfbe",
+      "summary": "span 1800 -> 1700 mm; wings and endplates follow the span parameter, so Y extents are now ±850 (endplates at Y ±830..±850)",
+      "kind": "revise",
+      "instruction": "make the span 1700 mm"
+    },
+    {
+      "version": 3,
+      "date": "2026-10-10T16:58:27+00:00",
+      "run_id": "20261010-194639-rebuild-assembly-of-20261010-151",
+      "script_sha256": "670aca01b2b61b8742841209352697fdb0e6b5901323e1dce37963f3f539bfbe",
+      "summary": "reverted to v1",
+      "kind": "revert",
+      "instruction": "revert FWG-001 to v1"
+    },
+    {
+      "version": 4,
+      "date": "2026-10-11T11:15:36+00:00",
+      "run_id": "20261011-140553-rebuild-assembly-of-20261011-134",
+      "script_sha256": "14142a182717b5be2d1c1a841395191338eb4fb8c5ea5027731b076c24b2cb44",
+      "summary": "Cambered airfoil main plane + 2 flaps in stepped cascade (6/18/30 deg, 12-20 mm slots), outer-25% outwash lofts, curved endplates; pylon/envelope unchanged",
+      "kind": "revise",
+      "instruction": "Refine the front wing for a more realistic multi-element look without changing any contact, envelope or mounting position.\nKeep exactly as is: the mount block (pylon) on the nose and its contact with the nose tip face at X=550 (same size and position); the overall X range, Y half-width and Z range of the wing (the world envelope must not grow in any direction); at least 20 mm clearance from the front wheels (currently about 195 mm); one connected solid.\nChange only the wing surfaces: (1) give the main plane and each of the existing flaps a cambered airfoil cross-section (rounded leading edge, thin trailing edge) instead of flat plates; (2) arrange the flaps as a stepped cascade, each flap slightly higher and more steeply angled than the one before, with a visible slot gap of 10-20 mm between elements, joined only through the endplates and the pylon; (3) make each endplate a smooth curved plate with a rounded top edge and an angled foot, a bit taller than the flap stack; (4) lift the outer 25 percent of the main plane smoothly upward (a gentle outwash curve). Use few loft sections and simple curves so the geometry stays robust; no tiny features below 3 mm."
+    },
+    {
+      "version": 5,
+      "date": "2026-10-12T04:45:45+00:00",
+      "run_id": "20261012-073006-rebuild-assembly-of-20261011-201",
+      "script_sha256": "2129d5bc47006cc9adc56b793699d275d8d373bc61e44ea92bd0d72a9fda19fb",
+      "summary": "3 stepped tapered elements with slots and outwash; endplates canted 9°; footplates; raised centre. Pylon and envelope unchanged",
+      "kind": "revise",
+      "instruction": "Make the front wing look like a modern multi-element wing without changing any contact, envelope or mounting position. Use the current registered version as the base. Keep exactly as is: the mount pylon and its contact with the nose tip face at X=550 (same size and position); the overall X range, Z range and Y half-width (the world envelope must not grow in any direction, including the top of the endplates); at least 20 mm clearance from the front wheels; one connected solid.\nChange only the wing: (1) three to four clearly separate stepped elements (main plane plus two or three flaps), each cambered with a rounded leading edge and a thin trailing edge, each flap slightly higher and steeper than the one before, with visible 15-20 mm slot gaps; (2) planform: the chord of every element tapers towards the outer ends (shorter chord outboard, swept trailing edges), the centre section flat, and the outer 25 percent of the main plane lifted in a smooth outwash curve; (3) endplates: large curved plates canted outward by about 8-10 degrees, the top outer edge exactly at the current maximum |Y| (so the foot sits further inboard), with a rounded top edge and a small angled footplate along the lower edge, all elements joined to them; (4) a slim raised centre section where the pylon joins. Use few loft sections and simple curves; no features below 3 mm."
+    }
+  ],
+  "revision": {
+    "revision_id": "R01",
+    "run_id": "20261012-073006-rebuild-assembly-of-20261011-201",
+    "kind": "revise",
+    "instruction": "Make the front wing look like a modern multi-element wing without changing any contact, envelope or mounting position. Use the current registered version as the base. Keep exactly as is: the mount pylon and its contact with the nose tip face at X=550 (same size and position); the overall X range, Z range and Y half-width (the world envelope must not grow in any direction, including the top of the endplates); at least 20 mm clearance from the front wheels; one connected solid.\nChange only the wing: (1) three to four clearly separate stepped elements (main plane plus two or three flaps), each cambered with a rounded leading edge and a thin trailing edge, each flap slightly higher and steeper than the one before, with visible 15-20 mm slot gaps; (2) planform: the chord of every element tapers towards the outer ends (shorter chord outboard, swept trailing edges), the centre section flat, and the outer 25 percent of the main plane lifted in a smooth outwash curve; (3) endplates: large curved plates canted outward by about 8-10 degrees, the top outer edge exactly at the current maximum |Y| (so the foot sits further inboard), with a rounded top edge and a small angled footplate along the lower edge, all elements joined to them; (4) a slim raised centre section where the pylon joins. Use few loft sections and simple curves; no features below 3 mm.",
+    "change_summary": "3 stepped tapered elements with slots and outwash; endplates canted 9°; footplates; raised centre. Pylon and envelope unchanged",
+    "assumptions": [
+      "The flaps are placed relative to the trailing edge of the element before them, so the slot gaps (about 24 mm overlap in X, 16-20 mm in Z) stay the same along the span. Flap 2 chord = 0.72 x flap_chord (130 mm). Chords taper linearly from Y=200 to about 77% at the tips.",
+      "Each endplate is built upright and then tilted 9° about its top inner edge, so the top outer edge is at |Y|=900 and Z stays within 50-330. The rounded top comes from the curved outline; there is no extra fillet.",
+      "The element tips end at |Y|=852/864/874, inside the tilted endplates. All bodies are merged into one solid by a combine feature and the mount join.",
+      "The footplates are 6-12 mm thick, run from X=630 to 1100 and stay at |Y|<=888 and Z>=50. X>=550 gives about 190 mm clearance in X from the front wheels."
+    ],
+    "spec_delta": {},
+    "base_version": 4,
+    "neighbour_pose_changes": [],
+    "reason": null,
+    "mates": [
+      {
+        "check_id": "MATE-FWG-001-MON-001",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "touching",
+          "gap_mm": 0.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-FWG-001-WHL-FL",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 197.053,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-FWG-001-WHL-FR",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 197.053,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      }
+    ],
+    "frame_mode": "part_local",
+    "frame_validation": {
+      "status": "VERIFIED",
+      "message": ""
+    }
+  },
+  "derived": {},
+  "geometry": {
+    "volume_mm3": 25353147.555738,
+    "solids": 1,
+    "lumps": 1,
+    "bbox_local": [
+      [
+        550.0,
+        -900.0,
+        50.0
+      ],
+      [
+        1150.0,
+        900.0,
+        330.0
+      ]
+    ],
+    "bbox_world": [
+      [
+        550.0,
+        -900.0,
+        50.0
+      ],
+      [
+        1150.0,
+        900.0,
+        330.0
+      ]
+    ]
+  }
+}

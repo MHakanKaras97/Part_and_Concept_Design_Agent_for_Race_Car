@@ -1,0 +1,14 @@
+{
+  "name": "part_SUR-L",
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "duration_s": 30.0,
+  "num_turns": 2,
+  "input_tokens": 2,
+  "output_tokens": 2811,
+  "cache_read_input_tokens": 3127,
+  "cache_creation_input_tokens": 1683,
+  "reported_cost_usd": 0.0703174,
+  "system_prompt": "system_459c9cc3cbf0.md"
+}

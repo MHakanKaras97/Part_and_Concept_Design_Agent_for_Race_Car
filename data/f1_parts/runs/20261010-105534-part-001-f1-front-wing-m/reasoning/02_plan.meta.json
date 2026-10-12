@@ -1,0 +1,12 @@
+{
+  "answered_by": "claude_code",
+  "command": "claude -p --json-schema <schema> --input-format stream-json --output-format stream-json --verbose --tools \"\" --no-session-persistence --strict-mcp-config",
+  "attachments_sent": [],
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "duration_s": 53.4,
+  "num_turns": 2,
+  "reported_cost_usd": 0.273408,
+  "session_id": ""
+}

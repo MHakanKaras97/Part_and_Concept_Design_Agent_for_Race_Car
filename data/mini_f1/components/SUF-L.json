@@ -1,0 +1,461 @@
+{
+  "record_type": "part",
+  "id": "SUF-L",
+  "name": "Front suspension left",
+  "role": "front-left suspension links: monocoque to WHL-FL",
+  "version": 3,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "SUF-L",
+    "name": "Front suspension left",
+    "role": "front-left suspension links: monocoque to WHL-FL",
+    "notes": "One connected dark-grey solid, 30 mm square beams. Lower wishbone: inboard nodes (80,145,120) and (-280,210,120), outboard node (0,590,300). Upper wishbone: inboard (80,145,185),(-280,210,185), outboard (0,590,420). Pushrod from (40,590,330) to (-200,195,190). Inboard ends embedded ~15 mm (max 20) into monocoque wall. Outboard ends end in flat pads exactly on plane Y=590, all within 90 mm of (0,360) in XZ, touching the hub boss. Join everything via the outboard upright pad.",
+    "dims": {
+      "beam_size": 30.0,
+      "outboard_face_y": 590.0,
+      "lower_outboard_z": 325.0,
+      "upper_outboard_z": 395.0,
+      "lower_inboard_z": 120.0,
+      "upper_inboard_z": 185.0,
+      "pickup_front_x": 80.0,
+      "pickup_rear_x_abs": 280.0
+    },
+    "position_mm": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      -300.0,
+      150.0,
+      100.0
+    ],
+    "envelope_max": [
+      100.0,
+      590.0,
+      440.0
+    ],
+    "fia_refs_used": [
+      "C2.3.1"
+    ],
+    "reuse": false,
+    "mirror_of": null,
+    "mirror_mode": null
+  },
+  "script_body": "import math\nimport adsk.core\nimport adsk.fusion\n\n\ndef vsub(a, b):\n    return (a[0] - b[0], a[1] - b[1], a[2] - b[2])\n\n\ndef vnorm(a):\n    l = math.sqrt(a[0] ** 2 + a[1] ** 2 + a[2] ** 2)\n    return (a[0] / l, a[1] / l, a[2] / l), l\n\n\ndef beam(tb, p0, p1, s, ext0, ext1):\n    d, l = vnorm(vsub(p1, p0))\n    a = (p0[0] - d[0] * ext0, p0[1] - d[1] * ext0, p0[2] - d[2] * ext0)\n    b = (p1[0] + d[0] * ext1, p1[1] + d[1] * ext1, p1[2] + d[2] * ext1)\n    c = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2)\n    L = l + ext0 + ext1\n    w, wl = vnorm((d[1], -d[0], 0.0))\n    obb = adsk.core.OrientedBoundingBox3D.create(\n        adsk.core.Point3D.create(mm(c[0]), mm(c[1]), mm(c[2])),\n        adsk.core.Vector3D.create(d[0], d[1], d[2]),\n        adsk.core.Vector3D.create(w[0], w[1], w[2]),\n        mm(L), mm(s), mm(s))\n    return tb.createBox(obb)\n\n\ndef abox(tb, lo, hi):\n    c = ((lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2)\n    obb = adsk.core.OrientedBoundingBox3D.create(\n        adsk.core.Point3D.create(mm(c[0]), mm(c[1]), mm(c[2])),\n        adsk.core.Vector3D.create(1, 0, 0),\n        adsk.core.Vector3D.create(0, 1, 0),\n        mm(hi[0] - lo[0]), mm(hi[1] - lo[1]), mm(hi[2] - lo[2]))\n    return tb.createBox(obb)\n\n\ndef zcyl(tb, x, y, z0, z1, r):\n    return tb.createCylinderOrCone(\n        adsk.core.Point3D.create(mm(x), mm(y), mm(z0)), mm(r),\n        adsk.core.Point3D.create(mm(x), mm(y), mm(z1)), mm(r))\n\n\ndef build(part):\n    p = part.p\n    s = p[\"beam_size\"]\n    yo = p[\"outboard_face_y\"]\n    zli, zui = p[\"lower_inboard_z\"], p[\"upper_inboard_z\"]\n    xf, xr = p[\"pickup_front_x\"], -p[\"pickup_rear_x_abs\"]\n    tb = adsk.fusion.TemporaryBRepManager.get()\n    union = adsk.fusion.BooleanTypes.UnionBooleanType\n    inter = adsk.fusion.BooleanTypes.IntersectionBooleanType\n\n    # simplified upright block centred on wheel centre (X=0, Z=360)\n    xc, zc = 0.0, 360.0\n    hx, hz, t, r = 50.0, 50.0, 45.0, 8.0\n    yi = yo - t\n    z0, z1 = zc - hz, zc + hz\n    # outboard arm nodes kept on the block's inboard face (within block Z range)\n    zlo = min(max(p[\"lower_outboard_z\"], z0 + s / 2), z1 - s / 2)\n    zuo = min(max(p[\"upper_outboard_z\"], z0 + s / 2), z1 - s / 2)\n\n    body = abox(tb, (xc - hx, yi + r, z0), (xc + hx, yo - r, z1))\n    tb.booleanOperation(body, abox(tb, (xc - hx + r, yi, z0), (xc + hx - r, yo, z1)), union)\n    for cx in (xc - hx + r, xc + hx - r):\n        for cy in (yi + r, yo - r):\n            tb.booleanOperation(body, zcyl(tb, cx, cy, z0, z1, r), union)\n\n    links = [\n        ((xf, 155.0, zli), (0.0, yi, zlo)),\n        ((xr, 235.0, zli), (0.0, yi, zlo)),\n        ((xf, 155.0, zui), (0.0, yi, zuo)),\n        ((xr, 235.0, zui), (0.0, yi, zuo)),\n        ((-200.0, 220.0, 190.0), (30.0, yi, 345.0)),\n    ]\n    for inb, outb in links:\n        bm = beam(tb, inb, outb, s, 15.0, 20.0)\n        # arms end at most 10 mm inside the block's inboard face\n        tb.booleanOperation(bm, abox(tb, (-400.0, 100.0, 0.0), (200.0, yi + 10.0, 500.0)), inter)\n        tb.booleanOperation(body, bm, union)\n\n    # clip to local envelope (flat outboard face exactly at Y = outboard_face_y)\n    env = abox(tb, (-300.0, 150.0, 100.0), (100.0, yo, 440.0))\n    tb.booleanOperation(body, env, inter)\n\n    comp = part.comp\n    bf = comp.features.baseFeatures.add()\n    bf.name = \"BF_front_suspension_left\"\n    bf.startEdit()\n    b = comp.bRepBodies.add(body, bf)\n    bf.finishEdit()\n    part.body(0).name = \"SUF_L_links\"\n",
+  "script_sha256": "7c46d559738fd2df9be2173e35d3f23a2331ceaaec59e6b61ce877e7f8280aea",
+  "params": {
+    "beam_size": 30.0,
+    "outboard_face_y": 590.0,
+    "lower_outboard_z": 325.0,
+    "upper_outboard_z": 395.0,
+    "lower_inboard_z": 120.0,
+    "upper_inboard_z": 185.0,
+    "pickup_front_x": 80.0,
+    "pickup_rear_x_abs": 280.0
+  },
+  "pose": {
+    "position": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      -300.0,
+      150.0,
+      100.0
+    ],
+    [
+      96.338,
+      590.0,
+      417.5984
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 2480556.2
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 1,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          -300.0,
+          150.0,
+          100.0
+        ],
+        [
+          96.338,
+          590.0,
+          417.5984
+        ]
+      ],
+      "limit": {
+        "min": [
+          -300.0,
+          150.0,
+          100.0
+        ],
+        "max": [
+          100.0,
+          590.0,
+          440.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FRAME",
+      "title": "Geometry in the part-local frame",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part's local bbox (built at identity) lies in the planned envelope taken back into the part frame by the inverse pose.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bbox_local": [
+          [
+            -300.0,
+            150.0,
+            100.0
+          ],
+          [
+            96.338,
+            590.0,
+            417.5984
+          ]
+        ]
+      },
+      "limit": {
+        "expected_local": [
+          [
+            -300.0,
+            150.0,
+            100.0
+          ],
+          [
+            100.0,
+            590.0,
+            440.0
+          ]
+        ],
+        "world_envelope": [
+          [
+            -300.0,
+            150.0,
+            100.0
+          ],
+          [
+            100.0,
+            590.0,
+            440.0
+          ]
+        ],
+        "tol_mm": 5.0,
+        "frame_mode": "part_local"
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "beam_size": 30.0,
+        "outboard_face_y": 590.0,
+        "lower_outboard_z": 325.0,
+        "upper_outboard_z": 395.0,
+        "lower_inboard_z": 120.0,
+        "upper_inboard_z": 185.0,
+        "pickup_front_x": 80.0,
+        "pickup_rear_x_abs": 280.0
+      },
+      "limit": {
+        "beam_size": 30.0,
+        "outboard_face_y": 590.0,
+        "lower_outboard_z": 325.0,
+        "upper_outboard_z": 395.0,
+        "lower_inboard_z": 120.0,
+        "upper_inboard_z": 185.0,
+        "pickup_front_x": 80.0,
+        "pickup_rear_x_abs": 280.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [
+    {
+      "article": "C2.3.1",
+      "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+      "page": 10,
+      "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+      "status": "VERIFIED",
+      "note": "measured max |Y| = 590.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+    }
+  ],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 SUF-L Front suspension left",
+    "param_prefix": "mf1_sufl",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-11T10:47:38+00:00"
+  },
+  "run_id": "20261011-134100-rebuild-assembly-of-20261011-125",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T19:27:26+00:00",
+      "run_id": "20261010-222202-extend-the-existing-mini-f1-asse",
+      "script_sha256": "1d6d0a8545bfd57da2199d459151805a56b68a4b72e2e7e57797510cb7d5a33d",
+      "summary": "built by fast mode",
+      "kind": "",
+      "instruction": ""
+    },
+    {
+      "version": 2,
+      "date": "2026-10-10T20:08:46+00:00",
+      "run_id": "20261010-230339-rebuild-assembly-of-20261010-222",
+      "script_sha256": "6c627af7067089ca7e08da517fc1616c563720933ba4806ea3c7ee6cc64860ea",
+      "summary": "Inboard pickups moved outward: front y 145→155, rear 210→235, pushrod inboard 195→220, clip line 140→150; outboard ends at Y=590 unchanged.",
+      "kind": "revise",
+      "instruction": "Move the inboard pickups outward so the deepest corners embed about 18 mm into the monocoque wall: front pickups y 145 to 155 with the clip line 140 to 150; rear pickups 210 to 235 and the centre link 195 to 220. Keep the outboard ends in the hub plane |Y|=590, all contact faces and the wishbone triangle layout unchanged."
+    },
+    {
+      "version": 3,
+      "date": "2026-10-11T10:47:38+00:00",
+      "run_id": "20261011-134100-rebuild-assembly-of-20261011-125",
+      "script_sha256": "7c46d559738fd2df9be2173e35d3f23a2331ceaaec59e6b61ce877e7f8280aea",
+      "summary": "Replaced the outboard pad with a 100x45x100 mm upright block (R8 vertical edges) at Y 545-590; arms and pushrod now end on its inboard face with ≤10 mm overlap",
+      "kind": "revise",
+      "instruction": "Add a simplified upright block at the outboard end of the front left suspension where the arms meet the wheel. Block: 100 mm in X, 100 mm in Z, centred on the wheel centre (X=0, Z=360), from |Y|=545 to |Y|=590 (45 mm thick), with 8 mm rounded vertical edges. Its outboard face lies exactly in the hub plane |Y|=590 and stays inside the 90 mm hub radius, so the contact with the wheel stays a planned touching contact. The wishbone arms and pushrod end on the block's inboard face and overlap it by up to 10 mm. Keep everything else unchanged: the inboard pickups, clip lines, planned embedding into the monocoque wall (at most 20 mm), and the arm layout. One connected solid."
+    }
+  ],
+  "revision": {
+    "revision_id": "R01",
+    "run_id": "20261011-134100-rebuild-assembly-of-20261011-125",
+    "kind": "revise",
+    "instruction": "Add a simplified upright block at the outboard end of the front left suspension where the arms meet the wheel. Block: 100 mm in X, 100 mm in Z, centred on the wheel centre (X=0, Z=360), from |Y|=545 to |Y|=590 (45 mm thick), with 8 mm rounded vertical edges. Its outboard face lies exactly in the hub plane |Y|=590 and stays inside the 90 mm hub radius, so the contact with the wheel stays a planned touching contact. The wishbone arms and pushrod end on the block's inboard face and overlap it by up to 10 mm. Keep everything else unchanged: the inboard pickups, clip lines, planned embedding into the monocoque wall (at most 20 mm), and the arm layout. One connected solid.",
+    "change_summary": "Replaced the outboard pad with a 100x45x100 mm upright block (R8 vertical edges) at Y 545-590; arms and pushrod now end on its inboard face with ≤10 mm overlap",
+    "assumptions": [
+      "The block replaces the old 20 mm outboard pad. The block runs from Z 310 to 410, and the old outboard nodes (Z 300/420) fall outside that range. So the lower and upper arms now end at Z 325 and 395 on the inboard face (Y=545). The script clamps them to this range.",
+      "The pushrod's outboard end moved from (40,590,330) to (30,545,345) so its 30 mm cross-section fits inside the block's 100 mm width (X ±50).",
+      "The block's corners are at most 70.7 mm from the wheel centre (0,360), so the whole outboard face fits inside the 90 mm hub radius.",
+      "Arm ends are trimmed to Y ≤ 555, so they overlap the block by at most 10 mm."
+    ],
+    "spec_delta": {
+      "dims": {
+        "lower_outboard_z": 325.0,
+        "upper_outboard_z": 395.0
+      }
+    },
+    "base_version": 2,
+    "neighbour_pose_changes": [],
+    "reason": null,
+    "mates": [
+      {
+        "check_id": "MATE-SUF-L-WHL-FL",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "touching",
+          "gap_mm": 0.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-MON-001-SUF-L",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "overlap",
+          "gap_mm": 0.0,
+          "overlap_mm3": 51818.6,
+          "overlap_depth_mm": 18.201,
+          "depth_method": "ray",
+          "overlap_depth_bbox_mm": 81.372,
+          "measure_version": 2,
+          "pieces": [
+            {
+              "axis": "Y",
+              "depth_mm": 16.8728,
+              "rays": 81
+            },
+            {
+              "axis": "Y",
+              "depth_mm": 16.0295,
+              "rays": 81
+            },
+            {
+              "axis": "Y",
+              "depth_mm": 9.5828,
+              "rays": 14
+            },
+            {
+              "axis": "Y",
+              "depth_mm": 16.7288,
+              "rays": 81
+            },
+            {
+              "axis": "Y",
+              "depth_mm": 18.2015,
+              "rays": 81
+            }
+          ]
+        }
+      },
+      {
+        "check_id": "MATE-SUF-L-SUF-R",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 300.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      }
+    ],
+    "frame_mode": "part_local",
+    "frame_validation": {
+      "status": "VERIFIED",
+      "message": ""
+    }
+  },
+  "derived": {},
+  "geometry": {
+    "volume_mm3": 2480556.240584,
+    "solids": 1,
+    "lumps": 1,
+    "bbox_local": [
+      [
+        -300.0,
+        150.0,
+        100.0
+      ],
+      [
+        96.338,
+        590.0,
+        417.5984
+      ]
+    ],
+    "bbox_world": [
+      [
+        -300.0,
+        150.0,
+        100.0
+      ],
+      [
+        96.338,
+        590.0,
+        417.5984
+      ]
+    ]
+  }
+}

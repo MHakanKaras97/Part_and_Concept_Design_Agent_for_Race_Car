@@ -1,0 +1,14 @@
+{
+  "name": "part_HAL-001",
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "duration_s": 19.7,
+  "num_turns": 2,
+  "input_tokens": 2,
+  "output_tokens": 1883,
+  "cache_read_input_tokens": 3127,
+  "cache_creation_input_tokens": 1582,
+  "reported_cost_usd": 0.0509494,
+  "system_prompt": "system_459c9cc3cbf0.md"
+}

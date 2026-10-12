@@ -1,0 +1,278 @@
+{
+  "found": true,
+  "component_name": "uie2etest BRK-001 sensor_box_l_bracket",
+  "document": "Untitled",
+  "fusion_version": "2705.1.11",
+  "bodies": [
+    {
+      "name": "BRK-001_body",
+      "is_solid": true,
+      "volume_mm3": 41516.114337169136,
+      "area_mm2": 16643.625061972714,
+      "bbox_min": [
+        0.0,
+        -32.0,
+        0.0
+      ],
+      "bbox_max": [
+        70.0,
+        32.0,
+        50.0
+      ],
+      "material": "Aluminum 6061",
+      "cylinders": [
+        {
+          "center": [
+            0.0,
+            -20.0,
+            35.0
+          ],
+          "axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "radius": 2.75,
+          "concave": true
+        },
+        {
+          "center": [
+            0.0,
+            20.0,
+            35.0
+          ],
+          "axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "radius": 2.75,
+          "concave": true
+        },
+        {
+          "center": [
+            58.0,
+            -20.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "radius": 3.3,
+          "concave": true
+        },
+        {
+          "center": [
+            22.0,
+            20.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "radius": 3.3,
+          "concave": true
+        },
+        {
+          "center": [
+            22.0,
+            -20.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "radius": 3.3,
+          "concave": true
+        },
+        {
+          "center": [
+            58.0,
+            20.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "radius": 3.3,
+          "concave": true
+        },
+        {
+          "center": [
+            10.0,
+            0.0,
+            10.0
+          ],
+          "axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "radius": 10.0,
+          "concave": false
+        },
+        {
+          "center": [
+            10.0,
+            0.0,
+            10.0
+          ],
+          "axis": [
+            -0.0,
+            1.0,
+            0.0
+          ],
+          "radius": 4.0,
+          "concave": true
+        }
+      ]
+    }
+  ],
+  "features": [
+    {
+      "name": "SK_L_profile",
+      "type": "Sketch",
+      "health": "HEALTHY",
+      "message": ""
+    },
+    {
+      "name": "EX_L_profile",
+      "type": "ExtrudeFeature",
+      "health": "HEALTHY",
+      "message": ""
+    },
+    {
+      "name": "FL_bend_inner",
+      "type": "FilletFeature",
+      "health": "HEALTHY",
+      "message": ""
+    },
+    {
+      "name": "FL_bend_outer",
+      "type": "FilletFeature",
+      "health": "HEALTHY",
+      "message": ""
+    },
+    {
+      "name": "SK_base_holes",
+      "type": "Sketch",
+      "health": "HEALTHY",
+      "message": ""
+    },
+    {
+      "name": "CUT_base_holes",
+      "type": "ExtrudeFeature",
+      "health": "HEALTHY",
+      "message": ""
+    },
+    {
+      "name": "SK_upright_holes",
+      "type": "Sketch",
+      "health": "HEALTHY",
+      "message": ""
+    },
+    {
+      "name": "CUT_upright_holes",
+      "type": "ExtrudeFeature",
+      "health": "HEALTHY",
+      "message": ""
+    }
+  ],
+  "sketches": [
+    {
+      "name": "SK_L_profile",
+      "fully_constrained": true,
+      "profiles": 1
+    },
+    {
+      "name": "SK_base_holes",
+      "fully_constrained": true,
+      "profiles": 4
+    },
+    {
+      "name": "SK_upright_holes",
+      "fully_constrained": true,
+      "profiles": 2
+    }
+  ],
+  "parameters": {
+    "uie2etest_brk001_leg_base_length": {
+      "value_mm": 70.0,
+      "expression": "70.0 mm",
+      "unit": "mm"
+    },
+    "uie2etest_brk001_leg_upright_height": {
+      "value_mm": 50.0,
+      "expression": "50.0 mm",
+      "unit": "mm"
+    },
+    "uie2etest_brk001_bracket_width": {
+      "value_mm": 64.0,
+      "expression": "64.0 mm",
+      "unit": "mm"
+    },
+    "uie2etest_brk001_bracket_thickness": {
+      "value_mm": 6.0,
+      "expression": "6.0 mm",
+      "unit": "mm"
+    },
+    "uie2etest_brk001_bend_inner_radius": {
+      "value_mm": 4.0,
+      "expression": "4.0 mm",
+      "unit": "mm"
+    },
+    "uie2etest_brk001_base_hole_diameter": {
+      "value_mm": 6.6,
+      "expression": "6.6 mm",
+      "unit": "mm"
+    },
+    "uie2etest_brk001_base_hole_x0": {
+      "value_mm": 22.0,
+      "expression": "22.0 mm",
+      "unit": "mm"
+    },
+    "uie2etest_brk001_base_hole_pitch_x": {
+      "value_mm": 36.0,
+      "expression": "36.0 mm",
+      "unit": "mm"
+    },
+    "uie2etest_brk001_base_hole_pitch_y": {
+      "value_mm": 40.0,
+      "expression": "40.0 mm",
+      "unit": "mm"
+    },
+    "uie2etest_brk001_upright_hole_diameter": {
+      "value_mm": 5.5,
+      "expression": "5.5 mm",
+      "unit": "mm"
+    },
+    "uie2etest_brk001_upright_hole_z0": {
+      "value_mm": 35.0,
+      "expression": "35.0 mm",
+      "unit": "mm"
+    },
+    "uie2etest_brk001_upright_hole_pitch_z": {
+      "value_mm": 0.0,
+      "expression": "0.0 mm",
+      "unit": "mm"
+    },
+    "uie2etest_brk001_upright_hole_pitch_y": {
+      "value_mm": 40.0,
+      "expression": "40.0 mm",
+      "unit": "mm"
+    },
+    "uie2etest_brk001_bend_outer_radius": {
+      "value_mm": 10.0,
+      "expression": "uie2etest_brk001_bend_inner_radius + uie2etest_brk001_bracket_thickness",
+      "unit": "mm"
+    }
+  }
+}

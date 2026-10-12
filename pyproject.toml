@@ -1,0 +1,32 @@
+[project]
+name = "ai-f1-engineering-agent"
+version = "0.1.0"
+description = "AI Engineering Agent: requirements -> assumptions -> plan -> Fusion CAD -> validation -> report"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = ["pydantic>=2.5", "PyYAML>=6.0", "requests>=2.31", "numpy>=1.26", "Pillow>=10.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+fia = ["pymupdf>=1.24"]          # only for scripts/fetch_fia_source.py (text extraction)
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["agent*", "fia_rules*", "fusion*", "manufacturing*", "ui*", "validation*", "vehicle*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.md", "*.yaml", "*.json", "static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+  "fusion: requires a running Autodesk Fusion with the MCP server enabled (127.0.0.1:27182)",
+  "claude: calls the real Claude Code CLI (claude -p); uses the local Claude Code login",
+  "fia_source: needs the real FIA regulation installed (scripts/fetch_fia_source.py); skipped when absent",
+]
+addopts = "-m 'not fusion and not claude'"

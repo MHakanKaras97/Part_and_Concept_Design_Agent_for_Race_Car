@@ -1,0 +1,453 @@
+{
+  "record_type": "part",
+  "id": "RWG-001",
+  "name": "Rear wing",
+  "role": "rear wing: main plane, flap, endplates, central support",
+  "version": 3,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "RWG-001",
+    "name": "Rear wing",
+    "role": "rear wing: main plane, flap, endplates, central support",
+    "notes": "Main plane chord 350 at Z ~870-905, X -4400 to -4050, span 1000 between endplates; one flap chord 200 above/behind with slot gap (Z ~930-1000). Two endplates 20 thick, Z 700-1100, X -4450 to -3950 at Y ±500..±520. Two simplified support plates (20 thick in Y, centred Y=±100) from front face at X=-3700 (touching monocoque rear face, Z 400-730 region) sweeping rearward up to the main plane underside. Clear of floor diffuser (max Z 230).",
+    "dims": {
+      "span": 1040.0,
+      "main_plane_chord": 350.0,
+      "flap_chord": 200.0,
+      "element_thickness": 35.0,
+      "endplate_height": 400.0,
+      "endplate_thickness": 20.0,
+      "support_spacing": 200.0,
+      "support_thickness": 20.0
+    },
+    "position_mm": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      -4450.0,
+      -520.0,
+      400.0
+    ],
+    "envelope_max": [
+      -3700.0,
+      520.0,
+      1100.0
+    ],
+    "fia_refs_used": [
+      "C2.3.1",
+      "C3.11.1",
+      "C3.11.4"
+    ],
+    "reuse": false,
+    "mirror_of": null,
+    "mirror_mode": null
+  },
+  "script_body": "def foil_plan(xf, c, w, t, yc, z):\n    # slim aerodynamic plan section: flat front at xf, widest just behind it, thin tail\n    return [(xf, yc - w / 2.0, z), (xf, yc + w / 2.0, z), (xf - 0.35 * c, yc + w / 2.0, z),\n            (xf - c, yc + t / 2.0, z), (xf - c, yc - t / 2.0, z), (xf - 0.35 * c, yc - w / 2.0, z)]\n\n\ndef build(part):\n    span = part.p[\"span\"]\n    ept = part.p[\"endplate_thickness\"]\n    st = part.p[\"support_thickness\"]\n    sy = part.p[\"support_spacing\"] / 2.0\n\n    # Main plane: cambered airfoil, rounded leading edge at front (+X), 4 mm trailing edge\n    sk = part.sketch(part.plane(\"y\", 0), \"SK_mainplane\")\n    mp = [(-4050, 962), (-4054, 971), (-4066, 978), (-4085, 982), (-4150, 985), (-4250, 988),\n          (-4350, 993), (-4400, 1000), (-4400, 996), (-4300, 972), (-4200, 958), (-4120, 950),\n          (-4085, 950), (-4065, 952), (-4054, 956)]\n    part.polygon(sk, [(x, 0, z) for x, z in mp])\n    part.extrude(part.profile(sk), \"span\", \"EX_mainplane\", symmetric=True)\n\n    # Flap: cambered airfoil above/behind the main plane, ~20-24 mm slot gap\n    skf = part.sketch(part.plane(\"y\", 0), \"SK_flap\")\n    fp = [(-4250, 1012), (-4254, 1021), (-4266, 1028), (-4330, 1042), (-4400, 1062),\n          (-4450, 1080), (-4450, 1076), (-4400, 1052), (-4330, 1026), (-4280, 1013), (-4262, 1009)]\n    part.polygon(skf, [(x, 0, z) for x, z in fp])\n    part.extrude(part.profile(skf), \"span\", \"EX_flap\", op=\"join\", symmetric=True)\n\n    # Endplates: swept, slightly curved leading edge, rounded top corners, shallow lower-rear cut-out\n    yin = span / 2.0 - ept\n    ep = [(-3958, 700), (-3952.3, 702.3), (-3950, 708), (-3972, 880), (-4010, 1060),\n          (-4016, 1080), (-4030, 1094), (-4050, 1100), (-4430, 1100), (-4443, 1095),\n          (-4450, 1085), (-4450, 765), (-4446, 752), (-4436, 745), (-4300, 745),\n          (-4262, 736), (-4228, 716), (-4200, 702), (-4185, 700)]\n    skl = part.sketch(part.plane(\"y\", yin), \"SK_endplate_L\")\n    part.polygon(skl, [(x, yin, z) for x, z in ep])\n    part.extrude(part.profile(skl), ept, \"EX_endplate_L\", op=\"join\")\n    skr = part.sketch(part.plane(\"y\", -yin), \"SK_endplate_R\")\n    part.polygon(skr, [(x, -yin, z) for x, z in ep])\n    part.extrude(part.profile(skr), -ept, \"EX_endplate_R\", op=\"join\")\n\n    # Supports: unchanged contact block at X=-3700 (Z 400..500, 20 thick), then a slim plate\n    # leaning rearward and tapering (20 -> 12 mm) into the main plane underside\n    for nm, yc in ((\"L\", sy), (\"R\", -sy)):\n        base = part.section(\"z\", 400, foil_plan(-3700, 130, st, 6, yc, 400), \"SK_support_base_\" + nm)\n        part.extrude(base, 100, \"EX_support_base_\" + nm, op=\"join\")\n        s0 = part.section(\"z\", 500, foil_plan(-3700, 130, st, 6, yc, 500), \"SK_support_low_\" + nm)\n        s1 = part.section(\"z\", 975, foil_plan(-4120, 160, 12, 4, yc, 975), \"SK_support_top_\" + nm)\n        part.loft([s0, s1], \"LF_support_\" + nm, op=\"join\")\n",
+  "script_sha256": "6ff4150fd8778b97604b38fac65ce2d866f8de92decdda7b5ed4244ef70ca216",
+  "params": {
+    "span": 1040.0,
+    "main_plane_chord": 350.0,
+    "flap_chord": 200.0,
+    "element_thickness": 35.0,
+    "endplate_height": 400.0,
+    "endplate_thickness": 20.0,
+    "support_spacing": 200.0,
+    "support_thickness": 20.0
+  },
+  "pose": {
+    "position": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      -4450.0,
+      -520.0,
+      400.0
+    ],
+    [
+      -3700.0,
+      520.0,
+      1100.0
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 19543467.5
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 18,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          -4450.0,
+          -520.0,
+          400.0
+        ],
+        [
+          -3700.0,
+          520.0,
+          1100.0
+        ]
+      ],
+      "limit": {
+        "min": [
+          -4450.0,
+          -520.0,
+          400.0
+        ],
+        "max": [
+          -3700.0,
+          520.0,
+          1100.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FRAME",
+      "title": "Geometry in the part-local frame",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part's local bbox (built at identity) lies in the planned envelope taken back into the part frame by the inverse pose.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bbox_local": [
+          [
+            -4450.0,
+            -520.0,
+            400.0
+          ],
+          [
+            -3700.0,
+            520.0,
+            1100.0
+          ]
+        ]
+      },
+      "limit": {
+        "expected_local": [
+          [
+            -4450.0,
+            -520.0,
+            400.0
+          ],
+          [
+            -3700.0,
+            520.0,
+            1100.0
+          ]
+        ],
+        "world_envelope": [
+          [
+            -4450.0,
+            -520.0,
+            400.0
+          ],
+          [
+            -3700.0,
+            520.0,
+            1100.0
+          ]
+        ],
+        "tol_mm": 5.0,
+        "frame_mode": "part_local"
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "span": 1040.0,
+        "main_plane_chord": 350.0,
+        "flap_chord": 200.0,
+        "element_thickness": 35.0,
+        "endplate_height": 400.0,
+        "endplate_thickness": 20.0,
+        "support_spacing": 200.0,
+        "support_thickness": 20.0
+      },
+      "limit": {
+        "span": 1040.0,
+        "main_plane_chord": 350.0,
+        "flap_chord": 200.0,
+        "element_thickness": 35.0,
+        "endplate_height": 400.0,
+        "endplate_thickness": 20.0,
+        "support_spacing": 200.0,
+        "support_thickness": 20.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [
+    {
+      "article": "C2.3.1",
+      "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+      "page": 10,
+      "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+      "status": "VERIFIED",
+      "note": "measured max |Y| = 520.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+    },
+    {
+      "article": "C3.11.1",
+      "text": "C3.11.1 Rear Wing Profiles \"Rear Wing Profiles\" Bodywork must: a. lie in its entirety within RV-RW-PROFILES. b. comprise of up to three, non-intersecting, simply connected volumes. c. when assessing each volume independently, contain no more than two sections in any Z-Plane and a single section in any X and Y -Plane. d. in any Y-Plane, within 40mm of the rearmost point of the forwardmost section,",
+      "page": 37,
+      "sha256": "deeccd613ef6fd6ff63b02f8467d883a89dd02cf4e3bcd89537b0f2ae1d3f0f9",
+      "status": "NOT_VERIFIED",
+      "note": "no automated check for this article at concept level"
+    },
+    {
+      "article": "C3.11.4",
+      "text": "C3.11.4 Rear Wing Pylon \"Rear Wing Pylon\" Bodywork must: a. lie in its entirety within RV-RW-PYLON. b. in any Z-Plane: i. have a total area no greater than 5000 mm2, except for regions within 30mm of Exhaust Tailpipe. ii. have a section thickness less than 25mm when measured in the Y direction, except for regions inside of RV-TAILPIPE. Furthermore: c. no part of Rear Wing Profiles may be obscured",
+      "page": 39,
+      "sha256": "2d17e4a866a3950f1690bbc9d251f4d74cf1d1b217e247311f89dd87193e0e87",
+      "status": "NOT_VERIFIED",
+      "note": "no automated check for this article at concept level"
+    }
+  ],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 RWG-001 Rear wing",
+    "param_prefix": "mf1_rwg001",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-11T11:21:16+00:00"
+  },
+  "run_id": "20261011-140553-rebuild-assembly-of-20261011-134",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T11:56:17+00:00",
+      "run_id": "20261010-145347-create-a-coherent-parametric-min",
+      "script_sha256": "bd3f509710d58f7bc743b9005603c7e7341174953ca0ca89757ae0728581e92a",
+      "summary": "built by fast mode",
+      "kind": "",
+      "instruction": ""
+    },
+    {
+      "version": 2,
+      "date": "2026-10-10T16:55:43+00:00",
+      "run_id": "20261010-194639-rebuild-assembly-of-20261010-151",
+      "script_sha256": "ac0d7fb60898fcdedf71c467dd66799ed8fb4d6b2dc275230bfbb5cf79d07041",
+      "summary": "Main plane raised 80 mm (Z 950-985); flap raised with it; support tops extended to new underside, front face still at X=-3700 Z 400-500.",
+      "kind": "revise",
+      "instruction": "raise the rear wing main plane by 80 mm and keep the supports touching the monocoque rear face"
+    },
+    {
+      "version": 3,
+      "date": "2026-10-11T11:21:16+00:00",
+      "run_id": "20261011-140553-rebuild-assembly-of-20261011-134",
+      "script_sha256": "6ff4150fd8778b97604b38fac65ce2d866f8de92decdda7b5ed4244ef70ca216",
+      "summary": "Cambered main plane and flap profiles with a ~20 mm slot gap, tapered supports leaning rearward, swept endplates with a cut-out, rounded profile corners",
+      "kind": "revise",
+      "instruction": "Refine the rear wing for a more realistic look without changing any contact, envelope or mounting position.\nKeep exactly as is: the support plates and where they touch the monocoque rear face at X=-3700 (Z 400..500, same position and size at that face); the overall X range, Y half-width and Z range (the world envelope must not grow in any direction); at least 20 mm clearance from the engine cover and the rear wheels (currently about 199 mm and 284 mm); one connected solid.\nChange only the wing: (1) give the main plane and the upper flap cambered airfoil cross-sections (rounded leading edge, thin trailing edge) with a 15-25 mm slot gap between them; (2) shape the supports as slim aerodynamic plates that lean rearward towards the main plane, thicker at the monocoque and thinner at the wing, joined smoothly to the underside of the main plane; (3) make each endplate a curved plate with a rounded top edge, a swept leading edge and a shallow cut-out along its lower rear edge; (4) round all outer corners with radii of at least 5 mm. Use few loft sections and simple curves so the geometry stays robust; no tiny features below 3 mm."
+    }
+  ],
+  "revision": {
+    "revision_id": "R02",
+    "run_id": "20261011-140553-rebuild-assembly-of-20261011-134",
+    "kind": "revise",
+    "instruction": "Refine the rear wing for a more realistic look without changing any contact, envelope or mounting position.\nKeep exactly as is: the support plates and where they touch the monocoque rear face at X=-3700 (Z 400..500, same position and size at that face); the overall X range, Y half-width and Z range (the world envelope must not grow in any direction); at least 20 mm clearance from the engine cover and the rear wheels (currently about 199 mm and 284 mm); one connected solid.\nChange only the wing: (1) give the main plane and the upper flap cambered airfoil cross-sections (rounded leading edge, thin trailing edge) with a 15-25 mm slot gap between them; (2) shape the supports as slim aerodynamic plates that lean rearward towards the main plane, thicker at the monocoque and thinner at the wing, joined smoothly to the underside of the main plane; (3) make each endplate a curved plate with a rounded top edge, a swept leading edge and a shallow cut-out along its lower rear edge; (4) round all outer corners with radii of at least 5 mm. Use few loft sections and simple curves so the geometry stays robust; no tiny features below 3 mm.",
+    "change_summary": "Cambered main plane and flap profiles with a ~20 mm slot gap, tapered supports leaning rearward, swept endplates with a cut-out, rounded profile corners",
+    "assumptions": [
+      "The outer corners are rounded by short polyline arcs in the sketch profiles (radius about 8-20 mm) instead of Fusion fillet features, to keep the build robust; the edges through the 20 mm endplate thickness stay sharp.",
+      "Each support is a 100 mm straight block from Z 400 to 500, so the contact face at X=-3700 (Y ±90..±110, Z 400..500) is unchanged. Above it is a straight two-section loft that thins from 20 mm to 12 mm and ends inside the main plane at Z 975.",
+      "The curved endplate shape comes from its side outline (curved leading edge, rounded corners). The plate itself stays flat across its thickness."
+    ],
+    "spec_delta": {},
+    "base_version": 2,
+    "neighbour_pose_changes": [],
+    "reason": null,
+    "mates": [
+      {
+        "check_id": "MATE-MON-001-RWG-001",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "touching",
+          "gap_mm": 0.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-ENG-001-RWG-001",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 200.591,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-RWG-001-WHL-RL",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 287.189,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-RWG-001-WHL-RR",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 287.189,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      }
+    ],
+    "frame_mode": "part_local",
+    "frame_validation": {
+      "status": "VERIFIED",
+      "message": ""
+    }
+  },
+  "derived": {},
+  "geometry": {
+    "volume_mm3": 19543467.475953,
+    "solids": 1,
+    "lumps": 1,
+    "bbox_local": [
+      [
+        -4450.0,
+        -520.0,
+        400.0
+      ],
+      [
+        -3700.0,
+        520.0,
+        1100.0
+      ]
+    ],
+    "bbox_world": [
+      [
+        -4450.0,
+        -520.0,
+        400.0
+      ],
+      [
+        -3700.0,
+        520.0,
+        1100.0
+      ]
+    ]
+  }
+}

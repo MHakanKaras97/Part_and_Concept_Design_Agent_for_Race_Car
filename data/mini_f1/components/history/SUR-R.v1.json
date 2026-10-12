@@ -1,0 +1,415 @@
+{
+  "record_type": "part",
+  "id": "SUR-R",
+  "name": "Rear suspension right",
+  "role": "rear-right suspension links: car body to WHL-RR",
+  "version": 1,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "SUR-R",
+    "name": "Rear suspension right",
+    "role": "rear-right suspension links: car body to WHL-RR",
+    "notes": "One connected dark-grey solid, 30 mm square beams. Lower wishbone: inboard (130,432,180),(-130,432,180), outboard (0,510,310). Upper: inboard (130,432,470),(-130,432,470), outboard (0,510,430). Pushrod (50,510,340) to (-100,435,460). Inboard ends embedded ~15 mm (max 20) into monocoque side wall (|Y|~447 there). Outboard flat pads exactly on plane Y=510, within 90 mm of (0,370) in XZ, joined by a small upright pad touching the hub boss.",
+    "dims": {
+      "beam_size": 30.0,
+      "outboard_face_y": 510.0,
+      "inboard_y": 432.0,
+      "lower_outboard_z": 310.0,
+      "upper_outboard_z": 430.0,
+      "lower_inboard_z": 180.0,
+      "upper_inboard_z": 470.0,
+      "pickup_half_spread_x": 130.0
+    },
+    "position_mm": [
+      -3400.0,
+      0.0,
+      0.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      -3550.0,
+      -510.0,
+      150.0
+    ],
+    "envelope_max": [
+      -3250.0,
+      -425.0,
+      500.0
+    ],
+    "fia_refs_used": [
+      "C2.3.1"
+    ],
+    "reuse": false,
+    "mirror_of": "SUR-L",
+    "mirror_mode": "mirror"
+  },
+  "script_body": "import math\n\ndef vsub(a, b):\n    return (a[0] - b[0], a[1] - b[1], a[2] - b[2])\n\ndef beam_box(tbm, p0, p1, size, ext):\n    d = vsub(p1, p0)\n    L = math.sqrt(d[0] ** 2 + d[1] ** 2 + d[2] ** 2)\n    c = ((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2, (p0[2] + p1[2]) / 2)\n    ld = adsk.core.Vector3D.create(d[0], d[1], d[2])\n    ld.normalize()\n    wd = ld.crossProduct(adsk.core.Vector3D.create(0, 1, 0))\n    wd.normalize()\n    obb = adsk.core.OrientedBoundingBox3D.create(pt(c[0], c[1], c[2]), ld, wd, mm(L + 2 * ext), mm(size), mm(size))\n    return tbm.createBox(obb)\n\ndef aa_box(tbm, x0, x1, y0, y1, z0, z1):\n    obb = adsk.core.OrientedBoundingBox3D.create(\n        pt((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2),\n        adsk.core.Vector3D.create(1, 0, 0), adsk.core.Vector3D.create(0, 1, 0),\n        mm(x1 - x0), mm(y1 - y0), mm(z1 - z0))\n    return tbm.createBox(obb)\n\ndef build(part):\n    tbm = adsk.fusion.TemporaryBRepManager.get()\n    s = part.p[\"beam_size\"]\n    yo = part.p[\"outboard_face_y\"]\n    yi = part.p[\"inboard_y\"]\n    hx = part.p[\"pickup_half_spread_x\"]\n    zlo = part.p[\"lower_outboard_z\"]\n    zuo = part.p[\"upper_outboard_z\"]\n    zli = part.p[\"lower_inboard_z\"]\n    zui = part.p[\"upper_inboard_z\"]\n    beams = [\n        ((hx, yi, zli), (0, yo, zlo)),\n        ((-hx, yi, zli), (0, yo, zlo)),\n        ((hx, yi, zui), (0, yo, zuo)),\n        ((-hx, yi, zui), (0, yo, zuo)),\n        ((50, yo, 340), (-100, 435, 460)),\n    ]\n    union = adsk.fusion.BooleanTypes.UnionBooleanType\n    body = None\n    for p0, p1 in beams:\n        b = beam_box(tbm, p0, p1, s, 12)\n        if body is None:\n            body = b\n        else:\n            tbm.booleanOperation(body, b, union)\n    # outboard flat pads and upright link pad on Y = yo\n    pads = [\n        aa_box(tbm, -30, 30, yo - 15, yo, zlo - 25, zlo + 25),\n        aa_box(tbm, -30, 30, yo - 15, yo, zuo - 25, zuo + 25),\n        aa_box(tbm, -30, 40, yo - 15, yo, zlo - 10, zuo + 10),\n    ]\n    for pd in pads:\n        tbm.booleanOperation(body, pd, union)\n    clip = aa_box(tbm, -150, 150, 425, yo, 150, 500)\n    tbm.booleanOperation(body, clip, adsk.fusion.BooleanTypes.IntersectionBooleanType)\n    bf = part.comp.features.baseFeatures.add()\n    bf.name = \"BF_rear_left_suspension\"\n    bf.startEdit()\n    added = part.comp.bRepBodies.add(body, bf)\n    bf.finishEdit()\n    added.name = \"SUR_L_links\"\n",
+  "script_sha256": "ce0522069fc5fbf0e4a211e8bf49f83b7766f71c8c54cb9483ffdf8d824e02e0",
+  "params": {
+    "beam_size": 30.0,
+    "outboard_face_y": 510.0,
+    "inboard_y": 432.0,
+    "lower_outboard_z": 310.0,
+    "upper_outboard_z": 430.0,
+    "lower_inboard_z": 180.0,
+    "upper_inboard_z": 470.0,
+    "pickup_half_spread_x": 130.0
+  },
+  "pose": {
+    "position": [
+      -3400.0,
+      0.0,
+      0.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      -3550.0,
+      -510.0,
+      157.4395
+    ],
+    [
+      -3250.0,
+      -425.0,
+      489.5925
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 889310.1
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 3,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          -3550.0,
+          -510.0,
+          157.4395
+        ],
+        [
+          -3250.0,
+          -425.0,
+          489.5925
+        ]
+      ],
+      "limit": {
+        "min": [
+          -3550.0,
+          -510.0,
+          150.0
+        ],
+        "max": [
+          -3250.0,
+          -425.0,
+          500.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FRAME",
+      "title": "Geometry in the part-local frame",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part's local bbox (built at identity) lies in the planned envelope taken back into the part frame by the inverse pose.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bbox_local": [
+          [
+            -150.0,
+            -510.0,
+            157.4395
+          ],
+          [
+            150.0,
+            -425.0,
+            489.5925
+          ]
+        ]
+      },
+      "limit": {
+        "expected_local": [
+          [
+            -150.0,
+            -510.0,
+            150.0
+          ],
+          [
+            150.0,
+            -425.0,
+            500.0
+          ]
+        ],
+        "world_envelope": [
+          [
+            -3550.0,
+            -510.0,
+            150.0
+          ],
+          [
+            -3250.0,
+            -425.0,
+            500.0
+          ]
+        ],
+        "tol_mm": 5.0,
+        "frame_mode": "part_local"
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          -3400.0,
+          0.0,
+          0.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "beam_size": 30.0,
+        "outboard_face_y": 510.0,
+        "inboard_y": 432.0,
+        "lower_outboard_z": 310.0,
+        "upper_outboard_z": 430.0,
+        "lower_inboard_z": 180.0,
+        "upper_inboard_z": 470.0,
+        "pickup_half_spread_x": 130.0
+      },
+      "limit": {
+        "beam_size": 30.0,
+        "outboard_face_y": 510.0,
+        "inboard_y": 432.0,
+        "lower_outboard_z": 310.0,
+        "upper_outboard_z": 430.0,
+        "lower_inboard_z": 180.0,
+        "upper_inboard_z": 470.0,
+        "pickup_half_spread_x": 130.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-DERIVED",
+      "title": "Derived from SUR-L (mirror)",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "Same volume and body structure as the source; local bbox mirrored (mirror) or equal (yaw180); world bbox = the source's mirrored about Y = 0.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "volume_mm3": 889310.058306,
+        "volume_rel_dev": 0.0,
+        "solids": 1,
+        "lumps": 1,
+        "bbox_local_dev_mm": 0.0,
+        "bbox_world_dev_mm": 0.0
+      },
+      "limit": {
+        "volume_rel": 1e-06,
+        "bbox_local_tol_mm": 0.01,
+        "bbox_world_tol_mm": 0.5,
+        "source": {
+          "volume_mm3": 889310.058306,
+          "solids": 1,
+          "lumps": 1,
+          "bbox_local": [
+            [
+              -150.0,
+              425.0,
+              157.4395
+            ],
+            [
+              150.0,
+              510.0,
+              489.5925
+            ]
+          ],
+          "bbox_world": [
+            [
+              -3550.0,
+              425.0,
+              157.4395
+            ],
+            [
+              -3250.0,
+              510.0,
+              489.5925
+            ]
+          ]
+        }
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [
+    {
+      "article": "C2.3.1",
+      "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+      "page": 10,
+      "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+      "status": "VERIFIED",
+      "note": "measured max |Y| = 510.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+    }
+  ],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 SUR-R Rear suspension right",
+    "param_prefix": "mf1_surr",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-10T19:29:16+00:00"
+  },
+  "run_id": "20261010-222202-extend-the-existing-mini-f1-asse",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T19:29:16+00:00",
+      "run_id": "20261010-222202-extend-the-existing-mini-f1-asse",
+      "script_sha256": "ce0522069fc5fbf0e4a211e8bf49f83b7766f71c8c54cb9483ffdf8d824e02e0",
+      "summary": "derived from SUR-L v1 (mirror)",
+      "kind": "",
+      "instruction": ""
+    }
+  ],
+  "revision": {},
+  "derived": {
+    "source_id": "SUR-L",
+    "source_version": 1,
+    "mode": "mirror",
+    "note": "derived from SUR-L v1 (mirror)"
+  },
+  "geometry": {
+    "volume_mm3": 889310.058306,
+    "solids": 1,
+    "lumps": 1,
+    "bbox_local": [
+      [
+        -150.0,
+        -510.0,
+        157.4395
+      ],
+      [
+        150.0,
+        -425.0,
+        489.5925
+      ]
+    ],
+    "bbox_world": [
+      [
+        -3550.0,
+        -510.0,
+        157.4395
+      ],
+      [
+        -3250.0,
+        -425.0,
+        489.5925
+      ]
+    ]
+  }
+}

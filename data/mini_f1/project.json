@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "id": "mini_f1",
+  "name": "Mini F1",
+  "kind": "vehicle",
+  "description": "Fast-mode concept assemblies (prompt -> Fusion). Concept level: no FIA compliance, structural adequacy or race readiness is claimed.",
+  "coordinate_system": "VCS: +X front, +Y left, +Z up, mm; origin front-axle centreline / plane of symmetry / reference plane (docs/coordinate_system.md)",
+  "regulation": null,
+  "fusion_namespace": "mf1",
+  "policy": {
+    "critical_missing_info_must_be_asked": true,
+    "allow_suggested_values_in_questions": false,
+    "max_revision_loops": 3
+  },
+  "created": "2026-10-10T11:53:47+00:00"
+}

@@ -1,0 +1,146 @@
+{
+  "component_type": "l_bracket",
+  "summary": "Machined aluminium L-bracket that holds a 2 kg sensor box on a flat plate; four M6 bolts are stated. How the sensor box itself is fastened to the bracket, and where its mass acts, is not stated and defines the second leg and the load, so it must be asked.",
+  "requirements": [
+    {
+      "id": "R01",
+      "key": "function",
+      "text": "AI interpretation: an L-shaped bracket that holds a sensor box on a flat plate; the base leg sits on the plate and the other leg carries the sensor box.",
+      "source": "USER_REQUEST",
+      "quote": "L-bracket to mount a 2 kg sensor box to a flat plate"
+    },
+    {
+      "id": "R02",
+      "key": "load",
+      "text": "AI interpretation: the supported payload is the sensor box with a mass of 2 kg (static mass only; no load direction, dynamic factor or centre of mass stated).",
+      "value": 2,
+      "unit": "kg",
+      "source": "USER_REQUEST",
+      "quote": "2 kg sensor box"
+    },
+    {
+      "id": "R03",
+      "key": "base_fastener",
+      "text": "AI interpretation: the bracket is fastened to the flat plate with four M6 bolts.",
+      "value": "4 x M6",
+      "source": "USER_REQUEST",
+      "quote": "to a flat plate with four M6 bolts"
+    },
+    {
+      "id": "R04",
+      "key": "manufacturing_process",
+      "text": "AI interpretation: the bracket is a machined part.",
+      "value": "machined",
+      "source": "USER_REQUEST",
+      "quote": "machined"
+    },
+    {
+      "id": "R05",
+      "key": "material",
+      "text": "AI interpretation: the bracket material is aluminium; alloy and temper are not specified.",
+      "value": "aluminium",
+      "source": "USER_REQUEST",
+      "quote": "machined aluminium"
+    }
+  ],
+  "missing_information": [
+    {
+      "id": "M01",
+      "key": "upright_fastener",
+      "topic": "Sensor-box attachment and centre of mass",
+      "why_it_matters": "The way the sensor box is fastened defines the holes, size and interface of the bracket leg that carries it; the position of its centre of mass defines the bending load. Neither can be guessed without making the bracket potentially unusable.",
+      "criticality": "CRITICAL",
+      "resolution": "ASK",
+      "question": "How is the sensor box attached to the bracket leg that carries it (fastener type, size, number and hole positions), and where is the sensor box's centre of mass relative to its mounting face?"
+    },
+    {
+      "id": "M02",
+      "key": "material_alloy",
+      "topic": "Aluminium alloy and temper",
+      "why_it_matters": "Yield strength used in the hand calculation.",
+      "criticality": "IMPORTANT",
+      "resolution": "ASSUME",
+      "assumption_id": "A02"
+    },
+    {
+      "id": "M03",
+      "key": "load_environment",
+      "topic": "Dynamic load / environment",
+      "why_it_matters": "A static mass does not define the design load under vibration or shock.",
+      "criticality": "IMPORTANT",
+      "resolution": "ASSUME",
+      "assumption_id": "A03"
+    },
+    {
+      "id": "M04",
+      "key": "envelope",
+      "topic": "Available space",
+      "why_it_matters": "Limits leg lengths and width.",
+      "criticality": "IMPORTANT",
+      "resolution": "ASSUME",
+      "assumption_id": "A04"
+    },
+    {
+      "id": "M05",
+      "key": "plate_hole_pattern",
+      "topic": "Hole pattern in the flat plate",
+      "why_it_matters": "If the plate is already drilled, the bracket's M6 holes must match it.",
+      "criticality": "IMPORTANT",
+      "resolution": "ASSUME",
+      "assumption_id": "A05"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "A01",
+      "text": "Concept-level design: nominal geometry, no tolerancing, no FEA or fatigue analysis; sizing by one hand calculation only.",
+      "rationale": "MVP scope.",
+      "impact": "Results are not a structural sign-off.",
+      "affects": [
+        "all"
+      ]
+    },
+    {
+      "id": "A02",
+      "text": "ENGINEERING ASSUMPTION (not stated by the user): aluminium 6061-T6 (material id AL6061-T6).",
+      "rationale": "Common general-purpose machining alloy; the request says only 'aluminium'.",
+      "impact": "Handbook yield strength (NOT_VERIFIED) used in the bending check.",
+      "affects": [
+        "material",
+        "load_case"
+      ]
+    },
+    {
+      "id": "A03",
+      "text": "ENGINEERING ASSUMPTION (not stated by the user): design load = 5 x the static weight of the 2 kg box, required safety factor on yield 2.0.",
+      "rationale": "No environment given; covers handling, shock and vibration at concept level.",
+      "impact": "Drives plate thickness; must be confirmed for the real environment.",
+      "affects": [
+        "load_case",
+        "bracket_thickness"
+      ]
+    },
+    {
+      "id": "A04",
+      "text": "ENGINEERING ASSUMPTION (not stated by the user): no hard envelope limit; keep the bracket compact.",
+      "rationale": "Envelope not stated.",
+      "impact": "Leg lengths and width follow from hole layout and edge-distance rules.",
+      "affects": [
+        "leg_base_length",
+        "leg_upright_height",
+        "bracket_width"
+      ]
+    },
+    {
+      "id": "A05",
+      "text": "ENGINEERING ASSUMPTION (not stated by the user): the flat plate will be drilled to match the bracket's M6 hole pattern.",
+      "rationale": "No plate pattern given.",
+      "impact": "The bracket defines the plate drilling pattern.",
+      "affects": [
+        "base_hole_x0",
+        "base_hole_pitch_x",
+        "base_hole_pitch_y"
+      ]
+    }
+  ]
+}

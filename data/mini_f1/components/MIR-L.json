@@ -1,0 +1,436 @@
+{
+  "record_type": "part",
+  "id": "MIR-L",
+  "name": "Mirror left",
+  "role": "left rear-view mirror housing on its stalk beside the cockpit",
+  "version": 3,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "MIR-L",
+    "name": "Mirror left",
+    "role": "left rear-view mirror housing on its stalk beside the cockpit",
+    "notes": "Black single solid. Stalk 30x30 along +Y from local Y 385 (embedded ~10, max 15, into monocoque side wall at |Y|~395) to Y 480, centred X 0, Z 0. Housing box 40 (X) x 160 (Y) x 80 (Z) centred at (0,560,0), small edge fillets. Keep >=20 mm from halo and sidepod.",
+    "dims": {
+      "housing_length": 40.0,
+      "housing_width": 160.0,
+      "housing_height": 80.0,
+      "housing_center_y": 560.0,
+      "stalk_size": 30.0,
+      "stalk_start_y": 392.0
+    },
+    "position_mm": [
+      -1700.0,
+      0.0,
+      540.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      -1720.0,
+      392.0,
+      500.0
+    ],
+    "envelope_max": [
+      -1680.0,
+      640.0,
+      580.0
+    ],
+    "fia_refs_used": [
+      "C2.3.1"
+    ],
+    "reuse": false,
+    "mirror_of": null,
+    "mirror_mode": null
+  },
+  "script_body": "import math\nimport adsk.core\nimport adsk.fusion\n\n\ndef teardrop(hl, hh, y, k):\n    # XZ teardrop: rounded front (+X), slightly tapered flat rear (-X, glass side)\n    a = hl / 2 * k\n    b = hh / 2 * k\n    pts = []\n    n = 10\n    for i in range(n + 1):\n        t = math.radians(-90.0 + 180.0 * i / n)\n        pts.append((round(a * math.cos(t), 4), y, round(b * math.sin(t), 4)))\n    pts.append((-a, y, 0.7 * b))\n    pts.append((-a, y, -0.7 * b))\n    return pts\n\n\ndef build(part):\n    hl = part.p[\"housing_length\"]\n    hw = part.p[\"housing_width\"]\n    hh = part.p[\"housing_height\"]\n    cy = part.p[\"housing_center_y\"]\n    s = part.p[\"stalk_size\"]\n    y0 = part.p[\"stalk_start_y\"]\n\n    # Housing: lofted rounded teardrop, slightly tapered towards both ends\n    y_in = cy - hw / 2\n    y_out = cy + hw / 2\n    p_in = part.section(\"y\", y_in, teardrop(hl, hh, y_in, 0.85), \"SK_housing_in\")\n    p_mid = part.section(\"y\", cy, teardrop(hl, hh, cy, 1.0), \"SK_housing_mid\")\n    p_out = part.section(\"y\", y_out, teardrop(hl, hh, y_out, 0.78), \"SK_housing_out\")\n    part.loft([p_in, p_mid, p_out], \"LF_housing\")\n\n    # Slim flattened stalk with rounded (elliptic) section, 10 mm into the housing\n    y1 = y_in + 10.0\n    ym = (y0 + y1) / 2\n    a = s / 2\n    b = s * 0.25\n    spts = []\n    m = 16\n    for i in range(m):\n        t = 2 * math.pi * i / m\n        spts.append((round(a * math.cos(t), 4), ym, round(b * math.sin(t), 4)))\n    sks = part.sketch(part.plane(\"y\", ym, \"PL_stalk_mid\"), \"SK_stalk\")\n    part.polygon(sks, spts)\n    part.extrude(part.profile(sks), y1 - y0, \"EX_stalk\", op=\"join\", symmetric=True)\n",
+  "script_sha256": "facc5dbe5011d9be9dedd694ae41af61de8406d16b3d974a894593ee93e3136d",
+  "params": {
+    "housing_length": 40.0,
+    "housing_width": 160.0,
+    "housing_height": 80.0,
+    "housing_center_y": 560.0,
+    "stalk_size": 30.0,
+    "stalk_start_y": 392.0
+  },
+  "pose": {
+    "position": [
+      -1700.0,
+      0.0,
+      540.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      -1720.0324,
+      392.0,
+      499.9352
+    ],
+    [
+      -1679.9676,
+      640.0,
+      580.0648
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 397461.7
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 6,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          -1720.0324,
+          392.0,
+          499.9352
+        ],
+        [
+          -1679.9676,
+          640.0,
+          580.0648
+        ]
+      ],
+      "limit": {
+        "min": [
+          -1720.0,
+          392.0,
+          500.0
+        ],
+        "max": [
+          -1680.0,
+          640.0,
+          580.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FRAME",
+      "title": "Geometry in the part-local frame",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part's local bbox (built at identity) lies in the planned envelope taken back into the part frame by the inverse pose.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bbox_local": [
+          [
+            -20.0324,
+            392.0,
+            -40.0648
+          ],
+          [
+            20.0324,
+            640.0,
+            40.0648
+          ]
+        ]
+      },
+      "limit": {
+        "expected_local": [
+          [
+            -20.0,
+            392.0,
+            -40.0
+          ],
+          [
+            20.0,
+            640.0,
+            40.0
+          ]
+        ],
+        "world_envelope": [
+          [
+            -1720.0,
+            392.0,
+            500.0
+          ],
+          [
+            -1680.0,
+            640.0,
+            580.0
+          ]
+        ],
+        "tol_mm": 5.0,
+        "frame_mode": "part_local"
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          -1700.0,
+          0.0,
+          540.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "housing_length": 40.0,
+        "housing_width": 160.0,
+        "housing_height": 80.0,
+        "housing_center_y": 560.0,
+        "stalk_size": 30.0,
+        "stalk_start_y": 392.0
+      },
+      "limit": {
+        "housing_length": 40.0,
+        "housing_width": 160.0,
+        "housing_height": 80.0,
+        "housing_center_y": 560.0,
+        "stalk_size": 30.0,
+        "stalk_start_y": 392.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [
+    {
+      "article": "C2.3.1",
+      "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+      "page": 10,
+      "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+      "status": "VERIFIED",
+      "note": "measured max |Y| = 640.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+    }
+  ],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 MIR-L Mirror left",
+    "param_prefix": "mf1_mirl",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-12T05:22:21+00:00"
+  },
+  "run_id": "20261012-080916-rebuild-assembly-of-20261012-073",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T19:29:10+00:00",
+      "run_id": "20261010-222202-extend-the-existing-mini-f1-asse",
+      "script_sha256": "43813b4cfd006d9d9dc32ab4811e5fb80dc557a345dca9988d1add5630320017",
+      "summary": "built by fast mode",
+      "kind": "",
+      "instruction": ""
+    },
+    {
+      "version": 2,
+      "date": "2026-10-10T20:06:19+00:00",
+      "run_id": "20261010-230339-rebuild-assembly-of-20261010-222",
+      "script_sha256": "43813b4cfd006d9d9dc32ab4811e5fb80dc557a345dca9988d1add5630320017",
+      "summary": "stalk_start_y 385 -> 392 (stalk now Y 392..490, about 13 mm into the side wall at |Y| about 405); housing and script logic unchanged",
+      "kind": "revise",
+      "instruction": "Change only the mirror stalk start: set stalk_start_y from 385 to 392 so the stalk embeds about 14 mm into the monocoque side wall (the wall is at |Y| about 405 at this station) and still joins the housing. Keep the housing position and size and everything else unchanged."
+    },
+    {
+      "version": 3,
+      "date": "2026-10-12T05:22:21+00:00",
+      "run_id": "20261012-080916-rebuild-assembly-of-20261012-073",
+      "script_sha256": "facc5dbe5011d9be9dedd694ae41af61de8406d16b3d974a894593ee93e3136d",
+      "summary": "Box housing now a lofted teardrop tapering slightly at both ends; square stalk now a slim 30x15 ellipse. Pose and extents unchanged.",
+      "kind": "revise",
+      "instruction": "Make the left mirror look aerodynamic. Use the current registered version as the base. Keep exactly as is: the stalk embedding into the monocoque wall (about 14 mm, limit 15), the housing centre position, and at least 20 mm clearance from the halo and the sidepod.\nChange only the shape: a rounded, slightly tapered teardrop housing instead of a box, and a slim flattened stalk with a rounded section. One connected solid."
+    }
+  ],
+  "revision": {
+    "revision_id": "R02",
+    "run_id": "20261012-080916-rebuild-assembly-of-20261012-073",
+    "kind": "revise",
+    "instruction": "Make the left mirror look aerodynamic. Use the current registered version as the base. Keep exactly as is: the stalk embedding into the monocoque wall (about 14 mm, limit 15), the housing centre position, and at least 20 mm clearance from the halo and the sidepod.\nChange only the shape: a rounded, slightly tapered teardrop housing instead of a box, and a slim flattened stalk with a rounded section. One connected solid.",
+    "change_summary": "Box housing now a lofted teardrop tapering slightly at both ends; square stalk now a slim 30x15 ellipse. Pose and extents unchanged.",
+    "assumptions": [
+      "Teardrop section in XZ: rounded front (+X) and a flat rear for the glass (-X). The rear edges taper to 70% of the height. Loft scale is 0.85 at the inner end, 1.0 at the centre and 0.78 at the outer end.",
+      "Stalk section is an ellipse, 30 mm in X by 15 mm in Z (0.5 x stalk_size), made as a 16-point polygon. The housing and stalk are faceted polygons and the old 4 mm edge fillets are gone."
+    ],
+    "spec_delta": {},
+    "base_version": 2,
+    "neighbour_pose_changes": [],
+    "reason": null,
+    "mates": [
+      {
+        "check_id": "MATE-MIR-L-MON-001",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "overlap",
+          "gap_mm": 0.0,
+          "overlap_mm3": 4503.9,
+          "overlap_depth_mm": 13.94,
+          "depth_method": "ray",
+          "overlap_depth_bbox_mm": 13.957,
+          "measure_version": 2,
+          "pieces": [
+            {
+              "axis": "Y",
+              "depth_mm": 13.9401,
+              "rays": 81
+            }
+          ]
+        }
+      },
+      {
+        "check_id": "MATE-HAL-001-MIR-L",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 384.868,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-MIR-L-SDP-L",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 99.212,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-MIR-L-MIR-R",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 784.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      }
+    ],
+    "frame_mode": "part_local",
+    "frame_validation": {
+      "status": "VERIFIED",
+      "message": ""
+    }
+  },
+  "derived": {},
+  "geometry": {
+    "volume_mm3": 397461.708155,
+    "solids": 1,
+    "lumps": 1,
+    "bbox_local": [
+      [
+        -20.0324,
+        392.0,
+        -40.0648
+      ],
+      [
+        20.0324,
+        640.0,
+        40.0648
+      ]
+    ],
+    "bbox_world": [
+      [
+        -1720.0324,
+        392.0,
+        499.9352
+      ],
+      [
+        -1679.9676,
+        640.0,
+        580.0648
+      ]
+    ]
+  }
+}

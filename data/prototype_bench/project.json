@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "id": "prototype_bench",
+  "name": "Prototype bench",
+  "kind": "bench",
+  "description": "Stand-alone components used to develop and prove the agent workflow (Prototype 1+).",
+  "coordinate_system": "VCS: +X front, +Y left, +Z up, mm (see docs/architecture.md)",
+  "regulation": null,
+  "policy": {
+    "critical_missing_info_must_be_asked": true,
+    "max_revision_loops": 3
+  },
+  "created": "2026-10-05T17:30:18+00:00"
+}

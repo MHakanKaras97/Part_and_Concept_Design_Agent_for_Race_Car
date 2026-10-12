@@ -1,0 +1,430 @@
+{
+  "record_type": "part",
+  "id": "ENG-001",
+  "name": "Engine cover",
+  "role": "power unit / engine cover behind the cockpit, above the floor",
+  "version": 2,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "ENG-001",
+    "name": "Engine cover",
+    "role": "power unit / engine cover behind the cockpit, above the floor",
+    "notes": "Red single solid, base plane local Z 0 (embedded into monocoque top, max 60). Airbox: local X -250..0, |Y|<=140, up to Z 320 with rounded top and a front intake opening (~160 wide x 120 high, 150 deep pocket) in the X=0 face. Shark-fin spine fused behind: local X -1150..-250, |Y|<=40, top Z from ~300 at X -250 tapering to 120 at X -1150. Stays >=100 mm ahead of the rear wing.",
+    "dims": {
+      "airbox_length": 250.0,
+      "airbox_half_width": 140.0,
+      "airbox_height": 320.0,
+      "spine_length": 900.0,
+      "spine_half_width": 40.0,
+      "spine_end_height": 120.0
+    },
+    "position_mm": [
+      -2450.0,
+      0.0,
+      680.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      -3600.0,
+      -140.0,
+      680.0
+    ],
+    "envelope_max": [
+      -2450.0,
+      140.0,
+      1000.0
+    ],
+    "fia_refs_used": [
+      "C2.3.1"
+    ],
+    "reuse": false,
+    "mirror_of": null,
+    "mirror_mode": null
+  },
+  "script_body": "import math\n\nN_ARC = 12\n\n\ndef cover_section(part, x, w, h, rz, name):\n    # flat base at z=0, vertical sides, elliptical crown (rounded top edges)\n    pts = [(x, -w, 0.0), (x, w, 0.0)]\n    for i in range(N_ARC + 1):\n        a = math.pi * i / N_ARC\n        pts.append((x, w * math.cos(a), h - rz + rz * math.sin(a)))\n    return part.section(\"x\", x, pts, name)\n\n\ndef oval_section(part, x, ry, rz, zc, name, n=24):\n    pts = []\n    for i in range(n):\n        a = 2.0 * math.pi * i / n\n        pts.append((x, ry * math.cos(a), zc + rz * math.sin(a)))\n    return part.section(\"x\", x, pts, name)\n\n\ndef build(part):\n    AL = part.p[\"airbox_length\"]\n    AW = part.p[\"airbox_half_width\"]\n    AH = part.p[\"airbox_height\"]\n    SL = part.p[\"spine_length\"]\n    SW = part.p[\"spine_half_width\"]\n    SE = part.p[\"spine_end_height\"]\n    x_end = -AL - SL\n\n    # One streamlined fairing: rounded front lip -> airbox -> smooth taper -> slim fin -> rounded tail point\n    stations = [\n        (0.0, AW - 15.0, AH - 15.0, 105.0),\n        (-20.0, AW - 3.0, AH - 3.0, 117.0),\n        (-45.0, AW, AH, 120.0),\n        (-120.0, AW, AH, 120.0),\n        (-AL + 50.0, AW, AH, 120.0),\n        (-AL - 50.0, 100.0, 300.0, 100.0),\n        (-AL - 200.0, 60.0, 272.0, 60.0),\n        (-AL - 450.0, SW, 225.0, SW),\n        (-AL - 700.0, 30.0, 170.0, 30.0),\n        (x_end + 50.0, 18.0, 135.0, 18.0),\n        (x_end, 10.0, SE, 10.0),\n    ]\n    profs = []\n    for k, (x, w, h, rz) in enumerate(stations):\n        profs.append(cover_section(part, x, w, h, rz, \"SK_fairing_%02d\" % k))\n    part.loft(profs, \"LF_fairing\")\n\n    # Front intake: oval opening 160 x 120 with ~20 mm oval lips, 150 deep pocket\n    zc = 220.0\n    cut_profs = [\n        oval_section(part, 0.0, 96.0, 72.0, zc, \"SK_intake_lip0\"),\n        oval_section(part, -8.0, 86.0, 64.0, zc, \"SK_intake_lip1\"),\n        oval_section(part, -20.0, 80.0, 60.0, zc, \"SK_intake_throat\"),\n        oval_section(part, -150.0, 80.0, 60.0, zc, \"SK_intake_back\"),\n    ]\n    part.loft(cut_profs, \"CUT_intake\", op=\"cut\")\n",
+  "script_sha256": "be9b85e1cae98fb7d497f34264d6102454be72ac2c212faa269c9616cad693ca",
+  "params": {
+    "airbox_length": 250.0,
+    "airbox_half_width": 140.0,
+    "airbox_height": 320.0,
+    "spine_length": 900.0,
+    "spine_half_width": 40.0,
+    "spine_end_height": 120.0
+  },
+  "pose": {
+    "position": [
+      -2450.0,
+      0.0,
+      680.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      -3600.0,
+      -141.9502,
+      680.0
+    ],
+    [
+      -2450.0,
+      141.9502,
+      1000.9751
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 38043896.9
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 16,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          -3600.0,
+          -141.9502,
+          680.0
+        ],
+        [
+          -2450.0,
+          141.9502,
+          1000.9751
+        ]
+      ],
+      "limit": {
+        "min": [
+          -3600.0,
+          -140.0,
+          680.0
+        ],
+        "max": [
+          -2450.0,
+          140.0,
+          1000.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FRAME",
+      "title": "Geometry in the part-local frame",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part's local bbox (built at identity) lies in the planned envelope taken back into the part frame by the inverse pose.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bbox_local": [
+          [
+            -1150.0,
+            -141.9502,
+            0.0
+          ],
+          [
+            0.0,
+            141.9502,
+            320.9751
+          ]
+        ]
+      },
+      "limit": {
+        "expected_local": [
+          [
+            -1150.0,
+            -140.0,
+            0.0
+          ],
+          [
+            0.0,
+            140.0,
+            320.0
+          ]
+        ],
+        "world_envelope": [
+          [
+            -3600.0,
+            -140.0,
+            680.0
+          ],
+          [
+            -2450.0,
+            140.0,
+            1000.0
+          ]
+        ],
+        "tol_mm": 5.0,
+        "frame_mode": "part_local"
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          -2450.0,
+          0.0,
+          680.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "airbox_length": 250.0,
+        "airbox_half_width": 140.0,
+        "airbox_height": 320.0,
+        "spine_length": 900.0,
+        "spine_half_width": 40.0,
+        "spine_end_height": 120.0
+      },
+      "limit": {
+        "airbox_length": 250.0,
+        "airbox_half_width": 140.0,
+        "airbox_height": 320.0,
+        "spine_length": 900.0,
+        "spine_half_width": 40.0,
+        "spine_end_height": 120.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [
+    {
+      "article": "C2.3.1",
+      "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+      "page": 10,
+      "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+      "status": "VERIFIED",
+      "note": "measured max |Y| = 142.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+    }
+  ],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 ENG-001 Engine cover",
+    "param_prefix": "mf1_eng001",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-12T04:59:31+00:00"
+  },
+  "run_id": "20261012-073006-rebuild-assembly-of-20261011-201",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T19:28:32+00:00",
+      "run_id": "20261010-222202-extend-the-existing-mini-f1-asse",
+      "script_sha256": "ae2f0a42d93b346ba9286291b2d79dc82cf5dcc1f142c452a64b9a871e1fe3bd",
+      "summary": "built by fast mode",
+      "kind": "",
+      "instruction": ""
+    },
+    {
+      "version": 2,
+      "date": "2026-10-12T04:59:31+00:00",
+      "run_id": "20261012-073006-rebuild-assembly-of-20261011-201",
+      "script_sha256": "be9b85e1cae98fb7d497f34264d6102454be72ac2c212faa269c9616cad693ca",
+      "summary": "Stepped extrudes replaced by one smooth loft (rounded lip and crown, taper to 80 mm fin, rounded tail) and a lofted oval intake with lips",
+      "kind": "revise",
+      "instruction": "Soften the engine cover so the airbox and the spine read as one streamlined fairing. Use the current registered version as the base. Keep exactly as is: the base on the monocoque top (embedding about 48 mm, limit 60), at least 20 mm clearance from the rear wing and the halo, and the overall height (Z max).\nChange only the shape: round the front intake opening with oval lips (about 20 mm radius); blend the airbox into the spine with one smooth taper, no steps; make the spine a slim fin of about 80 mm width that falls smoothly towards the tail and ends in a rounded point; round all outer edges with radii of at least 8 mm. One connected solid."
+    }
+  ],
+  "revision": {
+    "revision_id": "R03",
+    "run_id": "20261012-073006-rebuild-assembly-of-20261011-201",
+    "kind": "revise",
+    "instruction": "Soften the engine cover so the airbox and the spine read as one streamlined fairing. Use the current registered version as the base. Keep exactly as is: the base on the monocoque top (embedding about 48 mm, limit 60), at least 20 mm clearance from the rear wing and the halo, and the overall height (Z max).\nChange only the shape: round the front intake opening with oval lips (about 20 mm radius); blend the airbox into the spine with one smooth taper, no steps; make the spine a slim fin of about 80 mm width that falls smoothly towards the tail and ends in a rounded point; round all outer edges with radii of at least 8 mm. One connected solid.",
+    "change_summary": "Stepped extrudes replaced by one smooth loft (rounded lip and crown, taper to 80 mm fin, rounded tail) and a lofted oval intake with lips",
+    "assumptions": [
+      "The bottom edges at Z 0 stay sharp because they sit inside the monocoque top (about 48 mm embedded). All visible outer edges are rounded with radii of 10 mm or more.",
+      "The ~20 mm rounding on the front lip and intake is made with closely spaced loft sections, not fillet features.",
+      "The loft is smoothed between sections, so it may bulge about 1 mm past the 320 mm height or the ±140 mm width; the build should be checked against the envelope.",
+      "The tail ends in a rounded point 20 mm wide at local X -1150, 120 mm high."
+    ],
+    "spec_delta": {
+      "envelope_min": [
+        -3600.0,
+        -140.0,
+        680.0
+      ],
+      "envelope_max": [
+        -2450.0,
+        140.0,
+        1000.0
+      ]
+    },
+    "base_version": 1,
+    "neighbour_pose_changes": [],
+    "reason": null,
+    "mates": [
+      {
+        "check_id": "MATE-ENG-001-MON-001",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "overlap",
+          "gap_mm": 0.0,
+          "overlap_mm3": 4016930.6,
+          "overlap_depth_mm": 48.564,
+          "depth_method": "ray",
+          "overlap_depth_bbox_mm": 48.729,
+          "measure_version": 2,
+          "pieces": [
+            {
+              "axis": "Z",
+              "depth_mm": 48.5643,
+              "rays": 81
+            }
+          ]
+        }
+      },
+      {
+        "check_id": "MATE-ENG-001-RWG-001",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 210.149,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-ENG-001-HAL-001",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 167.816,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      }
+    ],
+    "frame_mode": "part_local",
+    "frame_validation": {
+      "status": "VERIFIED",
+      "message": ""
+    }
+  },
+  "derived": {},
+  "geometry": {
+    "volume_mm3": 38043896.90098,
+    "solids": 1,
+    "lumps": 1,
+    "bbox_local": [
+      [
+        -1150.0,
+        -141.9502,
+        0.0
+      ],
+      [
+        0.0,
+        141.9502,
+        320.9751
+      ]
+    ],
+    "bbox_world": [
+      [
+        -3600.0,
+        -141.9502,
+        680.0
+      ],
+      [
+        -2450.0,
+        141.9502,
+        1000.9751
+      ]
+    ]
+  }
+}

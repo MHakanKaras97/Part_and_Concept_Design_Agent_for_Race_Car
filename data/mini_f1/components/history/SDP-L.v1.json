@@ -1,0 +1,355 @@
+{
+  "record_type": "part",
+  "id": "SDP-L",
+  "name": "Sidepod left",
+  "role": "left sidepod bodywork with radiator inlet, beside the monocoque",
+  "version": 1,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "SDP-L",
+    "name": "Sidepod left",
+    "role": "left sidepod bodywork with radiator inlet, beside the monocoque",
+    "notes": "Red lofted solid, local X 0 (front) to -2250 (rear), bottom flat at local Z 0 on the floor top. Inner wall Y: 280 at X0, 372 at -700, 426 at -1900, 431 at -2250 (embeds <=25 into monocoque). Outer wall Y: ~620 at X0, 700 at -500, 540 at -2250. Top Z: 370 at X0, 390 at -1100, 270 at -2250, top edges filleted ~60. Front-face inlet pocket ~200(Y) x 150(Z), 120 deep, centred Y~460, Z~220. Modest outer lower undercut (~60 mm) only if robust.",
+    "dims": {
+      "length": 2250.0,
+      "front_inner_half_width": 280.0,
+      "max_outer_half_width": 700.0,
+      "rear_outer_half_width": 540.0,
+      "front_height": 370.0,
+      "max_height": 390.0,
+      "rear_height": 270.0,
+      "inlet_depth": 120.0
+    },
+    "position_mm": [
+      -700.0,
+      0.0,
+      30.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      -2950.0,
+      270.0,
+      30.0
+    ],
+    "envelope_max": [
+      -700.0,
+      700.0,
+      420.0
+    ],
+    "fia_refs_used": [
+      "C2.3.1"
+    ],
+    "reuse": false,
+    "mirror_of": null,
+    "mirror_mode": null
+  },
+  "script_body": "def build(part):\n    # stations: (x, inner y, outer y, top z)\n    st = [\n        (0.0, 280.0, 620.0, 370.0),\n        (-500.0, 345.7, 700.0, 379.0),\n        (-1100.0, 390.0, 645.0, 390.0),\n        (-1900.0, 426.0, 572.0, 306.5),\n        (-2250.0, 431.0, 540.0, 270.0),\n    ]\n    profs = []\n    for i, (x, yi, yo, zt) in enumerate(st):\n        pts = [\n            (x, yi, 0.0),\n            (x, yo - 60.0, 0.0),\n            (x, yo, 100.0),\n            (x, yo, zt - 60.0),\n            (x, yo - 60.0, zt),\n            (x, yi + 40.0, zt),\n            (x, yi, zt - 40.0),\n        ]\n        profs.append(part.section(\"x\", x, pts, \"SK_sec%d\" % i))\n    part.loft(profs, \"LF_sidepod\")\n\n    # radiator inlet pocket on the front face (symmetric cut -> 120 mm into the body)\n    d = part.p[\"inlet_depth\"]\n    sk = part.sketch(part.plane(\"x\", 0.0), \"SK_inlet\")\n    part.polygon(sk, [(0.0, 360.0, 145.0), (0.0, 560.0, 145.0),\n                      (0.0, 560.0, 295.0), (0.0, 360.0, 295.0)])\n    part.extrude(part.profile(sk), 2.0 * d, \"CUT_inlet\", op=\"cut\", symmetric=True)\n",
+  "script_sha256": "7f90d3532cccdc675dc3968a5cf39263d9976dda3ed3cec2299569181707d243",
+  "params": {
+    "length": 2250.0,
+    "front_inner_half_width": 280.0,
+    "max_outer_half_width": 700.0,
+    "rear_outer_half_width": 540.0,
+    "front_height": 370.0,
+    "max_height": 390.0,
+    "rear_height": 270.0,
+    "inlet_depth": 120.0
+  },
+  "pose": {
+    "position": [
+      -700.0,
+      0.0,
+      30.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      -2950.0,
+      280.0,
+      30.0
+    ],
+    [
+      -700.0,
+      701.1356,
+      421.8267
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 191349047.8
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 7,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          -2950.0,
+          280.0,
+          30.0
+        ],
+        [
+          -700.0,
+          701.1356,
+          421.8267
+        ]
+      ],
+      "limit": {
+        "min": [
+          -2950.0,
+          270.0,
+          30.0
+        ],
+        "max": [
+          -700.0,
+          700.0,
+          420.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FRAME",
+      "title": "Geometry in the part-local frame",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part's local bbox (built at identity) lies in the planned envelope taken back into the part frame by the inverse pose.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bbox_local": [
+          [
+            -2250.0,
+            280.0,
+            0.0
+          ],
+          [
+            0.0,
+            701.1356,
+            391.8267
+          ]
+        ]
+      },
+      "limit": {
+        "expected_local": [
+          [
+            -2250.0,
+            270.0,
+            0.0
+          ],
+          [
+            0.0,
+            700.0,
+            390.0
+          ]
+        ],
+        "world_envelope": [
+          [
+            -2950.0,
+            270.0,
+            30.0
+          ],
+          [
+            -700.0,
+            700.0,
+            420.0
+          ]
+        ],
+        "tol_mm": 5.0,
+        "frame_mode": "part_local"
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          -700.0,
+          0.0,
+          30.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "length": 2250.0,
+        "front_inner_half_width": 280.0,
+        "max_outer_half_width": 700.0,
+        "rear_outer_half_width": 540.0,
+        "front_height": 370.0,
+        "max_height": 390.0,
+        "rear_height": 270.0,
+        "inlet_depth": 120.0
+      },
+      "limit": {
+        "length": 2250.0,
+        "front_inner_half_width": 280.0,
+        "max_outer_half_width": 700.0,
+        "rear_outer_half_width": 540.0,
+        "front_height": 370.0,
+        "max_height": 390.0,
+        "rear_height": 270.0,
+        "inlet_depth": 120.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [
+    {
+      "article": "C2.3.1",
+      "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+      "page": 10,
+      "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+      "status": "VERIFIED",
+      "note": "measured max |Y| = 701.1 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+    }
+  ],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 SDP-L Sidepod left",
+    "param_prefix": "mf1_sdpl",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-10T19:28:15+00:00"
+  },
+  "run_id": "20261010-222202-extend-the-existing-mini-f1-asse",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T19:28:15+00:00",
+      "run_id": "20261010-222202-extend-the-existing-mini-f1-asse",
+      "script_sha256": "7f90d3532cccdc675dc3968a5cf39263d9976dda3ed3cec2299569181707d243",
+      "summary": "built by fast mode",
+      "kind": "",
+      "instruction": ""
+    }
+  ],
+  "revision": {},
+  "derived": {},
+  "geometry": {
+    "volume_mm3": 191349047.808699,
+    "solids": 1,
+    "lumps": 1,
+    "bbox_local": [
+      [
+        -2250.0,
+        280.0,
+        0.0
+      ],
+      [
+        0.0,
+        701.1356,
+        391.8267
+      ]
+    ],
+    "bbox_world": [
+      [
+        -2950.0,
+        280.0,
+        30.0
+      ],
+      [
+        -700.0,
+        701.1356,
+        421.8267
+      ]
+    ]
+  }
+}

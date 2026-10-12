@@ -1,0 +1,14 @@
+{
+  "name": "plan",
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "duration_s": 136.7,
+  "num_turns": 2,
+  "input_tokens": 2,
+  "output_tokens": 14100,
+  "cache_read_input_tokens": 0,
+  "cache_creation_input_tokens": 13017,
+  "reported_cost_usd": 0.386144,
+  "system_prompt": "system_1b1331ea967f.md"
+}

@@ -1,0 +1,14 @@
+{
+  "name": "part_FWG-001",
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "duration_s": 23.4,
+  "num_turns": 2,
+  "input_tokens": 2,
+  "output_tokens": 2073,
+  "cache_read_input_tokens": 2731,
+  "cache_creation_input_tokens": 1696,
+  "reported_cost_usd": 0.0555822,
+  "system_prompt": "system_c7f1edfb178a.md"
+}

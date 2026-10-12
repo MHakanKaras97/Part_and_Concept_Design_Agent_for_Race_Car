@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Engineering Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="fast-page">
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <div>
+        <h1>AI ENGINEERING AGENT</h1>
+        <span class="powered">Prompt → Fusion 360 → assembled concept · Powered by Claude</span>
+      </div>
+    </div>
+    <div class="status-pills">
+      <span class="pill" id="pill-backend"><b></b><span>Backend</span></span>
+      <span class="pill" id="pill-reasoner"><b></b><span>Claude</span></span>
+      <span class="pill" id="pill-fusion"><b></b><span>Fusion 360</span></span>
+      <a class="pill link" href="/advanced" title="The strict 8-stage engineering workflow (L-bracket generator)">Advanced ›</a>
+    </div>
+  </header>
+
+  <nav class="strip" id="strip" aria-label="Progress"></nav>
+
+  <main class="fast">
+    <section class="fast-main">
+      <div class="chat-toolbar">
+        <label for="run-select">Run</label>
+        <select id="run-select"><option value="">New design</option></select>
+        <button class="ghost" id="btn-new" type="button">+ New design</button>
+        <span class="toolbar-note" id="toolbar-note"></span>
+      </div>
+
+      <div class="banner" id="banner" hidden>
+        <div><b id="banner-title">Restart Fusion</b><div id="banner-text"></div></div>
+        <button type="button" id="btn-continue">Continue</button>
+      </div>
+
+      <form class="brief" id="brief-form">
+        <label for="brief" class="brief-label">Design brief</label>
+        <textarea id="brief" rows="9" placeholder="Describe the car in one detailed brief: proportions, wing elements, floor and diffuser, anything that matters. Unstated details become flagged assumptions."></textarea>
+        <div class="attach-previews" id="attach-previews" hidden></div>
+        <div class="brief-row">
+          <button type="button" class="ghost attach" id="btn-attach" title="Attach a reference image (stored with the run; not sent to Claude unless visual review is on)" aria-label="Attach image">&#128206;</button>
+          <input type="file" id="file-input" accept="image/png,image/jpeg,image/gif,image/webp" multiple hidden>
+          <label class="check"><input type="checkbox" id="visual-review"> Visual review (one extra Claude call with the iso screenshot)</label>
+          <button type="submit" id="btn-run" class="run">Run</button>
+        </div>
+        <div class="composer-hint" id="brief-hint">Fusion 360 must be running with its MCP server enabled, and its window must stay visible: the screenshots are taken from the Fusion viewport. The run builds into its own new Fusion document; nothing is saved or closed.</div>
+      </form>
+
+      <div class="qcard" id="qcard" hidden>
+        <div class="waiting-banner">■ ONE QUESTION BEFORE BUILDING</div>
+        <div class="msg-text" id="q-text"></div>
+        <textarea id="q-answer" rows="3" placeholder="Your answer (stored verbatim)"></textarea>
+        <button type="button" id="btn-answer">Answer</button>
+      </div>
+
+      <div class="working" id="working" hidden></div>
+
+      <section class="results" id="results" hidden>
+        <div class="shots">
+          <a id="iso-link" target="_blank"><img id="shot-iso" class="hero" alt="Iso view of the assembly"></a>
+          <div class="thumbs">
+            <figure><a id="front-link" target="_blank"><img id="shot-front" alt="Front view"></a><figcaption>Front (+X)</figcaption></figure>
+            <figure><a id="top-link" target="_blank"><img id="shot-top" alt="Top view"></a><figcaption>Top (+Z, front up)</figcaption></figure>
+          </div>
+        </div>
+        <div id="render-box" hidden></div>
+        <h2 class="section">Parts</h2>
+        <div class="meta">Click a part to revise it in words or revert it to an earlier version. A revision builds in this run's Fusion design and becomes a new registry version; on failure the old part is restored.</div>
+        <table class="kv parts" id="parts-table"></table>
+        <div class="revise-asm">
+          <label for="asm-instruction" class="brief-label">Revise assembly</label>
+          <textarea id="asm-instruction" rows="2" placeholder="One clause per part, separated by ';' (only the named parts change), e.g.  RWG-001 move=0,0,20; FWG-001: make the span 1700 mm"></textarea>
+          <button type="button" id="btn-revise-asm">Revise assembly</button>
+        </div>
+        <h2 class="section" id="revisions-head" hidden>Revisions</h2>
+        <div id="revisions"></div>
+        <h2 class="section">Assembly</h2>
+        <div id="assembly"></div>
+        <h2 class="section">Assumptions</h2>
+        <ul class="assumption-list" id="assumptions"></ul>
+        <div id="visual-review-box"></div>
+        <div class="rebuild-row">
+          <button type="button" class="ghost" id="btn-rebuild-assembly" title="Rebuild every registered part of this run into a NEW Fusion design from the stored scripts and poses (zero Claude calls), re-measure the mates and re-shoot">Rebuild assembly</button>
+          <button type="button" class="ghost" id="btn-recolor" title="Apply data/&lt;project&gt;/palette.json to this run's open Fusion design: recolour every part in place (no geometry change, no new part versions, zero Claude calls), read the colours back and re-shoot">Apply palette</button>
+          <span class="render-ctl">
+            <button type="button" class="ghost" id="btn-render" title="Local Fusion render of this run's open design (no geometry change, zero Claude calls). Same view directions as the screenshots, framed so the car fills about 80 % of the frame. If the render is refused, fails or times out (15 min per view), the MCP screenshot at 2400x1600 is used and marked as a fallback">Render</button>
+            <label><input type="checkbox" class="render-view" value="iso" checked> iso</label>
+            <label><input type="checkbox" class="render-view" value="front"> front</label>
+            <label><input type="checkbox" class="render-view" value="top"> top</label>
+            <select id="render-preset" title="draft = quality 25, 1280x853 · standard = 50, 1920x1280 · final = 75, 2400x1600"><option value="draft">draft</option><option value="standard" selected>standard</option><option value="final">final</option></select>
+            <select id="render-env" title="Environment that lights the scene (names as listed by Fusion's library in the last render preflight)" hidden></select>
+          </span>
+          <details class="render-more">
+            <summary>Render settings</summary>
+            <div class="render-grid">
+              <label>Render camera <select id="render-camera"><option value="perspective" selected>perspective</option><option value="orthographic">orthographic</option></select></label>
+              <label>Focal length (mm) <input type="number" id="render-focal" min="35" max="85" step="1" value="50"></label>
+              <label>Background <input type="color" id="render-bg" value="#3a3f47"></label>
+              <label>Brightness (lux) <input type="number" id="render-brightness" min="0" max="100000" step="50" value="1000"></label>
+              <label>Light angle (°) <input type="number" id="render-light" min="-180" max="180" step="5" value="30"></label>
+              <label><input type="checkbox" id="render-refl" checked> ground reflections</label>
+              <label>Ground roughness <input type="number" id="render-rough" min="0" max="1" step="0.05" value="0.15"></label>
+            </div>
+          </details>
+          <span class="meta" id="recolor-note"></span>
+          <span class="meta" id="rebuild-note"></span>
+        </div>
+        <div class="render-status" id="render-status" hidden><progress id="render-progress" max="1" value="0"></progress> <span class="meta" id="render-note"></span></div>
+        <div class="meta" id="counts"></div>
+      </section>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-block"><h2>Brief</h2><p id="p-brief" class="muted">No run selected.</p></div>
+      <div class="panel-block"><h2>Log (last 15)</h2><ol class="log" id="log"></ol></div>
+      <div class="panel-block"><h2>Concept level</h2><p class="muted small">Geometry is a concept. FIA statuses: VERIFIED only where Fusion measured the part against an unambiguous extent rule; everything else NOT_VERIFIED. No FIA compliance, structural adequacy or race readiness is claimed.</p></div>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <span>Made by Muhammed Hakan Karas</span>
+    <span class="legend"><i class="lg verified"></i>Verified <i class="lg notver"></i>Not verified <i class="lg fail"></i>Non-compliant / failed <i class="lg assumption"></i>Assumption</span>
+  </footer>
+
+  <script src="/static/fast.js"></script>
+</body>
+</html>

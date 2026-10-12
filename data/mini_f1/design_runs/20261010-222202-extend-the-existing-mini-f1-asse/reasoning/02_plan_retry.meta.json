@@ -1,0 +1,14 @@
+{
+  "name": "plan_retry",
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "duration_s": 109.8,
+  "num_turns": 2,
+  "input_tokens": 2,
+  "output_tokens": 12317,
+  "cache_read_input_tokens": 2857,
+  "cache_creation_input_tokens": 10419,
+  "reported_cost_usd": 0.3302714,
+  "system_prompt": "system_1b1331ea967f.md"
+}

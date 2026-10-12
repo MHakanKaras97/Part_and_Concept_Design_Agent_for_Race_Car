@@ -1,0 +1,17 @@
+def build(part):
+    L = part.p["length"]
+    T = part.p["thickness"]
+    DL = part.p["diffuser_length"]
+    DH = part.p["diffuser_height"]
+    # Side profile in the XZ plane: flat plate plus a diffuser ramp at the rear (low X)
+    # whose underside rises from z=0 at x=DL up to DH-T at x=0 (top reaches DH).
+    sk = part.sketch(part.plane("y", 0), "SK_floor_side")
+    part.polygon(sk, [
+        (L, 0, 0),
+        (L, 0, T),
+        (DL, 0, T),
+        (0, 0, DH),
+        (0, 0, DH - T),
+        (DL, 0, 0),
+    ])
+    part.extrude(part.profile(sk), "width", "EX_floor", symmetric=True)

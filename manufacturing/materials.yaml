@@ -1,0 +1,32 @@
+# Material properties used for hand calculations. Typical/minimum handbook values entered from
+# engineering knowledge; NOT checked against a supplier datasheet -> every result using them is
+# at best an ASSUMPTION-status result.
+- id: AL6061-T6
+  name: Aluminium 6061-T6
+  density_kg_m3: 2700
+  yield_strength_mpa: 276
+  processes: [machined]
+  fusion_material: Aluminum 6061
+  source: "Typical handbook value (e.g. ASM Handbook), not verified"
+  verification_status: NOT_VERIFIED
+- id: AL7075-T6
+  name: Aluminium 7075-T6
+  density_kg_m3: 2810
+  yield_strength_mpa: 503
+  processes: [machined]
+  source: "Typical handbook value (e.g. ASM Handbook), not verified"
+  verification_status: NOT_VERIFIED
+- id: S235
+  name: Structural steel S235
+  density_kg_m3: 7850
+  yield_strength_mpa: 235
+  processes: [machined]
+  source: "EN 10025-2 nominal minimum (t <= 16 mm), not verified"
+  verification_status: NOT_VERIFIED
+- id: TI6AL4V
+  name: Titanium Ti-6Al-4V (annealed)
+  density_kg_m3: 4430
+  yield_strength_mpa: 880
+  processes: [machined]
+  source: "Typical handbook value, not verified"
+  verification_status: NOT_VERIFIED

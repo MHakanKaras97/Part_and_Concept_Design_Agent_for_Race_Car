@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Engineering Agent - Advanced (strict mode)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <div>
+        <h1>AI ENGINEERING AGENT</h1>
+        <span class="powered">Powered by Claude</span>
+      </div>
+    </div>
+    <div class="status-pills">
+      <span class="pill" id="pill-backend"><b></b><span>Backend</span></span>
+      <span class="pill" id="pill-reasoner"><b></b><span>Reasoner</span></span>
+      <span class="pill" id="pill-fusion"><b></b><span>Fusion 360</span></span>
+      <a class="pill link" href="/" title="Fast mode: one brief to an assembled concept">‹ Fast mode</a>
+    </div>
+  </header>
+
+  <nav class="pipeline" id="pipeline" aria-label="Workflow stage"></nav>
+
+  <main class="layout">
+    <section class="chat-col">
+      <div class="chat-toolbar">
+        <label for="run-select">Run</label>
+        <select id="run-select"><option value="">New engineering task</option></select>
+        <button class="ghost" id="btn-new" type="button">+ New task</button>
+        <span class="toolbar-note" id="toolbar-note"></span>
+      </div>
+
+      <div class="chat" id="chat" aria-live="polite"></div>
+
+      <form class="composer" id="composer">
+        <div class="composer-mode" id="composer-mode">New engineering request</div>
+        <div class="attach-previews" id="attach-previews" hidden></div>
+        <div class="composer-row">
+          <button type="button" class="ghost attach" id="btn-attach" title="Attach an image (PNG, JPEG, GIF, WebP; max 5 MB)" aria-label="Attach image">&#128206;</button>
+          <input type="file" id="file-input" accept="image/png,image/jpeg,image/gif,image/webp" multiple hidden>
+          <textarea id="input" rows="3" placeholder="Describe the component you need..."></textarea>
+          <div class="composer-actions">
+            <button type="submit" id="btn-send">Send</button>
+            <button type="button" class="ghost" id="btn-retry" hidden>Check again</button>
+          </div>
+        </div>
+        <div class="composer-hint" id="composer-hint"></div>
+      </form>
+    </section>
+
+    <aside class="panel" id="panel">
+      <div class="panel-block">
+        <h2>Current task</h2>
+        <p id="p-task" class="muted">No task selected.</p>
+      </div>
+      <div class="panel-grid">
+        <div class="panel-block"><h2>Stage</h2><p id="p-stage" class="mono">-</p></div>
+        <div class="panel-block"><h2>Agent status</h2><p id="p-status" class="mono">-</p></div>
+      </div>
+      <div class="panel-block">
+        <h2>Component</h2>
+        <div id="p-component" class="muted">-</div>
+      </div>
+      <div class="panel-block">
+        <h2>Validation evidence</h2>
+        <div id="p-validation" class="muted">Not validated yet.</div>
+      </div>
+      <div class="panel-grid">
+        <div class="panel-block"><h2>FIA status</h2><div id="p-fia" class="muted">-</div></div>
+        <div class="panel-block"><h2>Fusion 360</h2><div id="p-fusion" class="muted">-</div></div>
+      </div>
+      <div class="panel-block">
+        <h2>Active assumptions</h2>
+        <ul id="p-assumptions" class="assumption-list"><li class="muted">None.</li></ul>
+      </div>
+      <div class="panel-block">
+        <h2>Outputs</h2>
+        <div id="p-outputs" class="muted">-</div>
+      </div>
+      <details class="panel-block">
+        <summary>Reasoning log</summary>
+        <ul id="p-log" class="log"></ul>
+      </details>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <span>Made by Muhammed Hakan Karas</span>
+    <span class="legend">
+      <i class="lg user"></i>User answer <i class="lg image"></i>Image evidence <i class="lg interp"></i>AI interpretation <i class="lg decision"></i>Engineering decision
+      <i class="lg assumption"></i>Assumption <i class="lg verified"></i>Verified <i class="lg notver"></i>Not verified
+    </span>
+  </footer>
+
+  <script src="/static/advanced.js"></script>
+</body>
+</html>

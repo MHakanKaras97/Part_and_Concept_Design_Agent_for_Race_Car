@@ -1,0 +1,90 @@
+# FIA 2026 Formula 1 Technical Regulations (Section C), Issue 20, 05/08/2026.
+# Only rules transcribed VERBATIM from the stored source are listed here.
+# verification_status stays NOT_VERIFIED until a human has compared the record with the source
+# (python -m agent rules-verify <id> --by <name>).
+- id: FIA26-C2.1.1
+  title: Car Coordinate System definition
+  authority: REGULATION
+  category: conventions
+  requirement_text: >-
+    The "Car Coordinate System" is a right-handed Cartesian [X, Y, Z] coordinate system and is defined
+    in the following way: a. The X axis is the longitudinal direction of the car and increases rearwards.
+    b. The Y axis is the transverse direction of the car and increases to the (driver's) right-hand side.
+    c. The Z axis is the vertical direction and increases upwards.
+  applies_to: [vehicle]
+  constraint: {type: info, quantity: coordinate_system}
+  severity: ADVISORY
+  validation_method: MANUAL
+  source: &fia26
+    document: FIA 2026 F1 Regulations - Section C [Technical]
+    issue: "Issue 20"
+    date: "2026-08-05"
+    article: C2.1.1
+    page: 9
+    file: fia_rules/source/fia_2026_f1_regulations_section_c_technical_iss20_2026-08-05.pdf
+    sha256: cf0b919eef5eecc27497fb6de012f8d27e200f6dbd34d62b7e5385f7274ff652
+    url: https://www.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_c_technical_-_iss_20_-_2026-08-05.pdf
+  regulation_version: "2026 Section C Iss 20"
+  verification_status: NOT_VERIFIED
+  notes: Project VCS (+X front, +Y left) = FIA axes rotated 180 deg about Z; see vehicle/transforms.py.
+- id: FIA26-C2.3.1
+  title: Overall width
+  authority: REGULATION
+  category: fundamental_dimensions
+  requirement_text: >-
+    Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article
+    C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.
+  applies_to: [vehicle]
+  constraint: {type: max, quantity: max_abs_y_excl_wheels, value: 950, unit: mm}
+  validation_method: VEHICLE_LAYOUT_CHECK
+  source: {<<: *fia26, article: C2.3.1, page: 10}
+  regulation_version: "2026 Section C Iss 20"
+  verification_status: NOT_VERIFIED
+- id: FIA26-C2.3.3
+  title: Wheelbase
+  authority: REGULATION
+  category: fundamental_dimensions
+  requirement_text: >-
+    The distance between the planes XF = 0 and XR = 0 must be less than or equal to 3400mm at
+    Legality Setup.
+  applies_to: [vehicle]
+  constraint: {type: max, quantity: wheelbase, value: 3400, unit: mm}
+  validation_method: VEHICLE_LAYOUT_CHECK
+  source: {<<: *fia26, article: C2.3.3, page: 11}
+  regulation_version: "2026 Section C Iss 20"
+  verification_status: NOT_VERIFIED
+- id: FIA26-C2.3.4
+  title: Front wheel position
+  authority: REGULATION
+  category: fundamental_dimensions
+  requirement_text: The plane XF = 0 must lie between XA = 0 and XA = 150 inclusive.
+  applies_to: [vehicle]
+  constraint: {type: range, quantity: xf_plane_at_xa, value: 0, value_max: 150, unit: mm}
+  validation_method: VEHICLE_LAYOUT_CHECK
+  source: {<<: *fia26, article: C2.3.4, page: 11}
+  regulation_version: "2026 Section C Iss 20"
+  verification_status: NOT_VERIFIED
+- id: FIA26-C2.3.5
+  title: Cockpit position
+  authority: REGULATION
+  category: fundamental_dimensions
+  requirement_text: >-
+    The distance between XA = 0 and XC = 0 must be greater than or equal to 1830mm and less than or
+    equal to 2030mm.
+  applies_to: [vehicle]
+  constraint: {type: range, quantity: xa_to_xc_distance, value: 1830, value_max: 2030, unit: mm}
+  validation_method: VEHICLE_LAYOUT_CHECK
+  source: {<<: *fia26, article: C2.3.5, page: 11}
+  regulation_version: "2026 Section C Iss 20"
+  verification_status: NOT_VERIFIED
+- id: FIA26-C2.3.6
+  title: Rear bulkhead position
+  authority: REGULATION
+  category: fundamental_dimensions
+  requirement_text: The distance between XC = 0 and XPU = 0 must be greater than or equal to 360mm
+  applies_to: [vehicle]
+  constraint: {type: min, quantity: xc_to_xpu_distance, value: 360, unit: mm}
+  validation_method: VEHICLE_LAYOUT_CHECK
+  source: {<<: *fia26, article: C2.3.6, page: 11}
+  regulation_version: "2026 Section C Iss 20"
+  verification_status: NOT_VERIFIED

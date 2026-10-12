@@ -1,0 +1,409 @@
+{
+  "record_type": "part",
+  "id": "WHL-RR",
+  "name": "Wheel rear right",
+  "role": "rear-right wheel and tyre on the rear axle, -Y side",
+  "version": 2,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "WHL-RR",
+    "name": "Wheel rear right",
+    "role": "rear-right wheel and tyre on the rear axle, -Y side",
+    "notes": "Axle along the part-local Y axis through the local origin (wheel centre), rotationally symmetric about it. Tyre cylinder radius 370 from local Y -190 to +190 with 40 mm rounded shoulders, near-black. Recessed silver rim face (dia 480, 30 deep) on the outboard (+Y) face. Hub boss on the inboard (-Y) side: radius 90 from local Y -190 to -250; end face at Y -250 is the suspension contact plane. One connected solid.",
+    "dims": {
+      "diameter": 740.0,
+      "width": 380.0,
+      "shoulder_radius": 40.0,
+      "rim_diameter": 480.0,
+      "rim_recess_depth": 30.0,
+      "hub_boss_radius": 90.0,
+      "hub_boss_length": 60.0
+    },
+    "position_mm": [
+      -3400.0,
+      -760.0,
+      370.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      180.0
+    ],
+    "envelope_min": [
+      -3770.0,
+      -950.0,
+      0.0
+    ],
+    "envelope_max": [
+      -3030.0,
+      -510.0,
+      740.0
+    ],
+    "fia_refs_used": [],
+    "reuse": false,
+    "mirror_of": "WHL-RL",
+    "mirror_mode": "yaw180"
+  },
+  "script_body": "import math\nimport adsk.core\nimport adsk.fusion\n\n\ndef build(part):\n    R = part.p[\"diameter\"] / 2.0\n    W = part.p[\"width\"]\n    rs = part.p[\"shoulder_radius\"]\n    rr = part.p[\"rim_diameter\"] / 2.0\n    rd = part.p[\"rim_recess_depth\"]\n    hb = part.p[\"hub_boss_radius\"]\n    hl = part.p[\"hub_boss_length\"]\n    y0, y1 = -W / 2.0, W / 2.0\n    yh = y0 - hl\n    lip_w = 8.0          # rim lip ring radial width\n    lip_drop = 8.0       # lip top sits 8 mm below the tyre outboard face\n    rib_h = 15.0         # spoke rib height above the recessed rim face\n    rib_w = 24.0         # spoke rib width\n    rib_r0 = 60.0        # rib start radius (hub area)\n    n = 6\n    pts = [(0.0, yh, 0.0), (hb, yh, 0.0), (hb, y0, 0.0)]\n    # inboard shoulder: centre (R-rs, y0+rs)\n    for i in range(n + 1):\n        a = math.radians(90.0 * i / n)\n        pts.append((R - rs + rs * math.sin(a), y0 + rs - rs * math.cos(a), 0.0))\n    # outboard shoulder: centre (R-rs, y1-rs)\n    for i in range(n + 1):\n        a = math.radians(90.0 * i / n)\n        pts.append((R - rs + rs * math.cos(a), y1 - rs + rs * math.sin(a), 0.0))\n    # outboard sidewall: smooth cosine blend from shoulder end (R-rs, y1) to rim lip top (rr, y1-lip_drop)\n    ns = 8\n    for i in range(1, ns + 1):\n        t = i / float(ns)\n        r = (R - rs) + (rr - (R - rs)) * t\n        y = y1 - lip_drop * (1.0 - math.cos(math.pi * t)) / 2.0\n        pts.append((r, y, 0.0))\n    # rim lip ring, then recessed rim face (depth rd reference)\n    pts += [(rr - lip_w, y1 - lip_drop, 0.0), (rr - lip_w, y1 - rd, 0.0), (0.0, y1 - rd, 0.0)]\n    sk = part.sketch(part.plane(\"z\", 0), \"SK_wheel_section\")\n    part.polygon(sk, pts)\n    prof = part.profile(sk)\n    revs = part.comp.features.revolveFeatures\n    inp = revs.createInput(prof, part.comp.yConstructionAxis,\n                           adsk.fusion.FeatureOperations.NewBodyFeatureOperation)\n    inp.setAngleExtent(False, adsk.core.ValueInput.createByString(\"360 deg\"))\n    rev = revs.add(inp)\n    rev.name = \"RV_wheel\"\n    # five raised spoke ribs on the recessed rim face, hub area to rim lip\n    ys = y1 - rd - 1.0          # start 1 mm inside the face for a solid join\n    r1 = rr - lip_w + 2.0       # overlap 2 mm into the lip\n    for k in range(5):\n        a = math.radians(90.0 + 72.0 * k)\n        ca, sa = math.cos(a), math.sin(a)\n        px, pz = -sa * rib_w / 2.0, ca * rib_w / 2.0\n        rib = [\n            (rib_r0 * ca + px, ys, rib_r0 * sa + pz),\n            (r1 * ca + px, ys, r1 * sa + pz),\n            (r1 * ca - px, ys, r1 * sa - pz),\n            (rib_r0 * ca - px, ys, rib_r0 * sa - pz),\n        ]\n        sk_r = part.sketch(part.plane(\"y\", ys, \"PL_rib_%d\" % (k + 1)), \"SK_spoke_rib_%d\" % (k + 1))\n        part.polygon(sk_r, rib)\n        part.extrude(part.profile(sk_r), rib_h + 1.0, \"EX_spoke_rib_%d\" % (k + 1), op=\"join\")\n",
+  "script_sha256": "156914f53d622b76aa703c0756357b9c6ac209587ca710365f4378b6a52047b2",
+  "params": {
+    "diameter": 740.0,
+    "width": 380.0,
+    "shoulder_radius": 40.0,
+    "rim_diameter": 480.0,
+    "rim_recess_depth": 30.0,
+    "hub_boss_radius": 90.0,
+    "hub_boss_length": 60.0
+  },
+  "pose": {
+    "position": [
+      -3400.0,
+      -760.0,
+      370.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      180.0
+    ]
+  },
+  "bbox_world": [
+    [
+      -3770.0,
+      -950.0,
+      0.0
+    ],
+    [
+      -3030.0,
+      -510.0,
+      740.0
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 157874713.9
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 12,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          -3770.0,
+          -950.0,
+          0.0
+        ],
+        [
+          -3030.0,
+          -510.0,
+          740.0
+        ]
+      ],
+      "limit": {
+        "min": [
+          -3770.0,
+          -950.0,
+          0.0
+        ],
+        "max": [
+          -3030.0,
+          -510.0,
+          740.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FRAME",
+      "title": "Geometry in the part-local frame",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part's local bbox (built at identity) lies in the planned envelope taken back into the part frame by the inverse pose.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bbox_local": [
+          [
+            -370.0,
+            -250.0,
+            -370.0
+          ],
+          [
+            370.0,
+            190.0,
+            370.0
+          ]
+        ]
+      },
+      "limit": {
+        "expected_local": [
+          [
+            -370.0,
+            -250.0,
+            -370.0
+          ],
+          [
+            370.0,
+            190.0,
+            370.0
+          ]
+        ],
+        "world_envelope": [
+          [
+            -3770.0,
+            -950.0,
+            0.0
+          ],
+          [
+            -3030.0,
+            -510.0,
+            740.0
+          ]
+        ],
+        "tol_mm": 5.0,
+        "frame_mode": "part_local"
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          -3400.0,
+          -760.0,
+          370.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "diameter": 740.0,
+        "width": 380.0,
+        "shoulder_radius": 40.0,
+        "rim_diameter": 480.0,
+        "rim_recess_depth": 30.0,
+        "hub_boss_radius": 90.0,
+        "hub_boss_length": 60.0
+      },
+      "limit": {
+        "diameter": 740.0,
+        "width": 380.0,
+        "shoulder_radius": 40.0,
+        "rim_diameter": 480.0,
+        "rim_recess_depth": 30.0,
+        "hub_boss_radius": 90.0,
+        "hub_boss_length": 60.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-DERIVED",
+      "title": "Derived from WHL-RL (yaw180)",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "Same volume and body structure as the source; local bbox mirrored (mirror) or equal (yaw180); world bbox = the source's mirrored about Y = 0.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "volume_mm3": 157874713.865177,
+        "volume_rel_dev": 0.0,
+        "solids": 1,
+        "lumps": 1,
+        "bbox_local_dev_mm": 0.0,
+        "bbox_world_dev_mm": 0.0
+      },
+      "limit": {
+        "volume_rel": 1e-06,
+        "bbox_local_tol_mm": 0.01,
+        "bbox_world_tol_mm": 0.5,
+        "source": {
+          "volume_mm3": 157874713.865177,
+          "solids": 1,
+          "lumps": 1,
+          "bbox_local": [
+            [
+              -370.0,
+              -250.0,
+              -370.0
+            ],
+            [
+              370.0,
+              190.0,
+              370.0
+            ]
+          ],
+          "bbox_world": [
+            [
+              -3770.0,
+              510.0,
+              0.0
+            ],
+            [
+              -3030.0,
+              950.0,
+              740.0
+            ]
+          ]
+        }
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 WHL-RR Wheel rear right",
+    "param_prefix": "mf1_whlrr",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-11T11:01:06+00:00"
+  },
+  "run_id": "20261011-134100-rebuild-assembly-of-20261011-125",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T19:29:14+00:00",
+      "run_id": "20261010-222202-extend-the-existing-mini-f1-asse",
+      "script_sha256": "2b1c7cd9f76bd3ee6ee2463b259a8b540f60e06ae3f5a7aa2492a9e82fe3fc7f",
+      "summary": "derived from WHL-RL v1 (yaw180)",
+      "kind": "",
+      "instruction": ""
+    },
+    {
+      "version": 2,
+      "date": "2026-10-11T11:01:06+00:00",
+      "run_id": "20261011-134100-rebuild-assembly-of-20261011-125",
+      "script_sha256": "156914f53d622b76aa703c0756357b9c6ac209587ca710365f4378b6a52047b2",
+      "summary": "derived from WHL-RL v2 (yaw180)",
+      "kind": "",
+      "instruction": ""
+    }
+  ],
+  "revision": {},
+  "derived": {
+    "source_id": "WHL-RL",
+    "source_version": 2,
+    "mode": "yaw180",
+    "note": "derived from WHL-RL v2 (yaw180)"
+  },
+  "geometry": {
+    "volume_mm3": 157874713.865177,
+    "solids": 1,
+    "lumps": 1,
+    "bbox_local": [
+      [
+        -370.0,
+        -250.0,
+        -370.0
+      ],
+      [
+        370.0,
+        190.0,
+        370.0
+      ]
+    ],
+    "bbox_world": [
+      [
+        -3770.0,
+        -950.0,
+        0.0
+      ],
+      [
+        -3030.0,
+        -510.0,
+        740.0
+      ]
+    ]
+  }
+}

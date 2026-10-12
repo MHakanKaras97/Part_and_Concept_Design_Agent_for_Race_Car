@@ -1,0 +1,888 @@
+{
+  "schema_version": 2,
+  "id": "BRK-002",
+  "name": "Sensor box bracket",
+  "type": "l_bracket",
+  "revision": 1,
+  "lifecycle": "CHECKED",
+  "coordinate_system": "VCS",
+  "pose": {
+    "position": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "generator": {
+    "id": "l_bracket",
+    "version": "1"
+  },
+  "parameters": {
+    "bracket_thickness": {
+      "name": "bracket_thickness",
+      "value": 5.0,
+      "unit": "mm",
+      "source": "ASSUMPTION",
+      "trace": [
+        "A01",
+        "A03",
+        "DFM-MACH-WALL-MIN"
+      ],
+      "rationale": "Engineering decision: hand calc with the assumed load gives a large margin already at 4 mm; 5 mm chosen for bolt-clamping stiffness."
+    },
+    "bend_inner_radius": {
+      "name": "bend_inner_radius",
+      "value": 4.0,
+      "unit": "mm",
+      "source": "RULE",
+      "trace": [
+        "DFM-MACH-INNER-RADIUS-MIN",
+        "DFM-DFMEA-FATIGUE-FILLET"
+      ],
+      "rationale": ">= 3 mm end-mill rule and >= 0.2 t fatigue rule."
+    },
+    "bracket_width": {
+      "name": "bracket_width",
+      "value": 60.0,
+      "unit": "mm",
+      "source": "DERIVED",
+      "trace": [
+        "R06",
+        "GL-HOLE-EDGE-DISTANCE",
+        "A04"
+      ],
+      "rationale": "User M5 spacing 40 mm (R06) + 2 x 1.5 x 5.5 mm edge distance = 56.5 mm minimum -> 60 mm."
+    },
+    "leg_base_length": {
+      "name": "leg_base_length",
+      "value": 64.0,
+      "unit": "mm",
+      "source": "DERIVED",
+      "trace": [
+        "GL-HOLE-EDGE-DISTANCE",
+        "A04",
+        "A05"
+      ],
+      "rationale": "Last base hole row at 52 mm + 1.5 x 6.6 mm = 61.9 mm minimum -> 64 mm."
+    },
+    "leg_upright_height": {
+      "name": "leg_upright_height",
+      "value": 50.0,
+      "unit": "mm",
+      "source": "DERIVED",
+      "trace": [
+        "R08",
+        "GL-HOLE-EDGE-DISTANCE",
+        "A04"
+      ],
+      "rationale": "User hole height 35 mm (R08) + 1.5 x 5.5 mm = 43.25 mm minimum -> 50 mm."
+    },
+    "base_hole_diameter": {
+      "name": "base_hole_diameter",
+      "value": 6.6,
+      "unit": "mm",
+      "source": "RULE",
+      "trace": [
+        "STD-ISO273-MEDIUM",
+        "R03"
+      ],
+      "rationale": "ISO 273 medium clearance for the user's M6 bolts."
+    },
+    "base_hole_x0": {
+      "name": "base_hole_x0",
+      "value": 22.0,
+      "unit": "mm",
+      "source": "ASSUMPTION",
+      "trace": [
+        "A06"
+      ],
+      "rationale": "Engineering decision: socket access next to the carrying leg (A06)."
+    },
+    "base_hole_pitch_x": {
+      "name": "base_hole_pitch_x",
+      "value": 30.0,
+      "unit": "mm",
+      "source": "ASSUMPTION",
+      "trace": [
+        "A05"
+      ],
+      "rationale": "Engineering decision: spread the four M6 bolts along the base to resist the overturning moment; plate drilled to suit (A05)."
+    },
+    "base_hole_pitch_y": {
+      "name": "base_hole_pitch_y",
+      "value": 36.0,
+      "unit": "mm",
+      "source": "DERIVED",
+      "trace": [
+        "GL-HOLE-EDGE-DISTANCE",
+        "A05"
+      ],
+      "rationale": "Side edge distance (30 - 18) = 12 mm = 1.82 d >= 1.5 d."
+    },
+    "base_hole_rows": {
+      "name": "base_hole_rows",
+      "value": 2.0,
+      "unit": "count",
+      "source": "REQUIREMENT",
+      "trace": [
+        "R03",
+        "A05"
+      ],
+      "rationale": "Four M6 bolts (R03) arranged 2 x 2 (A05)."
+    },
+    "base_hole_cols": {
+      "name": "base_hole_cols",
+      "value": 2.0,
+      "unit": "count",
+      "source": "REQUIREMENT",
+      "trace": [
+        "R03",
+        "A05"
+      ],
+      "rationale": "Four M6 bolts (R03) arranged 2 x 2 (A05)."
+    },
+    "upright_hole_diameter": {
+      "name": "upright_hole_diameter",
+      "value": 5.5,
+      "unit": "mm",
+      "source": "RULE",
+      "trace": [
+        "STD-ISO273-MEDIUM",
+        "R06"
+      ],
+      "rationale": "ISO 273 medium clearance for the user's M5 bolts."
+    },
+    "upright_hole_z0": {
+      "name": "upright_hole_z0",
+      "value": 35.0,
+      "unit": "mm",
+      "source": "USER",
+      "trace": [
+        "M06",
+        "R08"
+      ],
+      "rationale": "User: hole centres 35 mm above the flat plate (R08 interpretation of M06)."
+    },
+    "upright_hole_pitch_z": {
+      "name": "upright_hole_pitch_z",
+      "value": 0.0,
+      "unit": "mm",
+      "source": "DERIVED",
+      "trace": [],
+      "rationale": "Single row of holes (R06) - not used."
+    },
+    "upright_hole_pitch_y": {
+      "name": "upright_hole_pitch_y",
+      "value": 40.0,
+      "unit": "mm",
+      "source": "USER",
+      "trace": [
+        "M01",
+        "R06"
+      ],
+      "rationale": "User: M5 bolts 40 mm apart horizontally."
+    },
+    "upright_hole_rows": {
+      "name": "upright_hole_rows",
+      "value": 1.0,
+      "unit": "count",
+      "source": "USER",
+      "trace": [
+        "M01",
+        "R06"
+      ],
+      "rationale": "Two bolts side by side horizontally (R06 interpretation)."
+    },
+    "upright_hole_cols": {
+      "name": "upright_hole_cols",
+      "value": 2.0,
+      "unit": "count",
+      "source": "USER",
+      "trace": [
+        "M01",
+        "R06"
+      ],
+      "rationale": "Two M5 bolts (user)."
+    }
+  },
+  "interfaces": [
+    {
+      "id": "IF-BASE",
+      "name": "Base mounting face",
+      "type": "BOLTED",
+      "mates_with": "flat_plate (external, not modelled)",
+      "origin": [
+        32.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "mounting_points": [
+        {
+          "id": "HB11",
+          "position": [
+            22.0,
+            -18.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "hole_diameter": 6.6,
+          "fastener": "M6"
+        },
+        {
+          "id": "HB12",
+          "position": [
+            22.0,
+            18.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "hole_diameter": 6.6,
+          "fastener": "M6"
+        },
+        {
+          "id": "HB21",
+          "position": [
+            52.0,
+            -18.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "hole_diameter": 6.6,
+          "fastener": "M6"
+        },
+        {
+          "id": "HB22",
+          "position": [
+            52.0,
+            18.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "hole_diameter": 6.6,
+          "fastener": "M6"
+        }
+      ],
+      "clearance_min_mm": null,
+      "hole_geometry_status": "VERIFIED",
+      "mating_status": "NOT_VERIFIED"
+    },
+    {
+      "id": "IF-UPRIGHT",
+      "name": "Upright mounting face",
+      "type": "BOLTED",
+      "mates_with": "sensor_box (external, not modelled)",
+      "origin": [
+        0.0,
+        0.0,
+        25.0
+      ],
+      "normal": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "mounting_points": [
+        {
+          "id": "HU11",
+          "position": [
+            0.0,
+            -20.0,
+            35.0
+          ],
+          "axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "hole_diameter": 5.5,
+          "fastener": "M5"
+        },
+        {
+          "id": "HU12",
+          "position": [
+            0.0,
+            20.0,
+            35.0
+          ],
+          "axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "hole_diameter": 5.5,
+          "fastener": "M5"
+        }
+      ],
+      "clearance_min_mm": null,
+      "hole_geometry_status": "VERIFIED",
+      "mating_status": "NOT_VERIFIED"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R01",
+      "key": "function",
+      "text": "AI interpretation: an L-shaped bracket that holds a sensor box on a flat plate; the base leg sits on the plate and the other leg carries the sensor box.",
+      "value": null,
+      "unit": null,
+      "source": "LEGACY_V1",
+      "quote": "L-bracket to mount a 2 kg sensor box to a flat plate",
+      "answer_id": null,
+      "derived_from": [],
+      "interpreted_by": "AI"
+    },
+    {
+      "id": "R02",
+      "key": "load",
+      "text": "AI interpretation: the supported payload is the sensor box with a mass of 2 kg (static mass only; no load direction, dynamic factor or centre of mass stated).",
+      "value": 2,
+      "unit": "kg",
+      "source": "LEGACY_V1",
+      "quote": "2 kg sensor box",
+      "answer_id": null,
+      "derived_from": [],
+      "interpreted_by": "AI"
+    },
+    {
+      "id": "R03",
+      "key": "base_fastener",
+      "text": "AI interpretation: the bracket is fastened to the flat plate with four M6 bolts.",
+      "value": "4 x M6",
+      "unit": null,
+      "source": "LEGACY_V1",
+      "quote": "to a flat plate with four M6 bolts",
+      "answer_id": null,
+      "derived_from": [],
+      "interpreted_by": "AI"
+    },
+    {
+      "id": "R04",
+      "key": "manufacturing_process",
+      "text": "AI interpretation: the bracket is a machined part.",
+      "value": "machined",
+      "unit": null,
+      "source": "LEGACY_V1",
+      "quote": "machined",
+      "answer_id": null,
+      "derived_from": [],
+      "interpreted_by": "AI"
+    },
+    {
+      "id": "R05",
+      "key": "material",
+      "text": "AI interpretation: the bracket material is aluminium; alloy and temper are not specified.",
+      "value": "aluminium",
+      "unit": null,
+      "source": "LEGACY_V1",
+      "quote": "machined aluminium",
+      "answer_id": null,
+      "derived_from": [],
+      "interpreted_by": "AI"
+    },
+    {
+      "id": "R06",
+      "key": "upright_fastener",
+      "text": "AI interpretation: the sensor box is fastened to the carrying leg with two M5 bolts, 40 mm apart horizontally, side by side at the same height; the bracket therefore needs two M5 clearance holes in that leg.",
+      "value": "2 x M5 @ 40 mm",
+      "unit": null,
+      "source": "LEGACY_V1",
+      "quote": "attached with two M5 bolts, 40 mm apart horizontally",
+      "answer_id": "M01",
+      "derived_from": [],
+      "interpreted_by": "AI"
+    },
+    {
+      "id": "R07",
+      "key": "payload_cg_offset",
+      "text": "AI interpretation: the sensor box centre of mass lies 40 mm from its mounting face, i.e. 40 mm away from the face of the carrying leg; this is the lever arm of the box weight.",
+      "value": 40,
+      "unit": "mm",
+      "source": "LEGACY_V1",
+      "quote": "The centre of mass is 40 mm from the mounting face",
+      "answer_id": "M01",
+      "derived_from": [],
+      "interpreted_by": "AI"
+    },
+    {
+      "id": "R08",
+      "key": "upright_hole_position",
+      "text": "AI interpretation: the centres of the two M5 holes are 35 mm above the flat plate, i.e. 35 mm above the bottom face of the base leg (interpretation: the figure is taken as hole-centre height, not hole-edge height).",
+      "value": 35,
+      "unit": "mm",
+      "source": "LEGACY_V1",
+      "quote": "The two M5 holes are 35 mm above the flat plate",
+      "answer_id": "M06",
+      "derived_from": [],
+      "interpreted_by": "AI"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "A01",
+      "text": "Concept-level design: nominal geometry, no tolerancing, no FEA or fatigue analysis; sizing by one hand calculation only.",
+      "rationale": "MVP scope.",
+      "impact": "Results are not a structural sign-off.",
+      "affects": [
+        "all"
+      ]
+    },
+    {
+      "id": "A02",
+      "text": "ENGINEERING ASSUMPTION (not stated by the user): aluminium 6061-T6 (material id AL6061-T6).",
+      "rationale": "Common general-purpose machining alloy; the request says only 'aluminium'.",
+      "impact": "Handbook yield strength (NOT_VERIFIED) used in the bending check.",
+      "affects": [
+        "material",
+        "load_case"
+      ]
+    },
+    {
+      "id": "A03",
+      "text": "ENGINEERING ASSUMPTION (not stated by the user): design load = 5 x the static weight of the 2 kg box, required safety factor on yield 2.0.",
+      "rationale": "No environment given; covers handling, shock and vibration at concept level.",
+      "impact": "Drives plate thickness; must be confirmed for the real environment.",
+      "affects": [
+        "load_case",
+        "bracket_thickness"
+      ]
+    },
+    {
+      "id": "A04",
+      "text": "ENGINEERING ASSUMPTION (not stated by the user): no hard envelope limit; keep the bracket compact.",
+      "rationale": "Envelope not stated.",
+      "impact": "Leg lengths and width follow from hole layout and edge-distance rules.",
+      "affects": [
+        "leg_base_length",
+        "leg_upright_height",
+        "bracket_width"
+      ]
+    },
+    {
+      "id": "A05",
+      "text": "ENGINEERING ASSUMPTION (not stated by the user): the flat plate will be drilled to match the bracket's M6 hole pattern.",
+      "rationale": "No plate pattern given.",
+      "impact": "The bracket defines the plate drilling pattern.",
+      "affects": [
+        "base_hole_x0",
+        "base_hole_pitch_x",
+        "base_hole_pitch_y"
+      ]
+    },
+    {
+      "id": "A06",
+      "text": "ENGINEERING ASSUMPTION (not stated by the user): M6 hex-head bolts with washers installed from above with a socket; >= 15 mm from hole centre to the inner face of the carrying leg.",
+      "rationale": "Tool access for the base bolts next to the carrying leg.",
+      "impact": "Sets base_hole_x0.",
+      "affects": [
+        "base_hole_x0"
+      ]
+    }
+  ],
+  "applicable_rules": [
+    "DFM-MACH-WALL-MIN",
+    "DFM-MACH-INNER-RADIUS-MIN",
+    "DFM-DFMEA-FATIGUE-FILLET",
+    "STD-ISO273-MEDIUM",
+    "GL-HOLE-EDGE-DISTANCE"
+  ],
+  "manufacturing": {
+    "process": "machined",
+    "material": "AL6061-T6"
+  },
+  "validation": [
+    {
+      "check_id": "PROC-CAD-BUILD",
+      "title": "Fusion CAD build completed",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The generated Fusion script ran to completion without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "GEO-BODY-COUNT",
+      "title": "Expected number of solid bodies",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "Fusion reports the designed number of bodies, all solid.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": 1,
+      "limit": 1,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "GEO-FEATURE-HEALTH",
+      "title": "All timeline features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "Every Fusion timeline feature of the component computed without warning or error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": "8/8 healthy",
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "GEO-SKETCH-CONSTRAINED",
+      "title": "All sketches fully constrained",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "Every sketch is fully constrained (geometry fully driven by dimensions/constraints).",
+      "status": "VERIFIED",
+      "severity": "ADVISORY",
+      "method": "FUSION_MEASUREMENT",
+      "measured": "3/3",
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "GEO-BBOX",
+      "title": "Bounding box matches design (VCS)",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "Fusion-measured overall extents equal the designed extents (overall size only).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "min": [
+          0.0,
+          -30.0,
+          0.0
+        ],
+        "max": [
+          64.0,
+          30.0,
+          50.0
+        ]
+      },
+      "limit": {
+        "min": [
+          0.0,
+          -30.0,
+          0.0
+        ],
+        "max": [
+          64.0,
+          30.0,
+          50.0
+        ],
+        "tol_mm": 0.001
+      },
+      "unit": "mm",
+      "rule_id": null,
+      "message": "max deviation 0.00e+00 mm"
+    },
+    {
+      "check_id": "GEO-VOLUME",
+      "title": "Volume matches analytic model",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "Fusion-measured volume equals the generator's analytic volume (consistency with design intent).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": 30941.231,
+      "limit": "30941.231 ± 1e-04 rel",
+      "unit": "mm3",
+      "rule_id": null,
+      "message": "relative deviation 1.18e-15"
+    },
+    {
+      "check_id": "GEO-PARAM-SYNC",
+      "title": "Fusion user parameters equal the component record",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Fusion holds the parameter values of the record (does not by itself prove the geometry follows them).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": "14/14",
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "IFC-HOLE-GEOMETRY",
+      "title": "Own mounting holes: diameter, axis and position as designed",
+      "category": "INTERFACE",
+      "scope": "HOLE_GEOMETRY",
+      "claim": "This component's own mounting holes exist in Fusion with the designed diameter, axis and position. Says nothing about the mating part.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": "6/6 holes matched",
+      "limit": "position/diameter tol 0.001 mm",
+      "unit": "mm",
+      "rule_id": null,
+      "message": "All own mounting holes found in Fusion geometry."
+    },
+    {
+      "check_id": "IFC-MATING@IF-BASE",
+      "title": "Mating fit of IF-BASE with flat_plate (external, not modelled)",
+      "category": "INTERFACE",
+      "scope": "MATING_INTERFACE",
+      "claim": "Whether the mating part's holes/faces coincide with this interface. Not checked: the mating part is not modelled in the project.",
+      "status": "NOT_VERIFIED",
+      "severity": "ADVISORY",
+      "method": "NOT_RUN",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": "Mating part geometry not available; fit, hole alignment and clearance are not verified."
+    },
+    {
+      "check_id": "IFC-MATING@IF-UPRIGHT",
+      "title": "Mating fit of IF-UPRIGHT with sensor_box (external, not modelled)",
+      "category": "INTERFACE",
+      "scope": "MATING_INTERFACE",
+      "claim": "Whether the mating part's holes/faces coincide with this interface. Not checked: the mating part is not modelled in the project.",
+      "status": "NOT_VERIFIED",
+      "severity": "ADVISORY",
+      "method": "NOT_RUN",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": "Mating part geometry not available; fit, hole alignment and clearance are not verified."
+    },
+    {
+      "check_id": "DFM-MACH-WALL-MIN",
+      "title": "Minimum machinable wall thickness",
+      "category": "MANUFACTURING",
+      "scope": "MANUFACTURING_RULE",
+      "claim": "Design value of 'wall_thickness' satisfies rule DFM-MACH-WALL-MIN as transcribed (transcription NOT_VERIFIED).",
+      "status": "ASSUMPTION",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": 5.0,
+      "limit": ">= 2.0",
+      "unit": "mm",
+      "rule_id": "DFM-MACH-WALL-MIN",
+      "message": "Passes; rule transcription not yet human-verified."
+    },
+    {
+      "check_id": "DFM-MACH-INNER-RADIUS-MIN",
+      "title": "Minimum internal corner radius (end-mill access)",
+      "category": "MANUFACTURING",
+      "scope": "MANUFACTURING_RULE",
+      "claim": "Design value of 'internal_corner_radius' satisfies rule DFM-MACH-INNER-RADIUS-MIN as transcribed (transcription NOT_VERIFIED).",
+      "status": "ASSUMPTION",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": 4.0,
+      "limit": ">= 3.0",
+      "unit": "mm",
+      "rule_id": "DFM-MACH-INNER-RADIUS-MIN",
+      "message": "Passes; rule transcription not yet human-verified."
+    },
+    {
+      "check_id": "DFM-DFMEA-FATIGUE-FILLET",
+      "title": "Fatigue - internal fillet radius relative to wall thickness",
+      "category": "MANUFACTURING",
+      "scope": "MANUFACTURING_RULE",
+      "claim": "Design value of 'fillet_to_thickness_ratio' satisfies rule DFM-DFMEA-FATIGUE-FILLET as transcribed (transcription NOT_VERIFIED).",
+      "status": "ASSUMPTION",
+      "severity": "ADVISORY",
+      "method": "PARAMETER_CHECK",
+      "measured": 0.8,
+      "limit": ">= 0.2",
+      "unit": null,
+      "rule_id": "DFM-DFMEA-FATIGUE-FILLET",
+      "message": "Passes; rule transcription not yet human-verified."
+    },
+    {
+      "check_id": "STD-ISO273-MEDIUM",
+      "title": "Clearance hole diameter for metric bolts (ISO 273, medium series)",
+      "category": "MANUFACTURING",
+      "scope": "MANUFACTURING_RULE",
+      "claim": "Design value of 'clearance_holes' satisfies rule STD-ISO273-MEDIUM as transcribed (transcription NOT_VERIFIED).",
+      "status": "ASSUMPTION",
+      "severity": "ADVISORY",
+      "method": "PARAMETER_CHECK",
+      "measured": [
+        {
+          "item": "M6",
+          "value": 6.6
+        },
+        {
+          "item": "M5",
+          "value": 5.5
+        }
+      ],
+      "limit": {
+        "M3": 3.4,
+        "M4": 4.5,
+        "M5": 5.5,
+        "M6": 6.6,
+        "M8": 9.0,
+        "M10": 11.0,
+        "M12": 13.5
+      },
+      "unit": "mm",
+      "rule_id": "STD-ISO273-MEDIUM",
+      "message": "All items match the table."
+    },
+    {
+      "check_id": "GL-HOLE-EDGE-DISTANCE",
+      "title": "Bolt hole centre to free edge distance",
+      "category": "MANUFACTURING",
+      "scope": "MANUFACTURING_RULE",
+      "claim": "Design value of 'hole_edge_distance_ratio' satisfies rule GL-HOLE-EDGE-DISTANCE as transcribed (transcription NOT_VERIFIED).",
+      "status": "ASSUMPTION",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": 1.8182,
+      "limit": ">= 1.5",
+      "unit": null,
+      "rule_id": "GL-HOLE-EDGE-DISTANCE",
+      "message": "Passes; rule transcription not yet human-verified."
+    },
+    {
+      "check_id": "STR-PLATE-BENDING",
+      "title": "Hand calc: leg bending stress vs yield",
+      "category": "STRUCTURAL",
+      "scope": "STRUCTURAL_CHECK",
+      "claim": "One simplified hand calculation (plate bending at the critical section vs yield) meets the required safety factor. Not a structural-adequacy statement.",
+      "status": "ASSUMPTION",
+      "severity": "BLOCKING",
+      "method": "HAND_CALC",
+      "measured": {
+        "moment_Nmm": 3924.0,
+        "stress_MPa": 19.22,
+        "safety_factor": 14.36
+      },
+      "limit": "SF >= 2.0",
+      "unit": "MPa",
+      "rule_id": null,
+      "message": "Upright leg as a plate under constant moment M = F*e (payload weight F at CG offset e from the upright face); critical net section through the upright hole row (W - 2 x hole). Material AL6061-T6 yield 276.0 MPa (NOT_VERIFIED). Stress concentration at holes/fillet and fatigue NOT included."
+    },
+    {
+      "check_id": "STR-ADEQUACY",
+      "title": "Overall structural adequacy",
+      "category": "STRUCTURAL",
+      "scope": "STRUCTURAL_ADEQUACY",
+      "claim": "Whether the part is structurally adequate in service. Not established: only one simplified hand calculation was run.",
+      "status": "NOT_VERIFIED",
+      "severity": "ADVISORY",
+      "method": "NOT_RUN",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": "Not analysed: bolt loads/prying, base-leg bending, fatigue, stress concentration, FEA."
+    },
+    {
+      "check_id": "FIA-APPLICABILITY",
+      "title": "FIA rules for this component",
+      "category": "FIA",
+      "scope": "FIA",
+      "claim": "None of the structured FIA rules in the project targets this component type. No FIA compliance statement of any kind.",
+      "status": "NOT_APPLICABLE",
+      "severity": "ADVISORY",
+      "method": "NOT_RUN",
+      "measured": "6 structured FIA rules loaded; 0 apply to 'l_bracket'",
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": "No structured FIA rule applies to this component type; no FIA claim is made."
+    }
+  ],
+  "derived": {
+    "volume_mm3": 30941.231,
+    "mass_kg": 0.0835,
+    "mass_basis": "Fusion volume x AL6061-T6 density 2700.0 kg/m3 (NOT_VERIFIED)",
+    "bbox_vcs_mm": {
+      "min": [
+        0.0,
+        -30.0,
+        0.0
+      ],
+      "max": [
+        64.0,
+        30.0,
+        50.0
+      ]
+    },
+    "design_inputs": {
+      "base_fastener": "M6",
+      "upright_fastener": "M5",
+      "base_mates_with": "flat_plate (external, not modelled)",
+      "upright_mates_with": "sensor_box (external, not modelled)"
+    },
+    "load_case": {
+      "description": "Box weight 2 kg (R02) x assumed factor 5 (A03) = 98.1 N acting at the user's centre-of-mass offset of 40 mm (R07) from the carrying-leg face: constant bending moment on that leg.",
+      "force_n": 98.1,
+      "lever_arm_mm": 40.0,
+      "required_safety_factor": 2.0,
+      "trace": [
+        "R02",
+        "R07",
+        "A03"
+      ]
+    }
+  },
+  "fusion_ref": {
+    "document": "Untitled",
+    "component_name": "BRK-002 Sensor box bracket",
+    "built_at": "2026-10-05T17:58:20+00:00",
+    "fusion_version": "2705.1.11"
+  },
+  "provenance": [
+    "AI_GENERATED",
+    "GEOMETRY_VALIDATED",
+    "RULE_CHECKED",
+    "ASSUMPTION_BASED"
+  ],
+  "history": [
+    {
+      "revision": 1,
+      "date": "2026-10-05T17:58:20+00:00",
+      "run_id": "20261005-205141-design-a-machined-alumin",
+      "summary": "Created by run 20261005-205141-design-a-machined-alumin: Design a machined aluminium L-bracket to mount a 2 kg sensor box to a flat plate"
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "palette_version": 1,
+  "note": "Mini F1 colours (cosmetic only: no effect on part versions). finish: glossy_paint | matte_rubber | satin. A derived right-hand part not listed uses its source's entry. Apply to the open design: python -m agent recolor <run_id> zones colour faces by a deterministic rule (vehicle/palette.py): wheel_rim = the outboard rim face, lip and spokes; cockpit = the cockpit rim ring and everything inside it.",
+  "parts": {
+    "MON-001": {
+      "color": "#B01E28",
+      "finish": "glossy_paint",
+      "zones": [
+        {
+          "rule": "cockpit",
+          "color": "#CBD0D8",
+          "finish": "glossy_paint"
+        }
+      ]
+    },
+    "SDP-L": {
+      "color": "#CBD0D8",
+      "finish": "glossy_paint"
+    },
+    "SDP-R": {
+      "color": "#CBD0D8",
+      "finish": "glossy_paint"
+    },
+    "ENG-001": {
+      "color": "#9DB8E4",
+      "finish": "glossy_paint"
+    },
+    "FWG-001": {
+      "color": "#7FA3DB",
+      "finish": "glossy_paint"
+    },
+    "RWG-001": {
+      "color": "#B01E28",
+      "finish": "glossy_paint"
+    },
+    "HAL-001": {
+      "color": "#8A2BE2",
+      "finish": "glossy_paint"
+    },
+    "MIR-L": {
+      "color": "#8A2BE2",
+      "finish": "glossy_paint"
+    },
+    "MIR-R": {
+      "color": "#8A2BE2",
+      "finish": "glossy_paint"
+    },
+    "FLR-001": {
+      "color": "#4A4F58",
+      "finish": "satin"
+    },
+    "SUF-L": {
+      "color": "#4A4E55",
+      "finish": "satin"
+    },
+    "SUF-R": {
+      "color": "#4A4E55",
+      "finish": "satin"
+    },
+    "SUR-L": {
+      "color": "#4A4E55",
+      "finish": "satin"
+    },
+    "SUR-R": {
+      "color": "#4A4E55",
+      "finish": "satin"
+    },
+    "WHL-FL": {
+      "color": "#101113",
+      "finish": "matte_rubber",
+      "zones": [
+        {
+          "rule": "wheel_rim",
+          "color": "#C8CCD2",
+          "finish": "satin"
+        }
+      ]
+    },
+    "WHL-FR": {
+      "color": "#101113",
+      "finish": "matte_rubber",
+      "zones": [
+        {
+          "rule": "wheel_rim",
+          "color": "#C8CCD2",
+          "finish": "satin"
+        }
+      ]
+    },
+    "WHL-RL": {
+      "color": "#101113",
+      "finish": "matte_rubber",
+      "zones": [
+        {
+          "rule": "wheel_rim",
+          "color": "#C8CCD2",
+          "finish": "satin"
+        }
+      ]
+    },
+    "WHL-RR": {
+      "color": "#101113",
+      "finish": "matte_rubber",
+      "zones": [
+        {
+          "rule": "wheel_rim",
+          "color": "#C8CCD2",
+          "finish": "satin"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,276 @@
+{
+  "generator": "l_bracket",
+  "component_name": "PART-001 F1 Front Wing Mounting Bracket",
+  "steps": [
+    "1. Set the envelope and section from the user's values: base leg 120 mm (X), width 70 mm (Y), support height 65 mm (Z), base 12 mm, upright 10 mm (R05-R09).",
+    "2. Set the inner bend fillet to the user minimum R5 (R12). Confirm it against DFM-MACH-INNER-RADIUS-MIN (>= 3 mm) and DFM-DFMEA-FATIGUE-FILLET (>= 0.2 x 12 = 2.4 mm).",
+    "3. Lay out the vehicle-side zone (A07): 2 x Ø10 holes in the base, 1 row x 2 columns symmetric about y=0. Keep them clear of the bend fillet and >= 1.5d (15 mm) from every free edge (GL-HOLE-EDGE-DISTANCE).",
+    "4. Lay out the front-wing zone (A07): 2 x Ø8 holes in the upright, 1 row x 2 columns, above the bend fillet run-out and >= 12 mm from the top and side edges.",
+    "5. Keep the generator origin (outer corner of the L, mid-width plane) as the local frame (R17). X, Y and Z follow R14-R16. The L-profile provides the orientation asymmetry (A08).",
+    "6. Select machined AL7075-T6 (A02, A03). Python runs the feasibility and DFM rule checks.",
+    "7. No load case was given (A04, A10). Register a zero-load placeholder so the structural hand calculation is reported NOT_RUN, not passed.",
+    "8. Place the component at (500, -250, 150) mm with roll/pitch/yaw 15/35/60 deg, using R = Rz*Ry*Rx (A09).",
+    "9. Build in Fusion. Measure the envelope, thicknesses, hole diameters and positions, fillet radius, and the placed pose read-back. Compare these with the expected geometry."
+  ],
+  "parameters": {
+    "leg_base_length": {
+      "value": 120,
+      "unit": "mm",
+      "source": "USER",
+      "trace": [
+        "R05"
+      ],
+      "rationale": "Overall length along local X as given by the user."
+    },
+    "leg_upright_height": {
+      "value": 65,
+      "unit": "mm",
+      "source": "USER",
+      "trace": [
+        "R09"
+      ],
+      "rationale": "Support height along local Z as given by the user (measured from z=0)."
+    },
+    "bracket_width": {
+      "value": 70,
+      "unit": "mm",
+      "source": "USER",
+      "trace": [
+        "R06"
+      ],
+      "rationale": "Overall width along local Y as given by the user."
+    },
+    "bracket_thickness": {
+      "value": 12,
+      "unit": "mm",
+      "source": "USER",
+      "trace": [
+        "R07"
+      ],
+      "rationale": "Base thickness as given. 12 mm is far above the 2 mm machinable wall minimum."
+    },
+    "upright_thickness": {
+      "value": 10,
+      "unit": "mm",
+      "source": "USER",
+      "trace": [
+        "R08"
+      ],
+      "rationale": "Vertical support thickness as given. Differs from the base, so the optional parameter is set explicitly."
+    },
+    "bend_inner_radius": {
+      "value": 5,
+      "unit": "mm",
+      "source": "USER",
+      "trace": [
+        "R12",
+        "A03",
+        "DFM-MACH-INNER-RADIUS-MIN",
+        "DFM-DFMEA-FATIGUE-FILLET"
+      ],
+      "rationale": "User minimum R5. Satisfies >= 3 mm end-mill access and >= 0.2 x 12 = 2.4 mm fatigue ratio. The outer fillet becomes 5 + 12 = 17 mm."
+    },
+    "base_hole_diameter": {
+      "value": 10,
+      "unit": "mm",
+      "source": "USER",
+      "trace": [
+        "R10",
+        "A05"
+      ],
+      "rationale": "User-specified Ø10 base mounting holes, treated as finished diameter (A05)."
+    },
+    "base_hole_rows": {
+      "value": 1,
+      "unit": "count",
+      "source": "ASSUMPTION",
+      "trace": [
+        "R10",
+        "A06"
+      ],
+      "rationale": "The 2 base holes are placed side by side in one row (1 x 2) to spread lateral moment about X across the 70 mm width."
+    },
+    "base_hole_cols": {
+      "value": 2,
+      "unit": "count",
+      "source": "ASSUMPTION",
+      "trace": [
+        "R10",
+        "A06"
+      ],
+      "rationale": "Two columns symmetric about y=0 give the user's 2 base holes."
+    },
+    "base_hole_x0": {
+      "value": 70,
+      "unit": "mm",
+      "source": "ASSUMPTION",
+      "trace": [
+        "A06",
+        "GL-HOLE-EDGE-DISTANCE",
+        "R05"
+      ],
+      "rationale": "Centre is 50 mm past the fillet run-out (x = 10 + 5 = 15 mm), leaving tool and bolt-head access. It is 50 mm from the free end (x=120), well above 15 mm."
+    },
+    "base_hole_pitch_x": {
+      "value": 20,
+      "unit": "mm",
+      "source": "ASSUMPTION",
+      "trace": [
+        "A06"
+      ],
+      "rationale": "Ignored with 1 row. If ever used, a second row at x=90 would still keep 30 mm to the free end."
+    },
+    "base_hole_pitch_y": {
+      "value": 40,
+      "unit": "mm",
+      "source": "ASSUMPTION",
+      "trace": [
+        "A06",
+        "GL-HOLE-EDGE-DISTANCE",
+        "R06"
+      ],
+      "rationale": "Centres at y=±20 sit 15 mm from the ±35 side edges (= 1.5 x 10, the maximum allowed spacing) and leave a 30 mm ligament between holes."
+    },
+    "upright_hole_diameter": {
+      "value": 8,
+      "unit": "mm",
+      "source": "USER",
+      "trace": [
+        "R11",
+        "A05"
+      ],
+      "rationale": "User-specified Ø8 front-wing mounting holes, treated as finished diameter (A05)."
+    },
+    "upright_hole_rows": {
+      "value": 1,
+      "unit": "count",
+      "source": "ASSUMPTION",
+      "trace": [
+        "R11",
+        "A06"
+      ],
+      "rationale": "One row of two holes keeps both holes in the free upright zone above the fillet."
+    },
+    "upright_hole_cols": {
+      "value": 2,
+      "unit": "count",
+      "source": "ASSUMPTION",
+      "trace": [
+        "R11",
+        "A06"
+      ],
+      "rationale": "Two columns symmetric about y=0 give the user's 2 front-wing holes."
+    },
+    "upright_hole_z0": {
+      "value": 42,
+      "unit": "mm",
+      "source": "ASSUMPTION",
+      "trace": [
+        "A06",
+        "GL-HOLE-EDGE-DISTANCE",
+        "R09"
+      ],
+      "rationale": "Centre is roughly mid-way through the free upright zone (z = 12 + 5 = 17 to 65). It is 23 mm from the top edge (>= 12 mm) and 25 mm above the fillet run-out, leaving nut and washer clearance."
+    },
+    "upright_hole_pitch_z": {
+      "value": 10,
+      "unit": "mm",
+      "source": "ASSUMPTION",
+      "trace": [
+        "A06"
+      ],
+      "rationale": "Ignored with 1 row. If ever used, a second row at z=52 would still be 13 mm from the top edge (>= 12 mm)."
+    },
+    "upright_hole_pitch_y": {
+      "value": 40,
+      "unit": "mm",
+      "source": "ASSUMPTION",
+      "trace": [
+        "A06",
+        "GL-HOLE-EDGE-DISTANCE",
+        "R06"
+      ],
+      "rationale": "Centres at y=±20 sit 15 mm from the side edges (>= 1.5 x 8 = 12 mm). The pitch matches the base holes for a consistent interface pattern."
+    }
+  },
+  "design_inputs": {
+    "base_fastener": null,
+    "upright_fastener": null,
+    "base_mates_with": "vehicle/chassis-side front-wing mount (future F1 part; interface defined by base holes, A07)",
+    "upright_mates_with": "front wing main plane / pylon (future F1 part; interface defined by upright holes, A07)"
+  },
+  "manufacturing": {
+    "process": "machined",
+    "material": "AL7075-T6"
+  },
+  "load_case": {
+    "description": "No load case defined by the user (M03/A04). This is a zero-force placeholder: the structural hand calculation must be reported NOT_RUN, not passed, until the user supplies force, direction, lever arm and safety factor.",
+    "force_n": 0,
+    "lever_arm_mm": 0,
+    "required_safety_factor": 1,
+    "trace": [
+      "M03",
+      "A04",
+      "A10"
+    ]
+  },
+  "new_assumptions": [
+    {
+      "id": "A10",
+      "text": "The load_case is a zero-force placeholder (force 0 N, lever arm 0 mm, safety factor 1.0 as a schema-required non-binding value). It is not a design load.",
+      "rationale": "The user gave no load (A04). Loads and safety factors must not be invented.",
+      "impact": "The structural check is NOT_RUN. Strength and stiffness remain unverified.",
+      "affects": [
+        "M03",
+        "A04"
+      ]
+    },
+    {
+      "id": "A11",
+      "text": "Fastener sizes are left unspecified (design_inputs fasteners = null). Ø10 and Ø8 are not ISO 273 medium-series clearance values, so STD-ISO273-MEDIUM (advisory) may flag them. The user's diameters are kept.",
+      "rationale": "The user specified hole diameters, not bolts (A05). R03 makes them project-defined values.",
+      "impact": "Bolt size and fit class must be confirmed before mating with real parts. The advisory finding is expected and reported, not hidden.",
+      "affects": [
+        "R10",
+        "R11",
+        "A05"
+      ]
+    }
+  ],
+  "placement": {
+    "position_mm": [
+      500,
+      -250,
+      150
+    ],
+    "rotation_deg": [
+      15,
+      35,
+      60
+    ],
+    "source": "USER",
+    "trace": [
+      "R18",
+      "R19",
+      "R20",
+      "R21",
+      "R22",
+      "R23",
+      "R17",
+      "A09"
+    ],
+    "rationale": "User-stated pose of the generator origin in the project frame. Roll/pitch/yaw are applied about X/Y/Z as R = Rz(yaw)·Ry(pitch)·Rx(roll) (A09)."
+  },
+  "verification_plan": [
+    "Feasibility (Python): generator constraints pass for all parameters, including the hole layout clear of the bend fillet (base x0 = 70 > 15 mm; upright z0 = 42 > 17 mm).",
+    "Rule check DFM-MACH-WALL-MIN: min wall = min(12, 10) = 10 mm >= 2 mm.",
+    "Rule check DFM-MACH-INNER-RADIUS-MIN: inner bend R5 >= 3 mm.",
+    "Rule check DFM-DFMEA-FATIGUE-FILLET: 5 / 12 = 0.42 >= 0.2 (advisory).",
+    "Rule check GL-HOLE-EDGE-DISTANCE: base holes 15 mm to side edges and 50 mm to end (>= 15); upright holes 15 mm to sides and 23 mm to top (>= 12).",
+    "Rule check STD-ISO273-MEDIUM: expected advisory finding because no fastener is defined and Ø10/Ø8 do not match the medium series (A11). Report it as is.",
+    "Fusion measurement: bounding box 120 x 70 x 65 mm in the local frame; base 12 mm and upright 10 mm thickness; inner fillet R5 and outer R17; 4 holes with diameter and centre positions as planned.",
+    "Fusion placement read-back: occurrence transform equals translation (500, -250, 150) and R = Rz(60)·Ry(35)·Rx(15), checked fail-loud against the expected matrix.",
+    "Mass: computed from the measured volume x 2810 kg/m3 (AL7075-T6 has no Fusion material mapping), reported as indicative.",
+    "Structural hand calculation: NOT_RUN (no load case, A04/A10). No strength, safety or FIA compliance claim is made (A01, R02)."
+  ]
+}

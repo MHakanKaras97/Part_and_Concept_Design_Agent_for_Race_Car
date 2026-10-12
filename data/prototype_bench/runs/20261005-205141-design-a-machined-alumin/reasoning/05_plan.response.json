@@ -1,0 +1,42 @@
+{
+  "generator": "l_bracket",
+  "component_name": "Sensor box bracket",
+  "steps": [
+    "Fix the interfaces from the user's words: base leg 4 x M6 to the plate (R03); carrying leg 2 x M5, 40 mm apart horizontally (R06), hole centres 35 mm above the plate (R08).",
+    "Size clearance holes per STD-ISO273-MEDIUM: M6 -> 6.6 mm, M5 -> 5.5 mm.",
+    "Choose width, leg lengths and base-hole layout so every hole centre is >= 1.5 d from free edges (GL-HOLE-EDGE-DISTANCE) and clear of the bend.",
+    "Choose thickness from the bending hand calculation with the user's lever arm (R07) and the assumed design load (A03, A02); respect min wall (DFM-MACH-WALL-MIN).",
+    "Internal bend radius per DFM-MACH-INNER-RADIUS-MIN and DFM-DFMEA-FATIGUE-FILLET.",
+    "Build the parametric model in Fusion; inspect read-only; validate; review."
+  ],
+  "parameters": {
+    "bracket_thickness": {"value": 5, "unit": "mm", "source": "ASSUMPTION", "trace": ["A01", "A03", "DFM-MACH-WALL-MIN"], "rationale": "Engineering decision: hand calc with the assumed load gives a large margin already at 4 mm; 5 mm chosen for bolt-clamping stiffness."},
+    "bend_inner_radius": {"value": 4, "unit": "mm", "source": "RULE", "trace": ["DFM-MACH-INNER-RADIUS-MIN", "DFM-DFMEA-FATIGUE-FILLET"], "rationale": ">= 3 mm end-mill rule and >= 0.2 t fatigue rule."},
+    "bracket_width": {"value": 60, "unit": "mm", "source": "DERIVED", "trace": ["R06", "GL-HOLE-EDGE-DISTANCE", "A04"], "rationale": "User M5 spacing 40 mm (R06) + 2 x 1.5 x 5.5 mm edge distance = 56.5 mm minimum -> 60 mm."},
+    "leg_base_length": {"value": 64, "unit": "mm", "source": "DERIVED", "trace": ["GL-HOLE-EDGE-DISTANCE", "A04", "A05"], "rationale": "Last base hole row at 52 mm + 1.5 x 6.6 mm = 61.9 mm minimum -> 64 mm."},
+    "leg_upright_height": {"value": 50, "unit": "mm", "source": "DERIVED", "trace": ["R08", "GL-HOLE-EDGE-DISTANCE", "A04"], "rationale": "User hole height 35 mm (R08) + 1.5 x 5.5 mm = 43.25 mm minimum -> 50 mm."},
+    "base_hole_diameter": {"value": 6.6, "unit": "mm", "source": "RULE", "trace": ["STD-ISO273-MEDIUM", "R03"], "rationale": "ISO 273 medium clearance for the user's M6 bolts."},
+    "base_hole_x0": {"value": 22, "unit": "mm", "source": "ASSUMPTION", "trace": ["A06"], "rationale": "Engineering decision: socket access next to the carrying leg (A06)."},
+    "base_hole_pitch_x": {"value": 30, "unit": "mm", "source": "ASSUMPTION", "trace": ["A05"], "rationale": "Engineering decision: spread the four M6 bolts along the base to resist the overturning moment; plate drilled to suit (A05)."},
+    "base_hole_pitch_y": {"value": 36, "unit": "mm", "source": "DERIVED", "trace": ["GL-HOLE-EDGE-DISTANCE", "A05"], "rationale": "Side edge distance (30 - 18) = 12 mm = 1.82 d >= 1.5 d."},
+    "base_hole_rows": {"value": 2, "unit": "count", "source": "REQUIREMENT", "trace": ["R03", "A05"], "rationale": "Four M6 bolts (R03) arranged 2 x 2 (A05)."},
+    "base_hole_cols": {"value": 2, "unit": "count", "source": "REQUIREMENT", "trace": ["R03", "A05"], "rationale": "Four M6 bolts (R03) arranged 2 x 2 (A05)."},
+    "upright_hole_diameter": {"value": 5.5, "unit": "mm", "source": "RULE", "trace": ["STD-ISO273-MEDIUM", "R06"], "rationale": "ISO 273 medium clearance for the user's M5 bolts."},
+    "upright_hole_z0": {"value": 35, "unit": "mm", "source": "USER", "trace": ["M06", "R08"], "rationale": "User: hole centres 35 mm above the flat plate (R08 interpretation of M06)."},
+    "upright_hole_pitch_z": {"value": 0, "unit": "mm", "source": "DERIVED", "trace": [], "rationale": "Single row of holes (R06) - not used."},
+    "upright_hole_pitch_y": {"value": 40, "unit": "mm", "source": "USER", "trace": ["M01", "R06"], "rationale": "User: M5 bolts 40 mm apart horizontally."},
+    "upright_hole_rows": {"value": 1, "unit": "count", "source": "USER", "trace": ["M01", "R06"], "rationale": "Two bolts side by side horizontally (R06 interpretation)."},
+    "upright_hole_cols": {"value": 2, "unit": "count", "source": "USER", "trace": ["M01", "R06"], "rationale": "Two M5 bolts (user)."}
+  },
+  "design_inputs": {"base_fastener": "M6", "upright_fastener": "M5", "base_mates_with": "flat_plate (external, not modelled)", "upright_mates_with": "sensor_box (external, not modelled)"},
+  "manufacturing": {"process": "machined", "material": "AL6061-T6"},
+  "load_case": {"description": "Box weight 2 kg (R02) x assumed factor 5 (A03) = 98.1 N acting at the user's centre-of-mass offset of 40 mm (R07) from the carrying-leg face: constant bending moment on that leg.", "force_n": 98.1, "lever_arm_mm": 40, "required_safety_factor": 2.0, "trace": ["R02", "R07", "A03"]},
+  "new_assumptions": [
+    {"id": "A06", "text": "ENGINEERING ASSUMPTION (not stated by the user): M6 hex-head bolts with washers installed from above with a socket; >= 15 mm from hole centre to the inner face of the carrying leg.", "rationale": "Tool access for the base bolts next to the carrying leg.", "impact": "Sets base_hole_x0.", "affects": ["base_hole_x0"]}
+  ],
+  "verification_plan": [
+    "Pre-CAD (Python): manufacturing rules and the bending hand calculation.",
+    "Fusion (read-only): body count, feature health, sketches constrained, bbox, volume vs analytic model, parameters vs record.",
+    "Own hole geometry: all 4 M6 and 2 M5 holes at designed position, axis and diameter. Mating fit with plate and sensor box will remain NOT_VERIFIED (parts not modelled)."
+  ]
+}

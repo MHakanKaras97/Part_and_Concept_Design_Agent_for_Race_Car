@@ -1,0 +1,263 @@
+{
+  "record_type": "part",
+  "id": "MON-001",
+  "name": "Monocoque",
+  "role": "survival cell / chassis tub with nose and cockpit opening",
+  "version": 1,
+  "lifecycle": "CONCEPT",
+  "spec": {
+    "id": "MON-001",
+    "name": "Monocoque",
+    "role": "survival cell / chassis tub with nose and cockpit opening",
+    "notes": "Tapered loft from wide rear section (X=-3700, 900 wide x 700 high, Z 30-730) to narrow nose tip (X=+550, 200 wide x 200 high, Z 30-230, flat vertical tip face that the front wing mount touches). Flat bottom at Z=30 sits on floor top face. Open cockpit cut from top, approx X -2300 to -1500, 500 wide, with raised rim 60 mm high around opening. Flat vertical rear face at X=-3700 for rear wing supports. Half-width 450 is well inside the 950 mm limit.",
+    "dims": {
+      "length": 4250.0,
+      "rear_width": 900.0,
+      "nose_tip_width": 200.0,
+      "rear_height": 700.0,
+      "nose_tip_height": 200.0,
+      "cockpit_rim_height": 60.0,
+      "cockpit_opening_length": 800.0,
+      "cockpit_opening_width": 500.0
+    },
+    "position_mm": [
+      0.0,
+      0.0,
+      30.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      -3700.0,
+      -450.0,
+      30.0
+    ],
+    "envelope_max": [
+      550.0,
+      450.0,
+      790.0
+    ],
+    "fia_refs_used": [
+      "C2.3.1"
+    ],
+    "reuse": false
+  },
+  "script_body": "def sec(part, x, w, zb, zt, c, name):\n    h = w / 2.0\n    pts = [\n        (x, -h + c, zb), (x, h - c, zb), (x, h, zb + c), (x, h, zt - c),\n        (x, h - c, zt), (x, -h + c, zt), (x, -h, zt - c), (x, -h, zb + c),\n    ]\n    return part.section(\"x\", x, pts, name)\n\n\ndef build(part):\n    p = part.p\n    W = p[\"rear_width\"]\n    H = p[\"rear_height\"]\n    nw = p[\"nose_tip_width\"]\n    nh = p[\"nose_tip_height\"]\n    rim = p[\"cockpit_rim_height\"]\n    cl = p[\"cockpit_opening_length\"]\n    cw = p[\"cockpit_opening_width\"]\n    zb = 30.0\n    x_rear = 550.0 - p[\"length\"]\n\n    profs = [\n        sec(part, x_rear, W, zb, zb + H, 80, \"SK_sec_rear\"),\n        sec(part, -2600, W * 0.97, zb, zb + H - 40, 75, \"SK_sec_cockpit_rear\"),\n        sec(part, -1400, W * 0.85, zb, zb + H - 110, 65, \"SK_sec_cockpit_front\"),\n        sec(part, -400, W * 0.55, zb, zb + H * 0.56, 50, \"SK_sec_nose_root\"),\n        sec(part, 550, nw, zb, zb + nh, 30, \"SK_sec_nose_tip\"),\n    ]\n    part.loft(profs, \"LF_tub\", op=\"new\")\n\n    # cockpit centre\n    x0 = -2300.0\n    x1 = x0 + cl\n    # raised rim block (interior removed by cockpit cut)\n    zr0 = 560.0\n    zr_top = 680.0 + rim\n    sk = part.sketch(part.plane(\"z\", zr0), \"SK_cockpit_rim\")\n    part.polygon(sk, [\n        (x0 - 60, -cw / 2 - 60, zr0), (x1 + 60, -cw / 2 - 60, zr0),\n        (x1 + 60, cw / 2 + 60, zr0), (x0 - 60, cw / 2 + 60, zr0),\n    ])\n    part.extrude(part.profile(sk), zr_top - zr0, \"EX_cockpit_rim\", op=\"join\")\n\n    # cockpit opening cut from above\n    zc = 760.0\n    skc = part.sketch(part.plane(\"z\", zc), \"SK_cockpit_opening\")\n    part.polygon(skc, [\n        (x0, -cw / 2, zc), (x1, -cw / 2, zc),\n        (x1, cw / 2, zc), (x0, cw / 2, zc),\n    ])\n    part.extrude(part.profile(skc), -(zc - 140.0), \"CUT_cockpit\", op=\"cut\")\n",
+  "script_sha256": "5b914298c5939845c1b796d3f3b805f55a0b2f184a726df4dc393f34a203f5c9",
+  "params": {
+    "length": 4250.0,
+    "rear_width": 900.0,
+    "nose_tip_width": 200.0,
+    "rear_height": 700.0,
+    "nose_tip_height": 200.0,
+    "cockpit_rim_height": 60.0,
+    "cockpit_opening_length": 800.0,
+    "cockpit_opening_width": 500.0
+  },
+  "pose": {
+    "position": [
+      0.0,
+      0.0,
+      30.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      -3700.0,
+      -450.1972,
+      60.0
+    ],
+    [
+      550.0,
+      450.1972,
+      770.0
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 1498228445.1
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 10,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          -3700.0,
+          -450.1972,
+          60.0
+        ],
+        [
+          550.0,
+          450.1972,
+          770.0
+        ]
+      ],
+      "limit": {
+        "min": [
+          -3700.0,
+          -450.0,
+          30.0
+        ],
+        "max": [
+          550.0,
+          450.0,
+          790.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          0.0,
+          0.0,
+          30.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "length": 4250.0,
+        "rear_width": 900.0,
+        "nose_tip_width": 200.0,
+        "rear_height": 700.0,
+        "nose_tip_height": 200.0,
+        "cockpit_rim_height": 60.0,
+        "cockpit_opening_length": 800.0,
+        "cockpit_opening_width": 500.0
+      },
+      "limit": {
+        "length": 4250.0,
+        "rear_width": 900.0,
+        "nose_tip_width": 200.0,
+        "rear_height": 700.0,
+        "nose_tip_height": 200.0,
+        "cockpit_rim_height": 60.0,
+        "cockpit_opening_length": 800.0,
+        "cockpit_opening_width": 500.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [
+    {
+      "article": "C2.3.1",
+      "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+      "page": 10,
+      "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+      "status": "VERIFIED",
+      "note": "measured max |Y| = 450.2 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+    }
+  ],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 MON-001 Monocoque",
+    "param_prefix": "mf1_mon001",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-10T11:55:00+00:00"
+  },
+  "run_id": "20261010-145347-create-a-coherent-parametric-min",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T11:55:00+00:00",
+      "run_id": "20261010-145347-create-a-coherent-parametric-min",
+      "script_sha256": "5b914298c5939845c1b796d3f3b805f55a0b2f184a726df4dc393f34a203f5c9",
+      "summary": "built by fast mode"
+    }
+  ]
+}

@@ -1,0 +1,347 @@
+{
+  "record_type": "part",
+  "id": "ENG-001",
+  "name": "Engine cover",
+  "role": "power unit / engine cover behind the cockpit, above the floor",
+  "version": 1,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "ENG-001",
+    "name": "Engine cover",
+    "role": "power unit / engine cover behind the cockpit, above the floor",
+    "notes": "Red single solid, base plane local Z 0 (embedded into monocoque top, max 60). Airbox: local X -250..0, |Y|<=140, up to Z 320 with rounded top and a front intake opening (~160 wide x 120 high, 150 deep pocket) in the X=0 face. Shark-fin spine fused behind: local X -1150..-250, |Y|<=40, top Z from ~300 at X -250 tapering to 120 at X -1150. Stays >=100 mm ahead of the rear wing.",
+    "dims": {
+      "airbox_length": 250.0,
+      "airbox_half_width": 140.0,
+      "airbox_height": 320.0,
+      "spine_length": 900.0,
+      "spine_half_width": 40.0,
+      "spine_end_height": 120.0
+    },
+    "position_mm": [
+      -2450.0,
+      0.0,
+      680.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      -3600.0,
+      -140.0,
+      680.0
+    ],
+    "envelope_max": [
+      -2450.0,
+      140.0,
+      1000.0
+    ],
+    "fia_refs_used": [
+      "C2.3.1"
+    ],
+    "reuse": false,
+    "mirror_of": null,
+    "mirror_mode": null
+  },
+  "script_body": "import math\n\ndef build(part):\n    AL = part.p[\"airbox_length\"]\n    AW = part.p[\"airbox_half_width\"]\n    AH = part.p[\"airbox_height\"]\n    SL = part.p[\"spine_length\"]\n    SW = part.p[\"spine_half_width\"]\n    SE = part.p[\"spine_end_height\"]\n\n    # Airbox: rounded-top cross-section on the X=0 face, extruded rearwards\n    zs = AH - 120.0\n    pts = [(0.0, -AW, 0.0), (0.0, AW, 0.0), (0.0, AW, zs)]\n    n = 10\n    for i in range(1, n):\n        a = math.pi * i / n\n        pts.append((0.0, AW * math.cos(a), zs + 120.0 * math.sin(a)))\n    pts.append((0.0, -AW, zs))\n    sk = part.sketch(part.plane(\"x\", 0.0), \"SK_airbox\")\n    part.polygon(sk, pts)\n    part.extrude(part.profile(sk), -AL, \"EX_airbox\")\n\n    # Shark-fin spine: side profile in XZ, overlapping the airbox by 50 mm\n    x_end = -AL - SL\n    sk2 = part.sketch(part.plane(\"y\", 0.0), \"SK_spine\")\n    part.polygon(sk2, [\n        (x_end, 0.0, 0.0),\n        (-AL + 50.0, 0.0, 0.0),\n        (-AL + 50.0, 0.0, 300.0),\n        (-AL, 0.0, 300.0),\n        (x_end, 0.0, SE),\n    ])\n    part.extrude(part.profile(sk2), 2.0 * SW, \"EX_spine\", op=\"join\", symmetric=True)\n\n    # Front intake opening: ~160 wide x 120 high, 150 deep pocket\n    sk3 = part.sketch(part.plane(\"x\", 0.0), \"SK_intake\")\n    part.polygon(sk3, [\n        (0.0, -80.0, 160.0), (0.0, 80.0, 160.0),\n        (0.0, 80.0, 280.0), (0.0, -80.0, 280.0),\n    ])\n    part.extrude(part.profile(sk3), -150.0, \"CUT_intake\", op=\"cut\")\n",
+  "script_sha256": "ae2f0a42d93b346ba9286291b2d79dc82cf5dcc1f142c452a64b9a871e1fe3bd",
+  "params": {
+    "airbox_length": 250.0,
+    "airbox_half_width": 140.0,
+    "airbox_height": 320.0,
+    "spine_length": 900.0,
+    "spine_half_width": 40.0,
+    "spine_end_height": 120.0
+  },
+  "pose": {
+    "position": [
+      -2450.0,
+      0.0,
+      680.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      -3600.0,
+      -140.0,
+      680.0
+    ],
+    [
+      -2450.0,
+      140.0,
+      1000.0
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 32729356.9
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 5,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          -3600.0,
+          -140.0,
+          680.0
+        ],
+        [
+          -2450.0,
+          140.0,
+          1000.0
+        ]
+      ],
+      "limit": {
+        "min": [
+          -3600.0,
+          -140.0,
+          680.0
+        ],
+        "max": [
+          -2450.0,
+          140.0,
+          1000.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FRAME",
+      "title": "Geometry in the part-local frame",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part's local bbox (built at identity) lies in the planned envelope taken back into the part frame by the inverse pose.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bbox_local": [
+          [
+            -1150.0,
+            -140.0,
+            0.0
+          ],
+          [
+            0.0,
+            140.0,
+            320.0
+          ]
+        ]
+      },
+      "limit": {
+        "expected_local": [
+          [
+            -1150.0,
+            -140.0,
+            0.0
+          ],
+          [
+            0.0,
+            140.0,
+            320.0
+          ]
+        ],
+        "world_envelope": [
+          [
+            -3600.0,
+            -140.0,
+            680.0
+          ],
+          [
+            -2450.0,
+            140.0,
+            1000.0
+          ]
+        ],
+        "tol_mm": 5.0,
+        "frame_mode": "part_local"
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          -2450.0,
+          0.0,
+          680.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "airbox_length": 250.0,
+        "airbox_half_width": 140.0,
+        "airbox_height": 320.0,
+        "spine_length": 900.0,
+        "spine_half_width": 40.0,
+        "spine_end_height": 120.0
+      },
+      "limit": {
+        "airbox_length": 250.0,
+        "airbox_half_width": 140.0,
+        "airbox_height": 320.0,
+        "spine_length": 900.0,
+        "spine_half_width": 40.0,
+        "spine_end_height": 120.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [
+    {
+      "article": "C2.3.1",
+      "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+      "page": 10,
+      "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+      "status": "VERIFIED",
+      "note": "measured max |Y| = 140.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+    }
+  ],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 ENG-001 Engine cover",
+    "param_prefix": "mf1_eng001",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-10T19:28:32+00:00"
+  },
+  "run_id": "20261010-222202-extend-the-existing-mini-f1-asse",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T19:28:32+00:00",
+      "run_id": "20261010-222202-extend-the-existing-mini-f1-asse",
+      "script_sha256": "ae2f0a42d93b346ba9286291b2d79dc82cf5dcc1f142c452a64b9a871e1fe3bd",
+      "summary": "built by fast mode",
+      "kind": "",
+      "instruction": ""
+    }
+  ],
+  "revision": {},
+  "derived": {},
+  "geometry": {
+    "volume_mm3": 32729356.881874,
+    "solids": 1,
+    "lumps": 1,
+    "bbox_local": [
+      [
+        -1150.0,
+        -140.0,
+        0.0
+      ],
+      [
+        0.0,
+        140.0,
+        320.0
+      ]
+    ],
+    "bbox_world": [
+      [
+        -3600.0,
+        -140.0,
+        680.0
+      ],
+      [
+        -2450.0,
+        140.0,
+        1000.0
+      ]
+    ]
+  }
+}

@@ -1,0 +1,749 @@
+{
+  "run_id": "20261005-220102-e2e-test-scripted-custom",
+  "seq": 4,
+  "kind": "plan",
+  "instructions": "# Role\n\nYou are the reasoning component of an AI Engineering Agent. You do not draw CAD and you do not\ncompute checks yourself: Python performs calculations, rule checks and registration, and Fusion 360\nbuilds and measures geometry. Your job is engineering judgement: interpret, identify gaps, state\nassumptions, plan, and decide on revisions.\n\nRules that always apply:\n- Answer with ONE JSON object that validates against the response schema. No prose outside it.\n- Never invent requirements, regulations or rule values. Only rules listed in the context exist.\n- Never claim FIA compliance, structural safety, race-readiness or production readiness.\n- Do not silently invent critical information. Anything not stated by the user is either a\n  missing-information item (ASK) or an explicit assumption (A-id) - never a hidden default.\n- Every numeric design value must trace to requirement ids (R..), assumption ids (A..),\n  user answers (M..) or rule ids. Units: mm, deg, N, kg.\n- Keep the layers distinct: the user's words (authoritative) -> your interpretation (requirements,\n  labelled as AI interpretation) -> your engineering decisions (assumptions, parameters, traced).\n  Never present an interpretation or an assumption as something the user said.\n- Be concise and specific; write for an engineer reviewing your reasoning later.\n\n\n# Task: engineering design plan\n\nUsing context.analysis (requirements, assumptions, answers), context.generator (parameters, local\nframe, feasibility rules), context.rules (applicable manufacturing rules) and context.materials:\n\n1. `steps`: a short ordered engineering plan (what is done and checked, in order).\n2. `parameters`: a value for EVERY generator parameter (length params in mm, count params with\n   unit \"count\"), each with source, trace and a one-line rationale. Source USER / REQUIREMENT only for values\n   from the user's own words; IMAGE_EVIDENCE for values read from an attached image (trace the IMAGE requirement). Choose values that satisfy the\n   listed rules and the generator feasibility constraints - Python will check them.\n3. `design_inputs`: fasteners (e.g. \"M6\") and what each interface mates with.\n4. `manufacturing`: process + material id from context.materials.\n5. `load_case`: the load the bracket must carry for the hand calculation (force incl. any dynamic\n   factor, lever arm, required safety factor), with trace. If it rests on assumptions, add them to\n   `new_assumptions` (continue the A-numbering from the analysis).\n6. `verification_plan`: what will be verified and how (Fusion measurement, rule check, hand calc).\n\nIf context.feedback is present, a previous plan was rejected or failed checks: fix exactly those\nissues and explain the change in the affected parameter rationales.\n",
+  "context": {
+    "request": "E2E TEST (scripted customer answers): Design a machined aluminium L-bracket to mount a 2 kg sensor box to a flat plate with four M6 bolts. The sensor-box side is shown in the attached sketch.",
+    "project": {
+      "schema_version": 2,
+      "id": "ui_e2e_test",
+      "name": "Prototype bench",
+      "kind": "bench",
+      "description": "Stand-alone components used to develop and prove the agent workflow (Prototype 1+).",
+      "coordinate_system": "VCS: +X front, +Y left, +Z up, mm (see docs/architecture.md)",
+      "regulation": null,
+      "fusion_namespace": "uie2etest",
+      "policy": {
+        "critical_missing_info_must_be_asked": true,
+        "allow_suggested_values_in_questions": false,
+        "max_revision_loops": 3
+      },
+      "created": "2026-10-05T19:00:55+00:00"
+    },
+    "existing_components": [],
+    "user_answers": {
+      "M01": {
+        "question": "What load case should the bracket be designed for? Please give the orientation of the flat plate and the direction of the sensor box weight relative to it, any dynamic, vibration or acceleration loads, the required safety factor, and where the sensor box centre of mass sits relative to the upright mounting face.",
+        "answer": "[scripted E2E test answer] The sensor box is attached with two M5 bolts, 40 mm apart horizontally, hole centres 35 mm above the flat plate. The centre of mass is 40 mm from the mounting face. The plate is horizontal; the sensor box is mounted on the vertical leg and its weight acts downward. Use a dynamic factor of 3 and a safety factor of 2 on yield. The plate is not drilled yet; drill it to suit the bracket. The bracket must fit inside 80 mm in every direction. Material: aluminium 6061-T6.",
+        "received": "2026-10-05T19:01:34+00:00",
+        "entered_via": "ui: web interface"
+      },
+      "M02": {
+        "question": "What space is available for the bracket on the plate and around the sensor box? Are there any maximum dimensions, keep-out zones or a defined bolt pattern on the plate?",
+        "answer": "[scripted E2E test answer] The sensor box is attached with two M5 bolts, 40 mm apart horizontally, hole centres 35 mm above the flat plate. The centre of mass is 40 mm from the mounting face. The plate is horizontal; the sensor box is mounted on the vertical leg and its weight acts downward. Use a dynamic factor of 3 and a safety factor of 2 on yield. The plate is not drilled yet; drill it to suit the bracket. The bracket must fit inside 80 mm in every direction. Material: aluminium 6061-T6.",
+        "received": "2026-10-05T19:01:35+00:00",
+        "entered_via": "ui: web interface"
+      }
+    },
+    "attachments": [
+      {
+        "id": "IMG-01",
+        "original_name": "sensor_side_sketch.png",
+        "media_type": "image/png"
+      }
+    ],
+    "analysis": {
+      "component_type": "l_bracket",
+      "summary": "Machined aluminium 6061-T6 L-bracket mounting a 2 kg sensor box to a horizontal flat plate. Base leg: four M6 bolts into the plate. The plate is undrilled, so the bracket sets the base hole pattern. Upright leg: two M5 bolts, 40 mm apart horizontally, hole centres 35 mm above the plate, confirmed by the IMG-01 sketch. Load: weight acts downward, centre of mass 40 mm from the mounting face, dynamic factor 3, safety factor 2 on yield. The bracket must fit inside 80 mm in every direction. All required_info keys are covered by user statements. The remaining gaps (centre-of-mass position along the other two axes, base bolt layout) are handled as explicit assumptions. This is a concept-level design: no FEA and no compliance claims.",
+      "requirements": [
+        {
+          "id": "R01",
+          "key": "function",
+          "text": "The L-bracket mounts a 2 kg sensor box to a flat plate.",
+          "value": null,
+          "unit": null,
+          "source": "USER_REQUEST",
+          "quote": "mount a 2 kg sensor box to a flat plate",
+          "answer_id": null,
+          "derived_from": [],
+          "attachment_id": null,
+          "image_evidence": null,
+          "interpreted_by": "AI"
+        },
+        {
+          "id": "R02",
+          "key": "material",
+          "text": "Bracket material is aluminium 6061-T6.",
+          "value": "aluminium 6061-T6",
+          "unit": null,
+          "source": "USER_ANSWER",
+          "quote": "Material: aluminium 6061-T6.",
+          "answer_id": "M01",
+          "derived_from": [],
+          "attachment_id": null,
+          "image_evidence": null,
+          "interpreted_by": "AI"
+        },
+        {
+          "id": "R03",
+          "key": "manufacturing_process",
+          "text": "The bracket is a machined aluminium L-bracket.",
+          "value": "machined",
+          "unit": null,
+          "source": "USER_REQUEST",
+          "quote": "Design a machined aluminium L-bracket",
+          "answer_id": null,
+          "derived_from": [],
+          "attachment_id": null,
+          "image_evidence": null,
+          "interpreted_by": "AI"
+        },
+        {
+          "id": "R04",
+          "key": "base_fastener",
+          "text": "The base leg is fastened to the flat plate with four M6 bolts.",
+          "value": "M6",
+          "unit": null,
+          "source": "USER_REQUEST",
+          "quote": "to a flat plate with four M6 bolts",
+          "answer_id": null,
+          "derived_from": [],
+          "attachment_id": null,
+          "image_evidence": null,
+          "interpreted_by": "AI"
+        },
+        {
+          "id": "R05",
+          "key": "upright_fastener",
+          "text": "The sensor box is attached to the upright leg with two M5 bolts, 40 mm apart horizontally, hole centres 35 mm above the flat plate.",
+          "value": null,
+          "unit": null,
+          "source": "USER_ANSWER",
+          "quote": "The sensor box is attached with two M5 bolts, 40 mm apart horizontally, hole centres 35 mm above the flat plate.",
+          "answer_id": "M01",
+          "derived_from": [],
+          "attachment_id": null,
+          "image_evidence": null,
+          "interpreted_by": "AI"
+        },
+        {
+          "id": "R06",
+          "key": "upright_fastener_image",
+          "text": "The sketch shows the upright leg with 2x M5 holes, spaced 40 mm apart. This is consistent with the user's answer.",
+          "value": null,
+          "unit": null,
+          "source": "IMAGE",
+          "quote": null,
+          "answer_id": null,
+          "derived_from": [],
+          "attachment_id": "IMG-01",
+          "image_evidence": "Title text 'SENSOR BOX SIDE - UPRIGHT LEG: 2x M5 HOLES'; two circles on a horizontal line with dimension '40 mm' between their centres.",
+          "interpreted_by": "AI"
+        },
+        {
+          "id": "R07",
+          "key": "load",
+          "text": "The supported mass is 2 kg (sensor box).",
+          "value": 2,
+          "unit": "kg",
+          "source": "USER_REQUEST",
+          "quote": "a 2 kg sensor box",
+          "answer_id": null,
+          "derived_from": [],
+          "attachment_id": null,
+          "image_evidence": null,
+          "interpreted_by": "AI"
+        },
+        {
+          "id": "R08",
+          "key": "load_direction",
+          "text": "The plate is horizontal. The sensor box is on the vertical (upright) leg and its weight acts downward.",
+          "value": null,
+          "unit": null,
+          "source": "USER_ANSWER",
+          "quote": "The plate is horizontal; the sensor box is mounted on the vertical leg and its weight acts downward.",
+          "answer_id": "M01",
+          "derived_from": [],
+          "attachment_id": null,
+          "image_evidence": null,
+          "interpreted_by": "AI"
+        },
+        {
+          "id": "R09",
+          "key": "load_com_offset",
+          "text": "The sensor box centre of mass is 40 mm from the upright mounting face.",
+          "value": 40,
+          "unit": "mm",
+          "source": "USER_ANSWER",
+          "quote": "The centre of mass is 40 mm from the mounting face.",
+          "answer_id": "M01",
+          "derived_from": [],
+          "attachment_id": null,
+          "image_evidence": null,
+          "interpreted_by": "AI"
+        },
+        {
+          "id": "R10",
+          "key": "load_factors",
+          "text": "Design with a dynamic factor of 3 and a safety factor of 2 on yield.",
+          "value": null,
+          "unit": null,
+          "source": "USER_ANSWER",
+          "quote": "Use a dynamic factor of 3 and a safety factor of 2 on yield.",
+          "answer_id": "M01",
+          "derived_from": [],
+          "attachment_id": null,
+          "image_evidence": null,
+          "interpreted_by": "AI"
+        },
+        {
+          "id": "R11",
+          "key": "envelope",
+          "text": "The bracket must fit inside 80 mm in every direction.",
+          "value": 80,
+          "unit": "mm",
+          "source": "USER_ANSWER",
+          "quote": "The bracket must fit inside 80 mm in every direction.",
+          "answer_id": "M02",
+          "derived_from": [],
+          "attachment_id": null,
+          "image_evidence": null,
+          "interpreted_by": "AI"
+        },
+        {
+          "id": "R12",
+          "key": "plate_interface",
+          "text": "The plate has no existing holes. The plate holes will be drilled to suit the bracket's base hole pattern.",
+          "value": null,
+          "unit": null,
+          "source": "USER_ANSWER",
+          "quote": "The plate is not drilled yet; drill it to suit the bracket.",
+          "answer_id": "M02",
+          "derived_from": [],
+          "attachment_id": null,
+          "image_evidence": null,
+          "interpreted_by": "AI"
+        }
+      ],
+      "missing_information": [
+        {
+          "id": "M03",
+          "key": "com_position_other_axes",
+          "topic": "Sensor box centre-of-mass position along the other two axes (horizontal across the upright, and height above the plate)",
+          "why_it_matters": "This sets the bending lever arm at the upright root and any torsion about the vertical axis. The user gave only the offset from the mounting face.",
+          "criticality": "IMPORTANT",
+          "resolution": "ASSUME",
+          "question": null,
+          "assumption_id": "A03",
+          "follows_up": null
+        },
+        {
+          "id": "M04",
+          "key": "base_bolt_layout",
+          "topic": "Positions of the four M6 holes in the base leg",
+          "why_it_matters": "The layout affects the bolt load split and the base leg size. The user lets the bracket define it (R12), so it is a design decision.",
+          "criticality": "MINOR",
+          "resolution": "ASSUME",
+          "question": null,
+          "assumption_id": "A02",
+          "follows_up": null
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "A01",
+          "text": "Scope: concept-level design with nominal geometry. Strength is checked with hand calculations only: no FEA, fatigue or tolerance analysis. No claim of structural safety, regulatory compliance or production readiness.",
+          "rationale": "The project is a prototype bench with no regulation, and this generator supports concept-level checks only.",
+          "impact": "The results are indicative. Detailed verification is needed before use.",
+          "affects": [
+            "R10",
+            "R07"
+          ]
+        },
+        {
+          "id": "A02",
+          "text": "The four M6 base holes are placed symmetrically in a rectangular pattern within the 80 mm envelope. Hole positions and edge distances are chosen by the design and documented as parameters.",
+          "rationale": "The user said the plate will be drilled to suit the bracket (R12) but gave no pattern.",
+          "impact": "The plate must be drilled to the pattern the bracket defines.",
+          "affects": [
+            "R04",
+            "R11",
+            "R12"
+          ]
+        },
+        {
+          "id": "A03",
+          "text": "The sensor box centre of mass is assumed to sit centred horizontally between the two M5 holes and at the hole-centre height of 35 mm above the plate. Its stated 40 mm offset from the mounting face is used as given.",
+          "rationale": "The user gave only the offset from the mounting face. A centred position is the neutral choice and adds no torsion.",
+          "impact": "If the centre of mass is offset sideways or higher up, root bending and bolt loads increase. The checks should be re-run if this is known.",
+          "affects": [
+            "R05",
+            "R09"
+          ]
+        },
+        {
+          "id": "A04",
+          "text": "Design load = mass x 9.81 m/s^2 x dynamic factor, acting downward. Allowable stress = 6061-T6 yield strength / safety factor.",
+          "rationale": "This applies the user-given factors (R10) in the standard way. The 6061-T6 yield value comes from the material database, not from the user.",
+          "impact": "Sets the design force and allowable stress for the checks.",
+          "affects": [
+            "R07",
+            "R08",
+            "R10",
+            "R02"
+          ]
+        }
+      ]
+    },
+    "assumptions": [
+      {
+        "id": "A01",
+        "text": "Scope: concept-level design with nominal geometry. Strength is checked with hand calculations only: no FEA, fatigue or tolerance analysis. No claim of structural safety, regulatory compliance or production readiness.",
+        "rationale": "The project is a prototype bench with no regulation, and this generator supports concept-level checks only.",
+        "impact": "The results are indicative. Detailed verification is needed before use.",
+        "affects": [
+          "R10",
+          "R07"
+        ]
+      },
+      {
+        "id": "A02",
+        "text": "The four M6 base holes are placed symmetrically in a rectangular pattern within the 80 mm envelope. Hole positions and edge distances are chosen by the design and documented as parameters.",
+        "rationale": "The user said the plate will be drilled to suit the bracket (R12) but gave no pattern.",
+        "impact": "The plate must be drilled to the pattern the bracket defines.",
+        "affects": [
+          "R04",
+          "R11",
+          "R12"
+        ]
+      },
+      {
+        "id": "A03",
+        "text": "The sensor box centre of mass is assumed to sit centred horizontally between the two M5 holes and at the hole-centre height of 35 mm above the plate. Its stated 40 mm offset from the mounting face is used as given.",
+        "rationale": "The user gave only the offset from the mounting face. A centred position is the neutral choice and adds no torsion.",
+        "impact": "If the centre of mass is offset sideways or higher up, root bending and bolt loads increase. The checks should be re-run if this is known.",
+        "affects": [
+          "R05",
+          "R09"
+        ]
+      },
+      {
+        "id": "A04",
+        "text": "Design load = mass x 9.81 m/s^2 x dynamic factor, acting downward. Allowable stress = 6061-T6 yield strength / safety factor.",
+        "rationale": "This applies the user-given factors (R10) in the standard way. The 6061-T6 yield value comes from the material database, not from the user.",
+        "impact": "Sets the design force and allowable stress for the checks.",
+        "affects": [
+          "R07",
+          "R08",
+          "R10",
+          "R02"
+        ]
+      }
+    ],
+    "generator": {
+      "id": "l_bracket",
+      "version": "1",
+      "description": "Generator: machined L-bracket (Prototype 1).\n\nDeterministic: design inputs -> (feasibility errors, DFM quantities, expected geometry,\ninterfaces, Fusion script). The Fusion script builds a fully parametric, named model.\n\nLocal component frame (documented, mm):\n    origin  = outer corner of the L, on the bracket's mid-width plane\n    base leg   : x in [0, leg_base_length],   z in [0, bracket_thickness]   (bottom face z=0 mounts down)\n    upright leg: x in [0, bracket_thickness], z in [0, leg_upright_height]  (outer face x=0 mounts the payload)\n    width      : y in [-bracket_width/2, +bracket_width/2]\nBend: inner fillet bend_inner_radius at (x=t, z=t); outer fillet = inner + t (constant section).\nHoles: rows x cols grid per leg, columns symmetric about y=0.\n",
+      "length_params_mm": {
+        "leg_base_length": "Base leg length along local X (mm)",
+        "leg_upright_height": "Upright leg height along local Z (mm)",
+        "bracket_width": "Bracket width along local Y (mm)",
+        "bracket_thickness": "Plate thickness of both legs (mm)",
+        "bend_inner_radius": "Internal bend fillet radius (mm); outer = inner + thickness",
+        "base_hole_diameter": "Base leg clearance hole diameter (mm)",
+        "base_hole_x0": "Distance from upright outer face (x=0) to first base hole row (mm)",
+        "base_hole_pitch_x": "Row pitch of base holes along X (mm); ignored if 1 row",
+        "base_hole_pitch_y": "Column pitch of base holes along Y (mm); ignored if 1 column",
+        "upright_hole_diameter": "Upright leg clearance hole diameter (mm)",
+        "upright_hole_z0": "Height from base bottom face (z=0) to first upright hole row (mm)",
+        "upright_hole_pitch_z": "Row pitch of upright holes along Z (mm); ignored if 1 row",
+        "upright_hole_pitch_y": "Column pitch of upright holes along Y (mm); ignored if 1 column"
+      },
+      "count_params": {
+        "base_hole_rows": "Rows of base holes along X (1 or 2)",
+        "base_hole_cols": "Columns of base holes along Y (1 or 2)",
+        "upright_hole_rows": "Rows of upright holes along Z (1 or 2)",
+        "upright_hole_cols": "Columns of upright holes along Y (1 or 2)"
+      },
+      "processes": [
+        "machined"
+      ],
+      "design_inputs": [
+        "base_fastener",
+        "upright_fastener",
+        "base_mates_with",
+        "upright_mates_with"
+      ]
+    },
+    "rules": [
+      {
+        "id": "DFM-MACH-WALL-MIN",
+        "title": "Minimum machinable wall thickness",
+        "authority": "PROJECT_RULE",
+        "requirement_text": "Duvar Kalınlığı: Minimum işlenebilir duvar kalınlığı 2.0 mm tutulmalıdır.",
+        "process": "machined",
+        "constraint": {
+          "type": "min",
+          "quantity": "wall_thickness",
+          "value": 2.0,
+          "unit": "mm"
+        },
+        "severity": "BLOCKING",
+        "verification_status": "NOT_VERIFIED"
+      },
+      {
+        "id": "DFM-MACH-INNER-RADIUS-MIN",
+        "title": "Minimum internal corner radius (end-mill access)",
+        "authority": "PROJECT_RULE",
+        "requirement_text": "Radyuslar (Internal Fillets): İç keskin köşelerden kaçınılmalı; parmak freze uç çaplarına uygun minimum R >= 3.0 mm radüs verilmelidir.",
+        "process": "machined",
+        "constraint": {
+          "type": "min",
+          "quantity": "internal_corner_radius",
+          "value": 3.0,
+          "unit": "mm"
+        },
+        "severity": "BLOCKING",
+        "verification_status": "NOT_VERIFIED"
+      },
+      {
+        "id": "DFM-DFMEA-FATIGUE-FILLET",
+        "title": "Fatigue - internal fillet radius relative to wall thickness",
+        "authority": "PROJECT_RULE",
+        "requirement_text": "Yorulma Çatlağı (Fatigue) / Keskin iç köşelerdeki stres yoğunlaşması: fillet_radius >= 0.2 * wall_thickness şartı koy.",
+        "process": null,
+        "constraint": {
+          "type": "min",
+          "quantity": "fillet_to_thickness_ratio",
+          "value": 0.2
+        },
+        "severity": "ADVISORY",
+        "verification_status": "NOT_VERIFIED"
+      },
+      {
+        "id": "STD-ISO273-MEDIUM",
+        "title": "Clearance hole diameter for metric bolts (ISO 273, medium series)",
+        "authority": "STANDARD",
+        "requirement_text": "Standart Delik Ölçüleri: Delik çapları standart matkap ucu ve kılavuz (Tap/Thread) ölçülerine göre belirlenmelidir. (CAD_Design_Rules.md §2.A) -> implemented with ISO 273 medium-series clearance holes.",
+        "process": null,
+        "constraint": {
+          "type": "table_match",
+          "quantity": "clearance_holes",
+          "unit": "mm",
+          "table": {
+            "M3": 3.4,
+            "M4": 4.5,
+            "M5": 5.5,
+            "M6": 6.6,
+            "M8": 9.0,
+            "M10": 11.0,
+            "M12": 13.5
+          },
+          "tolerance": 0.01
+        },
+        "severity": "ADVISORY",
+        "verification_status": "NOT_VERIFIED"
+      },
+      {
+        "id": "GL-HOLE-EDGE-DISTANCE",
+        "title": "Bolt hole centre to free edge distance",
+        "authority": "GUIDELINE",
+        "requirement_text": "Hole centre to nearest free edge >= 1.5 x hole diameter (project guideline, common bolted-joint practice).",
+        "process": null,
+        "constraint": {
+          "type": "min",
+          "quantity": "hole_edge_distance_ratio",
+          "value": 1.5
+        },
+        "severity": "BLOCKING",
+        "verification_status": "NOT_VERIFIED"
+      }
+    ],
+    "materials": {
+      "AL6061-T6": {
+        "id": "AL6061-T6",
+        "name": "Aluminium 6061-T6",
+        "density_kg_m3": 2700.0,
+        "yield_strength_mpa": 276.0,
+        "processes": [
+          "machined"
+        ],
+        "fusion_material": "Aluminum 6061",
+        "source": "Typical handbook value (e.g. ASM Handbook), not verified",
+        "verification_status": "NOT_VERIFIED"
+      },
+      "AL7075-T6": {
+        "id": "AL7075-T6",
+        "name": "Aluminium 7075-T6",
+        "density_kg_m3": 2810.0,
+        "yield_strength_mpa": 503.0,
+        "processes": [
+          "machined"
+        ],
+        "fusion_material": null,
+        "source": "Typical handbook value (e.g. ASM Handbook), not verified",
+        "verification_status": "NOT_VERIFIED"
+      },
+      "S235": {
+        "id": "S235",
+        "name": "Structural steel S235",
+        "density_kg_m3": 7850.0,
+        "yield_strength_mpa": 235.0,
+        "processes": [
+          "machined"
+        ],
+        "fusion_material": null,
+        "source": "EN 10025-2 nominal minimum (t <= 16 mm), not verified",
+        "verification_status": "NOT_VERIFIED"
+      },
+      "TI6AL4V": {
+        "id": "TI6AL4V",
+        "name": "Titanium Ti-6Al-4V (annealed)",
+        "density_kg_m3": 4430.0,
+        "yield_strength_mpa": 880.0,
+        "processes": [
+          "machined"
+        ],
+        "fusion_material": null,
+        "source": "Typical handbook value, not verified",
+        "verification_status": "NOT_VERIFIED"
+      }
+    },
+    "feedback": null,
+    "loops": {
+      "used": 0,
+      "max": 3
+    }
+  },
+  "response_schema": {
+    "$defs": {
+      "Assumption": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "pattern": "^A\\d{2,3}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "impact": {
+            "default": "",
+            "title": "Impact",
+            "type": "string"
+          },
+          "affects": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Affects",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "rationale"
+        ],
+        "title": "Assumption",
+        "type": "object"
+      },
+      "LoadCase": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "force_n": {
+            "minimum": 0,
+            "title": "Force N",
+            "type": "number"
+          },
+          "lever_arm_mm": {
+            "minimum": 0,
+            "title": "Lever Arm Mm",
+            "type": "number"
+          },
+          "required_safety_factor": {
+            "exclusiveMinimum": 0,
+            "title": "Required Safety Factor",
+            "type": "number"
+          },
+          "trace": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Trace",
+            "type": "array"
+          }
+        },
+        "required": [
+          "description",
+          "force_n",
+          "lever_arm_mm",
+          "required_safety_factor",
+          "trace"
+        ],
+        "title": "LoadCase",
+        "type": "object"
+      },
+      "Manufacturing": {
+        "additionalProperties": false,
+        "properties": {
+          "process": {
+            "title": "Process",
+            "type": "string"
+          },
+          "material": {
+            "title": "Material",
+            "type": "string"
+          }
+        },
+        "required": [
+          "process",
+          "material"
+        ],
+        "title": "Manufacturing",
+        "type": "object"
+      },
+      "ParamSource": {
+        "enum": [
+          "REQUIREMENT",
+          "ASSUMPTION",
+          "RULE",
+          "DERIVED",
+          "USER",
+          "IMAGE_EVIDENCE"
+        ],
+        "title": "ParamSource",
+        "type": "string"
+      },
+      "PlannedParam": {
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "title": "Value",
+            "type": "number"
+          },
+          "unit": {
+            "enum": [
+              "mm",
+              "deg",
+              "N",
+              "kg",
+              "count",
+              ""
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/$defs/ParamSource"
+          },
+          "trace": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Trace",
+            "type": "array"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          }
+        },
+        "required": [
+          "value",
+          "unit",
+          "source",
+          "rationale"
+        ],
+        "title": "PlannedParam",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "generator": {
+        "title": "Generator",
+        "type": "string"
+      },
+      "component_name": {
+        "title": "Component Name",
+        "type": "string"
+      },
+      "steps": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Steps",
+        "type": "array"
+      },
+      "parameters": {
+        "additionalProperties": {
+          "$ref": "#/$defs/PlannedParam"
+        },
+        "title": "Parameters",
+        "type": "object"
+      },
+      "design_inputs": {
+        "additionalProperties": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "description": "Non-numeric generator inputs, e.g. base_fastener, upright_fastener, base_mates_with, upright_mates_with",
+        "title": "Design Inputs",
+        "type": "object"
+      },
+      "manufacturing": {
+        "$ref": "#/$defs/Manufacturing"
+      },
+      "load_case": {
+        "$ref": "#/$defs/LoadCase"
+      },
+      "new_assumptions": {
+        "items": {
+          "$ref": "#/$defs/Assumption"
+        },
+        "title": "New Assumptions",
+        "type": "array"
+      },
+      "verification_plan": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Verification Plan",
+        "type": "array"
+      }
+    },
+    "required": [
+      "generator",
+      "component_name",
+      "steps",
+      "parameters",
+      "design_inputs",
+      "manufacturing",
+      "load_case",
+      "verification_plan"
+    ],
+    "title": "PlanResponse",
+    "type": "object"
+  },
+  "attachments": [
+    {
+      "id": "IMG-01",
+      "file": "attachments/IMG-01.png",
+      "original_name": "sensor_side_sketch.png",
+      "media_type": "image/png",
+      "bytes": 8883,
+      "sha256": "68ed28b096bc8578f7b6bd5cbdb1b5da9f38b2f3b64b0a1d4a84d874797914d7",
+      "received": "2026-10-05T19:01:02+00:00",
+      "entered_via": "ui: web interface",
+      "role": "user-supplied source evidence"
+    }
+  ]
+}

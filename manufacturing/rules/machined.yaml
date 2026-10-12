@@ -1,0 +1,67 @@
+# Design-for-manufacture rules for machined metal parts.
+# PROJECT_RULE entries come from manufacturing/source/DFM_rules_summary.md
+# (generic design guidance, not a standard, not verified).
+- id: DFM-MACH-WALL-MIN
+  title: Minimum machinable wall thickness
+  authority: PROJECT_RULE
+  category: manufacturing/machined
+  requirement_text: "Keep every machined wall at least 2.0 mm thick."
+  applies_to: [any_component]
+  process: machined
+  constraint: {type: min, quantity: wall_thickness, value: 2.0, unit: mm}
+  severity: BLOCKING
+  validation_method: PARAMETER_CHECK
+  source: &dfmrules {document: DFM_rules_summary.md, article: "§1 Machined metal", file: manufacturing/source/DFM_rules_summary.md}
+  verification_status: NOT_VERIFIED
+- id: DFM-MACH-INNER-RADIUS-MIN
+  title: Minimum internal corner radius (end-mill access)
+  authority: PROJECT_RULE
+  category: manufacturing/machined
+  requirement_text: "Give internal corners a radius an end mill can reach: at least 3.0 mm."
+  applies_to: [any_component]
+  process: machined
+  constraint: {type: min, quantity: internal_corner_radius, value: 3.0, unit: mm}
+  severity: BLOCKING
+  validation_method: PARAMETER_CHECK
+  source: *dfmrules
+  verification_status: NOT_VERIFIED
+- id: DFM-DFMEA-FATIGUE-FILLET
+  title: Fatigue - internal fillet radius relative to wall thickness
+  authority: PROJECT_RULE
+  category: manufacturing/dfmea
+  requirement_text: "Size the internal fillet radius at least 0.2 x the wall thickness it joins (fatigue at stress concentrations)."
+  applies_to: [any_component]
+  constraint: {type: min, quantity: fillet_to_thickness_ratio, value: 0.2}
+  severity: ADVISORY
+  validation_method: PARAMETER_CHECK
+  source: {document: DFM_rules_summary.md, article: "§3 Failure modes", file: manufacturing/source/DFM_rules_summary.md}
+  verification_status: NOT_VERIFIED
+- id: STD-ISO273-MEDIUM
+  title: Clearance hole diameter for metric bolts (ISO 273, medium series)
+  authority: STANDARD
+  category: manufacturing/holes
+  requirement_text: "Size bolt holes to standard clearance sizes (DFM_rules_summary.md §2) -> implemented with ISO 273 medium-series clearance holes."
+  applies_to: [any_component]
+  constraint:
+    type: table_match
+    quantity: clearance_holes
+    unit: mm
+    tolerance: 0.01
+    table: {M3: 3.4, M4: 4.5, M5: 5.5, M6: 6.6, M8: 9.0, M10: 11.0, M12: 13.5}
+  severity: ADVISORY
+  validation_method: PARAMETER_CHECK
+  source: {document: "ISO 273 Fasteners - Clearance holes for bolts and screws (medium series)", article: "Table 1"}
+  verification_status: NOT_VERIFIED
+  notes: Table values entered from engineering knowledge, NOT copied from the ISO document (not available in the project). Must be checked against ISO 273 before marking VERIFIED.
+- id: GL-HOLE-EDGE-DISTANCE
+  title: Bolt hole centre to free edge distance
+  authority: GUIDELINE
+  category: manufacturing/holes
+  requirement_text: "Hole centre to nearest free edge >= 1.5 x hole diameter (project guideline, common bolted-joint practice)."
+  applies_to: [any_component]
+  constraint: {type: min, quantity: hole_edge_distance_ratio, value: 1.5}
+  severity: BLOCKING
+  validation_method: PARAMETER_CHECK
+  source: {document: "Project guideline (no cited standard)"}
+  verification_status: NOT_VERIFIED
+  notes: Agent-proposed guideline. Listed in DFM_rules_summary.md §2; not from a standard.

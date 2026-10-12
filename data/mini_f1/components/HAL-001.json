@@ -1,0 +1,426 @@
+{
+  "record_type": "part",
+  "id": "HAL-001",
+  "name": "Halo",
+  "role": "halo cockpit protection hoop over the cockpit opening",
+  "version": 2,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "HAL-001",
+    "name": "Halo",
+    "role": "halo cockpit protection hoop over the cockpit opening",
+    "notes": "Dark grey single solid. U-hoop of 40 mm bars: rear feet at local (-860, +/-280, 0) rising to a hoop top at Z ~160 (bar centre) curving round to the front at local X ~-80, Y 0; central front pillar from the hoop down to its foot at local (0,0,0). All foot bottoms flat on local Z=0 (rim top plane), inside the rim ring, touching the monocoque.",
+    "dims": {
+      "bar_thickness": 40.0,
+      "top_height": 160.0,
+      "rear_foot_x_offset": 860.0,
+      "rear_foot_half_span": 280.0,
+      "pillar_width": 40.0
+    },
+    "position_mm": [
+      -1470.0,
+      0.0,
+      740.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      -2360.0,
+      -310.0,
+      740.0
+    ],
+    "envelope_max": [
+      -1440.0,
+      310.0,
+      920.0
+    ],
+    "fia_refs_used": [
+      "C2.3.1"
+    ],
+    "reuse": false,
+    "mirror_of": null,
+    "mirror_mode": null
+  },
+  "script_body": "import math\nimport adsk.core\nimport adsk.fusion\n\n\ndef col(points):\n    c = adsk.core.ObjectCollection.create()\n    for p in points:\n        c.add(p)\n    return c\n\n\ndef on_sketch(sk, p):\n    q = sk.modelToSketchSpace(pt(p[0], p[1], p[2]))\n    q.z = 0.0\n    return q\n\n\ndef circle_prof(part, sk, c, r):\n    sk.sketchCurves.sketchCircles.addByCenterRadius(on_sketch(sk, c), mm(r))\n    return part.profile(sk)\n\n\ndef path_plane(part, line, frac, name):\n    planes = part.comp.constructionPlanes\n    ci = planes.createInput()\n    ci.setByDistanceOnPath(line, adsk.core.ValueInput.createByReal(frac))\n    pl = planes.add(ci)\n    pl.name = name\n    return pl\n\n\ndef build(part):\n    t = part.p[\"bar_thickness\"]\n    zt = part.p[\"top_height\"]\n    xr = -part.p[\"rear_foot_x_offset\"]\n    hs = part.p[\"rear_foot_half_span\"]\n    pw = part.p[\"pillar_width\"]\n    r = t / 2.0\n    rp = pw / 2.0\n    zc = zt - 0.5\n    xa = -85.0\n\n    # tube centreline: rear foot (below rim) -> rising arm -> front apex -> other arm -> foot\n    half = [(xa, 0.0, zc), (xa - 7.0, 50.0, zc), (xa - 45.0, 110.0, zc),\n            (xa - 135.0, 170.0, zc - 0.5), (-380.0, 225.0, zc - 2.0),\n            (-560.0, 260.0, zc - 7.0), (xr + 140.0, hs - 4.0, zc - 20.0),\n            (xr + 40.0, hs, zc - 50.0), (xr + 5.0, hs, 60.0), (xr, hs, 10.0),\n            (xr, hs, -30.0)]\n    pts = list(reversed(half)) + [(x, -y, z) for (x, y, z) in half[1:]]\n    skc = part.sketch(part.plane(\"z\", 0, \"PL_path\"), \"SK_hoop_path\")\n    spl = skc.sketchCurves.sketchFittedSplines.add(\n        col([skc.modelToSketchSpace(pt(p[0], p[1], p[2])) for p in pts]))\n    path = part.comp.features.createPath(spl, False)\n\n    skt = part.sketch(part.plane(\"z\", -30.0, \"PL_tube_start\"), \"SK_tube\")\n    prof = circle_prof(part, skt, (xr, hs, -30.0), r)\n    sw = part.comp.features.sweepFeatures\n    si = sw.createInput(prof, path, adsk.fusion.FeatureOperations.NewBodyFeatureOperation)\n    si.orientation = adsk.fusion.SweepOrientationTypes.PerpendicularOrientationType\n    swf = sw.add(si)\n    swf.name = \"SW_hoop\"\n\n    # flared rear feet (widen where they meet the rim)\n    for s, nm in ((1, \"L\"), (-1, \"R\")):\n        profs = []\n        for k, (z, rr) in enumerate(((0.0, r + 7.0), (22.0, r + 1.0), (45.0, r - 3.0))):\n            skf = part.sketch(part.plane(\"z\", z, \"PL_foot_%s%d\" % (nm, k)), \"SK_foot_%s%d\" % (nm, k))\n            profs.append(circle_prof(part, skf, (xr, s * hs, z), rr))\n        part.loft(profs, \"LF_foot_\" + nm, op=\"join\")\n\n    # front pillar leaning rearward (~28 deg) with flared foot and blended junction\n    L = math.hypot(xa, zc)\n    d = (xa / L, 0.0, zc / L)\n    u = (zc / L, 0.0, -xa / L)\n    ska = part.sketch(part.plane(\"y\", 0, \"PL_pillar\"), \"SK_pillar_axis\")\n    ln = ska.sketchCurves.sketchLines.addByTwoPoints(\n        ska.modelToSketchSpace(pt(0, 0, 0)), ska.modelToSketchSpace(pt(xa, 0, zc)))\n    sk0 = part.sketch(part.plane(\"z\", 0, \"PL_pillar_foot\"), \"SK_pillar_s0\")\n    profs = [circle_prof(part, sk0, (0.0, 0.0, 0.0), rp + 4.0)]\n    for k, dist in ((1, 50.0), (2, 130.0)):\n        pl = path_plane(part, ln, dist / L, \"PL_pillar_s%d\" % k)\n        sk = part.sketch(pl, \"SK_pillar_s%d\" % k)\n        profs.append(circle_prof(part, sk, (d[0] * dist, 0.0, d[2] * dist), rp))\n    pl3 = path_plane(part, ln, 1.0, \"PL_pillar_s3\")\n    sk3 = part.sketch(pl3, \"SK_pillar_s3\")\n    c = (xa, 0.0, zc)\n    sk3.sketchCurves.sketchEllipses.add(\n        on_sketch(sk3, c), on_sketch(sk3, (xa, 38.0, zc)),\n        on_sketch(sk3, (xa + 17.0 * u[0], 0.0, zc + 17.0 * u[2])))\n    profs.append(part.profile(sk3))\n    part.loft(profs, \"LF_pillar\", op=\"join\")\n\n    # flat foot bottoms on the rim top plane (local Z=0)\n    skx = part.sketch(part.plane(\"z\", 0, \"PL_trim\"), \"SK_trim\")\n    part.polygon(skx, [(-950.0, -350.0, 0), (100.0, -350.0, 0), (100.0, 350.0, 0), (-950.0, 350.0, 0)])\n    part.extrude(part.profile(skx), -40.0, \"CUT_below_rim\", op=\"cut\")\n",
+  "script_sha256": "21f31079be2e71b585164d181b1335e65bb423ca473c8a9100df36ff168ba873",
+  "params": {
+    "bar_thickness": 40.0,
+    "top_height": 160.0,
+    "rear_foot_x_offset": 860.0,
+    "rear_foot_half_span": 280.0,
+    "pillar_width": 40.0
+  },
+  "pose": {
+    "position": [
+      -1470.0,
+      0.0,
+      740.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      -2357.0,
+      -307.0,
+      740.0
+    ],
+    [
+      -1446.0,
+      307.0,
+      919.5116
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 2681685.4
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 19,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          -2357.0,
+          -307.0,
+          740.0
+        ],
+        [
+          -1446.0,
+          307.0,
+          919.5116
+        ]
+      ],
+      "limit": {
+        "min": [
+          -2360.0,
+          -310.0,
+          740.0
+        ],
+        "max": [
+          -1440.0,
+          310.0,
+          920.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FRAME",
+      "title": "Geometry in the part-local frame",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part's local bbox (built at identity) lies in the planned envelope taken back into the part frame by the inverse pose.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bbox_local": [
+          [
+            -887.0,
+            -307.0,
+            0.0
+          ],
+          [
+            24.0,
+            307.0,
+            179.5116
+          ]
+        ]
+      },
+      "limit": {
+        "expected_local": [
+          [
+            -890.0,
+            -310.0,
+            0.0
+          ],
+          [
+            30.0,
+            310.0,
+            180.0
+          ]
+        ],
+        "world_envelope": [
+          [
+            -2360.0,
+            -310.0,
+            740.0
+          ],
+          [
+            -1440.0,
+            310.0,
+            920.0
+          ]
+        ],
+        "tol_mm": 5.0,
+        "frame_mode": "part_local"
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          -1470.0,
+          0.0,
+          740.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "bar_thickness": 40.0,
+        "top_height": 160.0,
+        "rear_foot_x_offset": 860.0,
+        "rear_foot_half_span": 280.0,
+        "pillar_width": 40.0
+      },
+      "limit": {
+        "bar_thickness": 40.0,
+        "top_height": 160.0,
+        "rear_foot_x_offset": 860.0,
+        "rear_foot_half_span": 280.0,
+        "pillar_width": 40.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [
+    {
+      "article": "C2.3.1",
+      "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+      "page": 10,
+      "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+      "status": "VERIFIED",
+      "note": "measured max |Y| = 307.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+    }
+  ],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 HAL-001 Halo",
+    "param_prefix": "mf1_hal001",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-12T05:05:20+00:00"
+  },
+  "run_id": "20261012-073006-rebuild-assembly-of-20261011-201",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T19:28:56+00:00",
+      "run_id": "20261010-222202-extend-the-existing-mini-f1-asse",
+      "script_sha256": "1f1459978eb2c970d2608f16c46233f4438f6c630617e159404491ef53d7c5e1",
+      "summary": "built by fast mode",
+      "kind": "",
+      "instruction": ""
+    },
+    {
+      "version": 2,
+      "date": "2026-10-12T05:05:20+00:00",
+      "run_id": "20261012-073006-rebuild-assembly-of-20261011-201",
+      "script_sha256": "21f31079be2e71b585164d181b1335e65bb423ca473c8a9100df36ff168ba873",
+      "summary": "Square-bar halo replaced by swept 40 mm round tube: smooth rising arms, flared rear feet, 28 deg rearward-leaning pillar with blended junction",
+      "kind": "revise",
+      "instruction": "Make the halo look like a real tubular halo. Use the current registered version as the base. Keep exactly as is: the foot positions and the contact with the monocoque (foot bottoms lie on the rim top plane Z=740, planned touching contact), the overall height, and at least 20 mm clearance from the engine cover and the mirrors.\nChange only the section and the form: round tube of about 40 mm diameter instead of a square bar; the two side arms as smooth curves rising from the rear feet towards the front, with feet that widen slightly where they meet the rim; the front pillar leaning rearward from its foot (its top further back than its foot, about 25-35 degrees from vertical) if it is currently vertical, joined to the arms by a smooth rounded junction; generous radii on all bends. One connected solid."
+    }
+  ],
+  "revision": {
+    "revision_id": "R04",
+    "run_id": "20261012-073006-rebuild-assembly-of-20261011-201",
+    "kind": "revise",
+    "instruction": "Make the halo look like a real tubular halo. Use the current registered version as the base. Keep exactly as is: the foot positions and the contact with the monocoque (foot bottoms lie on the rim top plane Z=740, planned touching contact), the overall height, and at least 20 mm clearance from the engine cover and the mirrors.\nChange only the section and the form: round tube of about 40 mm diameter instead of a square bar; the two side arms as smooth curves rising from the rear feet towards the front, with feet that widen slightly where they meet the rim; the front pillar leaning rearward from its foot (its top further back than its foot, about 25-35 degrees from vertical) if it is currently vertical, joined to the arms by a smooth rounded junction; generous radii on all bends. One connected solid.",
+    "change_summary": "Square-bar halo replaced by swept 40 mm round tube: smooth rising arms, flared rear feet, 28 deg rearward-leaning pillar with blended junction",
+    "assumptions": [
+      "bar_thickness = tube diameter (40); pillar_width = pillar tube diameter (40)",
+      "Rear feet flare to 54 mm diameter, pillar foot to 48 mm, at Z=0; local envelope becomes X -890..30, Y +/-310, Z 0..180",
+      "Tube centreline peaks at 159.5 mm so the outer top stays at about 180 mm",
+      "Pillar lean about 28 deg: foot (0,0,0), top at the hoop apex (-85,0,159.5)"
+    ],
+    "spec_delta": {
+      "envelope_min": [
+        -2360.0,
+        -310.0,
+        740.0
+      ],
+      "envelope_max": [
+        -1440.0,
+        310.0,
+        920.0
+      ]
+    },
+    "base_version": 1,
+    "neighbour_pose_changes": [],
+    "reason": null,
+    "mates": [
+      {
+        "check_id": "MATE-HAL-001-MON-001",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "touching",
+          "gap_mm": 0.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-HAL-001-MIR-L",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 376.362,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-ENG-001-HAL-001",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 168.911,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-HAL-001-MIR-R",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 376.362,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      }
+    ],
+    "frame_mode": "part_local",
+    "frame_validation": {
+      "status": "VERIFIED",
+      "message": ""
+    }
+  },
+  "derived": {},
+  "geometry": {
+    "volume_mm3": 2681685.393852,
+    "solids": 1,
+    "lumps": 1,
+    "bbox_local": [
+      [
+        -887.0,
+        -307.0,
+        0.0
+      ],
+      [
+        24.0,
+        307.0,
+        179.5116
+      ]
+    ],
+    "bbox_world": [
+      [
+        -2357.0,
+        -307.0,
+        740.0
+      ],
+      [
+        -1446.0,
+        307.0,
+        919.5116
+      ]
+    ]
+  }
+}

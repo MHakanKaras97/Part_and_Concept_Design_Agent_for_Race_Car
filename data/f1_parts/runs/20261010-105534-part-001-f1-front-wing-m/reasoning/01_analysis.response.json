@@ -1,0 +1,334 @@
+{
+  "component_type": "l_bracket",
+  "summary": "PART 001 is an F1-inspired front-wing mounting bracket for a concept-level demonstrator. It does not claim FIA homologation. It maps to the l_bracket generator: a base leg holds 2 x Ø10 holes for the vehicle-side mount and an upright support holds 2 x Ø8 holes for the front-wing mount. The user gave the main dimensions (120 x 70 mm envelope, 12 mm base, 10 mm upright, 65 mm support height), a minimum R5 fillet, the local frame axes, the instruction to keep the generator origin, and the placement pose (500, -250, 150 mm; roll 15, pitch 35, yaw 60 deg). The user also said to treat dimensions and geometric rules as project engineering assumptions. For that reason the gaps that do not change the given geometry are assumed and labelled, not asked: material, manufacturing process, hole positions and edge distances, how the holes map to fasteners, and the rotation convention. No load case was given. Structural checks will therefore be NOT_RUN, not passed, until the user supplies a load.",
+  "requirements": [
+    {
+      "id": "R01",
+      "key": "function",
+      "text": "The part is a rigid mounting bracket representing the structural connection of the front wing to the vehicle. It must be parametric and manufacturable.",
+      "source": "USER_REQUEST",
+      "quote": "Ön kanadın araç üzerindeki yapısal bağlantısını temsil eden, parametrik ve üretilebilir bir mounting bracket oluşturmak."
+    },
+    {
+      "id": "R02",
+      "key": "scope_no_homologation_claim",
+      "text": "The part is an F1-inspired engineering demonstrator. It must not be presented as a real FIA-homologated part.",
+      "source": "USER_REQUEST",
+      "quote": "Gerçek FIA homologasyon parçası olduğunu iddia etme."
+    },
+    {
+      "id": "R03",
+      "key": "scope_dimensions_as_assumptions",
+      "text": "Dimensions and geometric rules are to be treated as engineering assumptions defined within the project scope.",
+      "source": "USER_REQUEST",
+      "quote": "Boyutları ve geometrik kuralları proje kapsamında tanımlanmış mühendislik varsayımları olarak kabul et."
+    },
+    {
+      "id": "R04",
+      "key": "function_two_mounting_zones",
+      "text": "The bracket must have two main connection zones.",
+      "source": "USER_REQUEST",
+      "quote": "iki ana bağlantı bölgesi"
+    },
+    {
+      "id": "R05",
+      "key": "envelope",
+      "text": "Overall bracket length (local X, longitudinal) is 120 mm.",
+      "source": "USER_REQUEST",
+      "quote": "Overall length: 120 mm",
+      "value": 120,
+      "unit": "mm"
+    },
+    {
+      "id": "R06",
+      "key": "envelope",
+      "text": "Overall bracket width (local Y, lateral) is 70 mm.",
+      "source": "USER_REQUEST",
+      "quote": "Overall width: 70 mm",
+      "value": 70,
+      "unit": "mm"
+    },
+    {
+      "id": "R07",
+      "key": "base_thickness",
+      "text": "Base leg thickness is 12 mm.",
+      "source": "USER_REQUEST",
+      "quote": "Base thickness: 12 mm",
+      "value": 12,
+      "unit": "mm"
+    },
+    {
+      "id": "R08",
+      "key": "upright_thickness",
+      "text": "Vertical support (upright) thickness is 10 mm.",
+      "source": "USER_REQUEST",
+      "quote": "Vertical support thickness: 10 mm",
+      "value": 10,
+      "unit": "mm"
+    },
+    {
+      "id": "R09",
+      "key": "envelope",
+      "text": "Support height (local Z) is 65 mm.",
+      "source": "USER_REQUEST",
+      "quote": "Support height: 65 mm",
+      "value": 65,
+      "unit": "mm"
+    },
+    {
+      "id": "R10",
+      "key": "base_fastener",
+      "text": "The base leg has 2 mounting holes of diameter 10 mm (vehicle-side connection).",
+      "source": "USER_REQUEST",
+      "quote": "2 × Ø10 mm base mounting holes",
+      "value": {
+        "count": 2,
+        "diameter": 10
+      },
+      "unit": "mm"
+    },
+    {
+      "id": "R11",
+      "key": "upright_fastener",
+      "text": "The upright has 2 front-wing mounting holes of diameter 8 mm.",
+      "source": "USER_REQUEST",
+      "quote": "2 × Ø8 mm front-wing mounting holes",
+      "value": {
+        "count": 2,
+        "diameter": 8
+      },
+      "unit": "mm"
+    },
+    {
+      "id": "R12",
+      "key": "min_fillet",
+      "text": "The minimum fillet radius is 5 mm.",
+      "source": "USER_REQUEST",
+      "quote": "R5 mm",
+      "value": 5,
+      "unit": "mm"
+    },
+    {
+      "id": "R13",
+      "key": "orientation_asymmetric",
+      "text": "The geometry must be non-symmetric, with a clearly identifiable orientation.",
+      "source": "USER_REQUEST",
+      "quote": "simetrik olmayan / yönü belli bir geometri"
+    },
+    {
+      "id": "R14",
+      "key": "local_frame_x",
+      "text": "Local X is the part's longitudinal direction.",
+      "source": "USER_REQUEST",
+      "quote": "X: part longitudinal direction"
+    },
+    {
+      "id": "R15",
+      "key": "local_frame_y",
+      "text": "Local Y is the part's lateral direction.",
+      "source": "USER_REQUEST",
+      "quote": "Y: part lateral direction"
+    },
+    {
+      "id": "R16",
+      "key": "local_frame_z",
+      "text": "Local Z is the vertical direction.",
+      "source": "USER_REQUEST",
+      "quote": "Z: vertical direction"
+    },
+    {
+      "id": "R17",
+      "key": "local_origin",
+      "text": "Keep the existing generator origin as the part origin for now.",
+      "source": "USER_REQUEST",
+      "quote": "Origin için şimdilik mevcut generator origin'ini koru."
+    },
+    {
+      "id": "R18",
+      "key": "placement_x",
+      "text": "Placement position X is 500 mm.",
+      "source": "USER_REQUEST",
+      "quote": "X = 500 mm",
+      "value": 500,
+      "unit": "mm"
+    },
+    {
+      "id": "R19",
+      "key": "placement_y",
+      "text": "Placement position Y is -250 mm.",
+      "source": "USER_REQUEST",
+      "quote": "Y = -250 mm",
+      "value": -250,
+      "unit": "mm"
+    },
+    {
+      "id": "R20",
+      "key": "placement_z",
+      "text": "Placement position Z is 150 mm.",
+      "source": "USER_REQUEST",
+      "quote": "Z = 150 mm",
+      "value": 150,
+      "unit": "mm"
+    },
+    {
+      "id": "R21",
+      "key": "placement_roll",
+      "text": "Placement roll is 15 deg.",
+      "source": "USER_REQUEST",
+      "quote": "Roll = 15°",
+      "value": 15,
+      "unit": "deg"
+    },
+    {
+      "id": "R22",
+      "key": "placement_pitch",
+      "text": "Placement pitch is 35 deg.",
+      "source": "USER_REQUEST",
+      "quote": "Pitch = 35°",
+      "value": 35,
+      "unit": "deg"
+    },
+    {
+      "id": "R23",
+      "key": "placement_yaw",
+      "text": "Placement yaw is 60 deg.",
+      "source": "USER_REQUEST",
+      "quote": "Yaw = 60°",
+      "value": 60,
+      "unit": "deg"
+    },
+    {
+      "id": "R24",
+      "key": "assembly_ready",
+      "text": "The part must be designed so it can later be assembled with other F1 parts, with a meaningful coordinate frame inside the Fusion assembly.",
+      "source": "USER_REQUEST",
+      "quote": "daha sonra başka F1 parçalarıyla assembly oluşturulabilecek şekilde tasarlanmış olması"
+    }
+  ],
+  "missing_information": [
+    {
+      "id": "M01",
+      "key": "material",
+      "topic": "Bracket material",
+      "why_it_matters": "Material drives mass, machinability and any later structural check. The user-given geometry does not depend on it.",
+      "criticality": "IMPORTANT",
+      "resolution": "ASSUME",
+      "assumption_id": "A02"
+    },
+    {
+      "id": "M02",
+      "key": "manufacturing_process",
+      "topic": "Manufacturing process",
+      "why_it_matters": "The request asks for a manufacturable part but names no process. The process sets the allowed features and fillet rules; the generator supports only machined.",
+      "criticality": "IMPORTANT",
+      "resolution": "ASSUME",
+      "assumption_id": "A03"
+    },
+    {
+      "id": "M03",
+      "key": "load",
+      "topic": "Load case (force/mass, direction, dynamic or safety factor)",
+      "why_it_matters": "Without a load case no structural check can be evaluated. Checks will be NOT_RUN rather than passed. The given dimensions are not changed by this gap.",
+      "criticality": "IMPORTANT",
+      "resolution": "ASSUME",
+      "assumption_id": "A04"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "A01",
+      "text": "Scope: concept-level demonstrator with nominal geometry only. No FEA, no tolerancing, no FIA compliance, structural-safety or race-readiness claim.",
+      "rationale": "Stated by the user (R02, R03) and by project policy.",
+      "impact": "All results are indicative, for demonstration and assembly-framework purposes.",
+      "affects": [
+        "R01",
+        "R02",
+        "R03"
+      ]
+    },
+    {
+      "id": "A02",
+      "text": "Material is assumed to be a machinable high-strength aluminium alloy (7075-T6 class) until the user specifies otherwise.",
+      "rationale": "A common choice for machined motorsport brackets. The user did not specify a material.",
+      "impact": "Affects only mass properties and any later strength check, not the geometry.",
+      "affects": [
+        "M01"
+      ]
+    },
+    {
+      "id": "A03",
+      "text": "The part is assumed to be machined from billet (the only process the l_bracket generator supports).",
+      "rationale": "The user asked for a manufacturable part without naming a process.",
+      "impact": "Internal corners use fillets of at least the R12 minimum. No draft or casting features.",
+      "affects": [
+        "M02",
+        "R12"
+      ]
+    },
+    {
+      "id": "A04",
+      "text": "No load case is defined. Load-dependent structural checks are reported as NOT_RUN, not as passed.",
+      "rationale": "The user gave no load, and loads must not be invented.",
+      "impact": "Strength and stiffness of the bracket are unverified until the user supplies a load case.",
+      "affects": [
+        "M03"
+      ]
+    },
+    {
+      "id": "A05",
+      "text": "The Ø10 and Ø8 values are treated as finished hole diameters. Bolt thread, grade and clearance class are not specified.",
+      "rationale": "The user specified holes, not fasteners (R10, R11).",
+      "impact": "Fastener selection and hole fit must be confirmed before interfacing with real parts.",
+      "affects": [
+        "R10",
+        "R11"
+      ]
+    },
+    {
+      "id": "A06",
+      "text": "Hole positions, spacing and edge distances follow the l_bracket generator's parametric defaults. Each pair is placed in its own leg, and the values are exposed as named parameters.",
+      "rationale": "Not given by the user. R03 allows project-defined geometric assumptions.",
+      "impact": "Mating F1 parts must later adopt or re-parameterise these interface positions.",
+      "affects": [
+        "R10",
+        "R11",
+        "R24"
+      ]
+    },
+    {
+      "id": "A07",
+      "text": "Base holes (R10) form the vehicle/chassis-side connection zone. Upright holes (R11) form the front-wing connection zone. Together they satisfy the two connection zones of R04.",
+      "rationale": "Follows from the hole labels in the request.",
+      "impact": "Defines which leg faces which mating part in later assemblies.",
+      "affects": [
+        "R04",
+        "R10",
+        "R11"
+      ]
+    },
+    {
+      "id": "A08",
+      "text": "The L-profile (a base leg with an upright at one end) provides the required directional asymmetry along local X.",
+      "rationale": "R13 asks for an orientation-defined geometry. The l_bracket form is inherently asymmetric along its longitudinal axis.",
+      "impact": "No additional asymmetric features are added unless requested.",
+      "affects": [
+        "R13"
+      ]
+    },
+    {
+      "id": "A09",
+      "text": "Roll, pitch and yaw are applied about X, Y and Z respectively, using the project's standard pose convention (VCS: +X front, +Y left, +Z up). The position is the placement of the generator origin.",
+      "rationale": "The user did not state a rotation order. The project convention is used for consistency with other parts.",
+      "impact": "A different rotation order would yield a different final orientation.",
+      "affects": [
+        "R18",
+        "R19",
+        "R20",
+        "R21",
+        "R22",
+        "R23",
+        "R17"
+      ]
+    }
+  ]
+}

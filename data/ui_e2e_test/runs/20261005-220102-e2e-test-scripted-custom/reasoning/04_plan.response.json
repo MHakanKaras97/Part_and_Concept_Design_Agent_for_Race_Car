@@ -1,0 +1,252 @@
+{
+  "generator": "l_bracket",
+  "component_name": "sensor_box_l_bracket",
+  "steps": [
+    "Set the interfaces: upright 2x M5 (40 mm apart horizontally, centres 35 mm above the plate) from R05 (user) and R06 (IMG-01). Base 4x M6 in a 2x2 pattern that the bracket defines (R04, R12, A02).",
+    "Size the envelope: width 70 x base length 75 x upright height 50 mm, all within 80 mm (R11).",
+    "Set the thickness to 6 mm and the inner bend radius to 4 mm. Check them against DFM-MACH-WALL-MIN, DFM-MACH-INNER-RADIUS-MIN and DFM-DFMEA-FATIGUE-FILLET.",
+    "Set ISO 273 medium clearance holes: M6 -> 6.6 mm, M5 -> 5.5 mm. Check hole-to-free-edge distance >= 1.5 x d (GL-HOLE-EDGE-DISTANCE).",
+    "Hand calculation: F = 2 kg x 9.81 x 3 = 58.9 N downward at 40 mm from the upright outer face. Check bending at the upright root and the base-bolt tension against 276/2 = 138 MPa allowable.",
+    "Build the model in Fusion 360 and measure the bounding box, hole positions and diameters, thickness and fillet. Compare them with the expected geometry.",
+    "Report the results as concept-level only (A01). Make no safety or compliance claim."
+  ],
+  "parameters": {
+    "leg_base_length": {
+      "value": 75,
+      "unit": "mm",
+      "source": "DERIVED",
+      "rationale": "Second base row at x=60 plus a 15 mm end margin (>= 9.9 mm required). Fits within the 80 mm envelope.",
+      "trace": [
+        "R11",
+        "A02",
+        "A06",
+        "GL-HOLE-EDGE-DISTANCE"
+      ]
+    },
+    "leg_upright_height": {
+      "value": 50,
+      "unit": "mm",
+      "source": "DERIVED",
+      "rationale": "M5 row at z=35 plus a 15 mm top margin (>= 8.25 mm required). Within 80 mm.",
+      "trace": [
+        "R05",
+        "R11",
+        "GL-HOLE-EDGE-DISTANCE"
+      ]
+    },
+    "bracket_width": {
+      "value": 70,
+      "unit": "mm",
+      "source": "DERIVED",
+      "rationale": "Gives 15 mm edge margin for the M5 holes at y=+/-20 and 12 mm for the M6 holes at y=+/-23. Within 80 mm.",
+      "trace": [
+        "R05",
+        "R11",
+        "A02",
+        "GL-HOLE-EDGE-DISTANCE"
+      ]
+    },
+    "bracket_thickness": {
+      "value": 6,
+      "unit": "mm",
+      "source": "ASSUMPTION",
+      "rationale": "Strength alone needs about 1.2 mm (root bending). 6 mm is chosen for stiffness and bolt-head seating. Satisfies the 2.0 mm minimum wall.",
+      "trace": [
+        "A05",
+        "DFM-MACH-WALL-MIN",
+        "R10"
+      ]
+    },
+    "bend_inner_radius": {
+      "value": 4,
+      "unit": "mm",
+      "source": "RULE",
+      "rationale": "4 mm meets R >= 3.0 for end-mill access and >= 0.2 x 6 = 1.2 mm for the fatigue fillet rule.",
+      "trace": [
+        "DFM-MACH-INNER-RADIUS-MIN",
+        "DFM-DFMEA-FATIGUE-FILLET"
+      ]
+    },
+    "base_hole_diameter": {
+      "value": 6.6,
+      "unit": "mm",
+      "source": "RULE",
+      "rationale": "ISO 273 medium clearance for M6.",
+      "trace": [
+        "R04",
+        "STD-ISO273-MEDIUM"
+      ]
+    },
+    "base_hole_x0": {
+      "value": 20,
+      "unit": "mm",
+      "source": "ASSUMPTION",
+      "rationale": "The fillet ends at x=10. At x=20, an M6 socket head (dia 10) clears the fillet and the upright for tool access.",
+      "trace": [
+        "A02",
+        "A06"
+      ]
+    },
+    "base_hole_pitch_x": {
+      "value": 40,
+      "unit": "mm",
+      "source": "ASSUMPTION",
+      "rationale": "A wide row spread increases the resisting arm against overturning by the upright moment. The last row sits at x=60.",
+      "trace": [
+        "A02",
+        "A06",
+        "R11"
+      ]
+    },
+    "base_hole_pitch_y": {
+      "value": 46,
+      "unit": "mm",
+      "source": "ASSUMPTION",
+      "rationale": "Holes at y=+/-23 give 12 mm to the side edges (>= 9.9 mm) in the 70 mm width.",
+      "trace": [
+        "A02",
+        "A06",
+        "GL-HOLE-EDGE-DISTANCE"
+      ]
+    },
+    "upright_hole_diameter": {
+      "value": 5.5,
+      "unit": "mm",
+      "source": "RULE",
+      "rationale": "ISO 273 medium clearance for M5.",
+      "trace": [
+        "R05",
+        "STD-ISO273-MEDIUM"
+      ]
+    },
+    "upright_hole_z0": {
+      "value": 35,
+      "unit": "mm",
+      "source": "USER",
+      "rationale": "The user states the hole centres are 35 mm above the flat plate (= base bottom face, z=0).",
+      "trace": [
+        "R05",
+        "M01"
+      ]
+    },
+    "upright_hole_pitch_z": {
+      "value": 0,
+      "unit": "mm",
+      "source": "DERIVED",
+      "rationale": "Not used: there is a single upright row (R05: two holes on one horizontal line).",
+      "trace": [
+        "R05",
+        "R06"
+      ]
+    },
+    "upright_hole_pitch_y": {
+      "value": 40,
+      "unit": "mm",
+      "source": "USER",
+      "rationale": "The user states the holes are 40 mm apart horizontally. The IMG-01 sketch shows the same 40 mm.",
+      "trace": [
+        "R05",
+        "M01",
+        "R06"
+      ]
+    },
+    "base_hole_rows": {
+      "value": 2,
+      "unit": "count",
+      "source": "DERIVED",
+      "rationale": "Four M6 bolts in a rectangular 2x2 pattern.",
+      "trace": [
+        "R04",
+        "A02"
+      ]
+    },
+    "base_hole_cols": {
+      "value": 2,
+      "unit": "count",
+      "source": "DERIVED",
+      "rationale": "Four M6 bolts in a rectangular 2x2 pattern.",
+      "trace": [
+        "R04",
+        "A02"
+      ]
+    },
+    "upright_hole_rows": {
+      "value": 1,
+      "unit": "count",
+      "source": "USER",
+      "rationale": "The two M5 holes lie on one horizontal line.",
+      "trace": [
+        "R05",
+        "M01",
+        "R06"
+      ]
+    },
+    "upright_hole_cols": {
+      "value": 2,
+      "unit": "count",
+      "source": "USER",
+      "rationale": "Two M5 bolts.",
+      "trace": [
+        "R05",
+        "M01",
+        "R06"
+      ]
+    }
+  },
+  "design_inputs": {
+    "base_fastener": "M6",
+    "upright_fastener": "M5",
+    "base_mates_with": "Horizontal flat plate (undrilled; to be drilled to the bracket's 2x2 M6 pattern, R12)",
+    "upright_mates_with": "2 kg sensor box, 2x M5 at 40 mm horizontal pitch, centres 35 mm above plate (R05, IMG-01)"
+  },
+  "manufacturing": {
+    "process": "machined",
+    "material": "AL6061-T6"
+  },
+  "load_case": {
+    "description": "Sensor box weight x dynamic factor 3, acting downward at the centre of mass. The centre of mass is 40 mm out from the upright outer face (x=-40), centred between the M5 holes (A03). The load bends the upright root and puts tension in the front base bolts. Allowable = 276 MPa / 2.",
+    "force_n": 58.86,
+    "lever_arm_mm": 40,
+    "required_safety_factor": 2,
+    "trace": [
+      "R07",
+      "R08",
+      "R09",
+      "R10",
+      "A03",
+      "A04",
+      "R02"
+    ]
+  },
+  "verification_plan": [
+    "Fusion measurement: bounding box <= 80 x 80 x 80 mm (expected 75 x 70 x 50) (R11).",
+    "Fusion measurement: thickness 6 mm, inner bend radius 4 mm, outer radius 10 mm.",
+    "Fusion measurement: hole diameters 6.6 / 5.5 mm. Base hole centres at x=20/60, y=+/-23. Upright hole centres at z=35, y=+/-20 (R05, R06).",
+    "Rule check: DFM-MACH-WALL-MIN, DFM-MACH-INNER-RADIUS-MIN, DFM-DFMEA-FATIGUE-FILLET, STD-ISO273-MEDIUM, GL-HOLE-EDGE-DISTANCE (minimum edge margins 12 mm for M6 and 15 mm for M5).",
+    "Hand calculation (Python): upright root bending sigma = 6*F*40/(b*t^2) vs 138 MPa. Also check at the M5 hole line with the net width reduced by the holes.",
+    "Hand calculation (Python): base bolt tension from the overturning moment about the rear row, compared with an M6 indicative capacity. Report as concept-level only (A01)."
+  ],
+  "new_assumptions": [
+    {
+      "id": "A05",
+      "text": "Leg thickness is set to 6 mm. This is well above the about 1.2 mm strength minimum, for stiffness and bolt-head/nut seating.",
+      "rationale": "A thin aluminium leg under 3 g dynamic load may deflect or vibrate. The user gave no stiffness or frequency target.",
+      "impact": "Adds mass. A lighter section can be re-checked if a mass target is given.",
+      "affects": [
+        "R10",
+        "R11"
+      ]
+    },
+    {
+      "id": "A06",
+      "text": "The base 2x2 M6 pattern is set at x=20/60 mm and y=+/-23 mm from the upright outer face and the centreline.",
+      "rationale": "The first row clears the bend fillet for socket-head access. The wide row spacing gives a resisting arm against the overturning moment, and the pattern stays within the 80 mm envelope.",
+      "impact": "The plate must be drilled to this pattern (R12).",
+      "affects": [
+        "R04",
+        "R11",
+        "R12"
+      ]
+    }
+  ]
+}

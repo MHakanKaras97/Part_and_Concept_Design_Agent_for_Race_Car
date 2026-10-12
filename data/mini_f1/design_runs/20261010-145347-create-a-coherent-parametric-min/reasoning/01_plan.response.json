@@ -1,0 +1,194 @@
+{
+  "parts": [
+    {
+      "id": "MON-001",
+      "name": "Monocoque",
+      "role": "survival cell / chassis tub with nose and cockpit opening",
+      "dims": {
+        "length": 4250,
+        "rear_width": 900,
+        "nose_tip_width": 200,
+        "rear_height": 700,
+        "nose_tip_height": 200,
+        "cockpit_rim_height": 60,
+        "cockpit_opening_length": 800,
+        "cockpit_opening_width": 500
+      },
+      "position_mm": [
+        0,
+        0,
+        30
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "envelope_min": [
+        -3700,
+        -450,
+        30
+      ],
+      "envelope_max": [
+        550,
+        450,
+        790
+      ],
+      "fia_refs_used": [
+        "C2.3.1"
+      ],
+      "notes": "Tapered loft from wide rear section (X=-3700, 900 wide x 700 high, Z 30-730) to narrow nose tip (X=+550, 200 wide x 200 high, Z 30-230, flat vertical tip face that the front wing mount touches). Flat bottom at Z=30 sits on floor top face. Open cockpit cut from top, approx X -2300 to -1500, 500 wide, with raised rim 60 mm high around opening. Flat vertical rear face at X=-3700 for rear wing supports. Half-width 450 is well inside the 950 mm limit."
+    },
+    {
+      "id": "FWG-001",
+      "name": "Front wing",
+      "role": "front wing: main plane, flap(s), endplates; ahead of the front axle",
+      "dims": {
+        "span": 1800,
+        "main_plane_chord": 350,
+        "flap_chord": 180,
+        "element_thickness": 30,
+        "endplate_height": 280,
+        "endplate_thickness": 20,
+        "mount_width": 120,
+        "mount_length": 150
+      },
+      "position_mm": [
+        0,
+        0,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "envelope_min": [
+        550,
+        -900,
+        50
+      ],
+      "envelope_max": [
+        1150,
+        900,
+        330
+      ],
+      "fia_refs_used": [
+        "C2.3.1",
+        "C3.10.1"
+      ],
+      "notes": "Main plane (chord 350, 30 thick) spanning 1800 at low Z (~70-100) at front X 800-1150; two flaps chord 180 stacked rearward/upward with small slot gaps, giving up to three sections per Y-plane. Two vertical endplates (20 thick, 280 high, Z 50-330) at Y=±880..±900. Central mount/pylon block Y ±60, from flap/main plane rearward to X=550, Z 100-230, its rear face touching the monocoque nose tip face (no overlap)."
+    },
+    {
+      "id": "FLR-001",
+      "name": "Floor",
+      "role": "floor plate under the car with rear diffuser ramp",
+      "dims": {
+        "length": 3900,
+        "width": 1600,
+        "thickness": 30,
+        "diffuser_length": 600,
+        "diffuser_width": 1000,
+        "diffuser_exit_height": 230,
+        "edge_chamfer": 20
+      },
+      "position_mm": [
+        0,
+        0,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "envelope_min": [
+        -4300,
+        -800,
+        0
+      ],
+      "envelope_max": [
+        -400,
+        800,
+        230
+      ],
+      "fia_refs_used": [
+        "C2.3.1",
+        "C3.5.4"
+      ],
+      "notes": "Thin flat plate X -4300 to -400, Y ±800, Z 0-30; top face Z=30 carries the monocoque. Simplified side edges: chamfered/tapered outer edges and slightly tapered front corners in plan. Rear diffuser ramp: wedge X -3700 to -4300, Y ±500, rising from Z=30 at X=-3700 to Z=230 at rear edge, behind the monocoque rear face so no intersection. Single solid body."
+    },
+    {
+      "id": "RWG-001",
+      "name": "Rear wing",
+      "role": "rear wing: main plane, flap, endplates, central support",
+      "dims": {
+        "span": 1040,
+        "main_plane_chord": 350,
+        "flap_chord": 200,
+        "element_thickness": 35,
+        "endplate_height": 400,
+        "endplate_thickness": 20,
+        "support_spacing": 200,
+        "support_thickness": 20
+      },
+      "position_mm": [
+        0,
+        0,
+        0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "envelope_min": [
+        -4450,
+        -520,
+        400
+      ],
+      "envelope_max": [
+        -3700,
+        520,
+        1100
+      ],
+      "fia_refs_used": [
+        "C2.3.1",
+        "C3.11.1",
+        "C3.11.4"
+      ],
+      "notes": "Main plane chord 350 at Z ~870-905, X -4400 to -4050, span 1000 between endplates; one flap chord 200 above/behind with slot gap (Z ~930-1000). Two endplates 20 thick, Z 700-1100, X -4450 to -3950 at Y ±500..±520. Two simplified support plates (20 thick in Y, centred Y=±100) from front face at X=-3700 (touching monocoque rear face, Z 400-730 region) sweeping rearward up to the main plane underside. Clear of floor diffuser (max Z 230)."
+    }
+  ],
+  "mates": [
+    {
+      "a": "FWG-001",
+      "b": "MON-001",
+      "expect": "touching",
+      "value_mm": 0
+    },
+    {
+      "a": "MON-001",
+      "b": "FLR-001",
+      "expect": "touching",
+      "value_mm": 0
+    },
+    {
+      "a": "RWG-001",
+      "b": "MON-001",
+      "expect": "touching",
+      "value_mm": 0
+    }
+  ],
+  "assumptions": [
+    "Overall length ~5600 mm, from front wing leading edge X=+1150 to rear wing endplate trailing edge X=-4450.",
+    "Max part half-width set to 900 mm (front wing), inside the 950 mm limit of C2.3.1.",
+    "Floor is 30 mm thick with its top face at Z=30; the monocoque has a flat bottom at Z=30.",
+    "Monocoque runs from X=+550 (nose tip) to X=-3700 (rear face); the nose has a flat bottom with no raised-nose geometry.",
+    "Front wing mount is a central pylon block whose rear face touches the 200x200 nose tip face at X=550.",
+    "Rear wing uses two support plates at Y=±100 that touch the monocoque rear face at X=-3700, not a single pylon.",
+    "Diffuser ramp rises from 30 mm to 230 mm over the last 600 mm of the floor and is 1000 mm wide.",
+    "Wing profiles are simplified as constant-thickness cambered or flat plates; no RV/RS reference volumes are modelled."
+  ],
+  "question": null
+}

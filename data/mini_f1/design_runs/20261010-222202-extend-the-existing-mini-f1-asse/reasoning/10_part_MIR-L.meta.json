@@ -1,0 +1,14 @@
+{
+  "name": "part_MIR-L",
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "duration_s": 12.5,
+  "num_turns": 2,
+  "input_tokens": 2,
+  "output_tokens": 1145,
+  "cache_read_input_tokens": 3127,
+  "cache_creation_input_tokens": 1578,
+  "reported_cost_usd": 0.036157400000000006,
+  "system_prompt": "system_459c9cc3cbf0.md"
+}

@@ -1,0 +1,126 @@
+{
+  "component_type": "l_bracket",
+  "summary": "Machined aluminium L-bracket mounting a 2 kg sensor box to a flat plate. The base leg uses four M6 bolts (from the request). The upright leg uses 2x M5 holes at 40 mm spacing, read from IMG-01. The load case (direction, dynamic factor, safety factor, centre-of-mass offset) and the space envelope are not stated. Both would change the leg sizes and thickness, so they are asked rather than assumed. The aluminium alloy/temper is assumed. Scope is a concept-level design with nominal geometry and no FEA.",
+  "requirements": [
+    {
+      "id": "R01",
+      "key": "function",
+      "text": "The bracket connects a sensor box to a flat plate: the base leg sits on the plate and the sensor box mounts on the upright leg (AI interpretation of the L-bracket role).",
+      "source": "USER_REQUEST",
+      "quote": "L-bracket to mount a 2 kg sensor box to a flat plate"
+    },
+    {
+      "id": "R02",
+      "key": "material",
+      "text": "Bracket material is aluminium; the alloy and temper are not specified.",
+      "source": "USER_REQUEST",
+      "quote": "machined aluminium L-bracket",
+      "value": "aluminium"
+    },
+    {
+      "id": "R03",
+      "key": "manufacturing_process",
+      "text": "The bracket is machined.",
+      "source": "USER_REQUEST",
+      "quote": "machined aluminium L-bracket",
+      "value": "machined"
+    },
+    {
+      "id": "R04",
+      "key": "base_fastener",
+      "text": "The base leg fastens to the flat plate with four M6 bolts.",
+      "source": "USER_REQUEST",
+      "quote": "to a flat plate with four M6 bolts",
+      "value": "4x M6"
+    },
+    {
+      "id": "R05",
+      "key": "upright_fastener",
+      "text": "The upright leg (sensor-box side) has 2x M5 holes spaced 40 mm apart, as read from the sketch.",
+      "source": "IMAGE",
+      "attachment_id": "IMG-01",
+      "image_evidence": "Title text 'SENSOR BOX SIDE - UPRIGHT LEG: 2x M5 HOLES'; two circles drawn side by side in a rectangle; dimension line between them labelled '40 mm'.",
+      "value": "2x M5 @ 40",
+      "unit": "mm"
+    },
+    {
+      "id": "R06",
+      "key": "load",
+      "text": "The supported mass is 2 kg (sensor box). Load direction, dynamic factor and safety factor are not stated.",
+      "source": "USER_REQUEST",
+      "quote": "2 kg sensor box",
+      "value": 2,
+      "unit": "kg"
+    }
+  ],
+  "missing_information": [
+    {
+      "id": "M01",
+      "key": "load",
+      "topic": "Load case beyond the static mass",
+      "why_it_matters": "The plate orientation, the load direction, dynamic/vibration loads, the safety factor and the centre-of-mass offset from the upright face set the bending moment at the bracket root. This drives leg thickness and fillet size.",
+      "criticality": "CRITICAL",
+      "resolution": "ASK",
+      "question": "What load case should the bracket be designed for? Please give the orientation of the flat plate and the direction of the sensor box weight relative to it, any dynamic, vibration or acceleration loads, the required safety factor, and where the sensor box centre of mass sits relative to the upright mounting face."
+    },
+    {
+      "id": "M02",
+      "key": "envelope",
+      "topic": "Available space / size limits",
+      "why_it_matters": "The leg lengths, width and height, and the base bolt pattern, depend on the space available on the plate and around the sensor box. Without it, interfaces may clash.",
+      "criticality": "CRITICAL",
+      "resolution": "ASK",
+      "question": "What space is available for the bracket on the plate and around the sensor box? Are there any maximum dimensions, keep-out zones or a defined bolt pattern on the plate?"
+    },
+    {
+      "id": "M03",
+      "key": "material_grade",
+      "topic": "Aluminium alloy and temper",
+      "why_it_matters": "The allowable stress used in the sizing checks depends on the alloy and temper. A common machining alloy is a reasonable concept-level default.",
+      "criticality": "IMPORTANT",
+      "resolution": "ASSUME",
+      "assumption_id": "A01"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "A01",
+      "text": "Aluminium alloy assumed to be 6061-T6 (nominal properties) until the user specifies a grade.",
+      "rationale": "The user specified aluminium and machining but no grade. 6061-T6 is a widely used machinable bracket alloy.",
+      "impact": "Sets the allowable stress in the sizing checks. A weaker alloy would need thicker legs.",
+      "affects": [
+        "R02",
+        "M03"
+      ]
+    },
+    {
+      "id": "A02",
+      "text": "The 40 mm dimension in IMG-01 is the centre-to-centre spacing of the two M5 holes, and the holes lie in a line parallel to the bend line of the upright leg.",
+      "rationale": "The dimension line in the sketch spans the two hole centres, and the holes are drawn side by side horizontally.",
+      "impact": "Sets the upright hole positions and the minimum upright width. A different interpretation would move the interface holes.",
+      "affects": [
+        "R05"
+      ]
+    },
+    {
+      "id": "A03",
+      "text": "Scope: concept-level design with nominal geometry, simple hand-calculation checks only, no FEA, no tolerancing or fatigue analysis. This is not a structural-safety or production-readiness claim.",
+      "rationale": "Prototype bench workflow. No regulation applies to this project.",
+      "impact": "The results are indicative and need engineering review before any use.",
+      "affects": [
+        "R01",
+        "R06"
+      ]
+    },
+    {
+      "id": "A04",
+      "text": "Bolt holes are clearance holes for the stated sizes (M6 base, M5 upright). The base four-bolt pattern is placed symmetrically by the generator unless the user defines the plate pattern.",
+      "rationale": "No hole type or plate pattern was given. Clearance holes are the default for through-bolting.",
+      "impact": "Hole diameters and base hole layout. Can be changed if M02 gives a plate pattern.",
+      "affects": [
+        "R04",
+        "R05"
+      ]
+    }
+  ]
+}

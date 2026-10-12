@@ -1,0 +1,14 @@
+{
+  "name": "part_WHL-RL",
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "duration_s": 13.3,
+  "num_turns": 2,
+  "input_tokens": 2,
+  "output_tokens": 1166,
+  "cache_read_input_tokens": 3127,
+  "cache_creation_input_tokens": 1542,
+  "reported_cost_usd": 0.0362894,
+  "system_prompt": "system_459c9cc3cbf0.md"
+}

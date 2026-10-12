@@ -1,0 +1,191 @@
+{
+  "component_type": "l_bracket",
+  "summary": "Machined aluminium 6061-T6 L-bracket. Its horizontal base leg bolts to an undrilled horizontal flat plate with four M6 bolts. Its vertical upright leg carries a 2 kg sensor box on two M5 bolts. The M5 holes are 40 mm apart horizontally, with centres 35 mm above the plate; IMG-01 matches this. The centre of mass is 40 mm from the mounting face. Design factors: dynamic factor 3 and safety factor 2 on yield. The bracket must fit inside an 80 mm cube. All required inputs are covered by the user's answers and the image. The remaining gaps are minor and handled as assumptions, so no new questions are needed.",
+  "requirements": [
+    {
+      "id": "R01",
+      "key": "function",
+      "text": "The bracket mounts a 2 kg sensor box to a flat plate.",
+      "source": "USER_REQUEST",
+      "quote": "mount a 2 kg sensor box to a flat plate",
+      "value": 2,
+      "unit": "kg"
+    },
+    {
+      "id": "R02",
+      "key": "manufacturing_process",
+      "text": "The bracket is a machined aluminium L-bracket.",
+      "source": "USER_REQUEST",
+      "quote": "Design a machined aluminium L-bracket",
+      "value": "machined"
+    },
+    {
+      "id": "R03",
+      "key": "material",
+      "text": "Bracket material: aluminium 6061-T6.",
+      "source": "USER_ANSWER",
+      "answer_id": "M01",
+      "quote": "Material: aluminium 6061-T6.",
+      "value": "6061-T6"
+    },
+    {
+      "id": "R04",
+      "key": "base_fastener",
+      "text": "The base leg is fastened to the flat plate with four M6 bolts.",
+      "source": "USER_REQUEST",
+      "quote": "to a flat plate with four M6 bolts",
+      "value": "M6"
+    },
+    {
+      "id": "R05",
+      "key": "upright_fastener",
+      "text": "The sensor box is attached to the upright leg with two M5 bolts, 40 mm apart horizontally, with hole centres 35 mm above the flat plate.",
+      "source": "USER_ANSWER",
+      "answer_id": "M01",
+      "quote": "The sensor box is attached with two M5 bolts, 40 mm apart horizontally, hole centres 35 mm above the flat plate.",
+      "value": {
+        "count": 2,
+        "size": "M5",
+        "spacing_mm": 40,
+        "height_mm": 35
+      }
+    },
+    {
+      "id": "R06",
+      "key": "upright_fastener_image",
+      "text": "IMG-01 shows the upright leg (sensor-box side) with 2x M5 holes, 40 mm apart. This matches R05.",
+      "source": "IMAGE",
+      "attachment_id": "IMG-01",
+      "image_evidence": "Title text 'SENSOR BOX SIDE - UPRIGHT LEG: 2x M5 HOLES'; two circles side by side on a rectangle; a horizontal dimension line between them labelled '40 mm'. No height dimension is shown.",
+      "value": {
+        "count": 2,
+        "size": "M5",
+        "spacing_mm": 40
+      },
+      "unit": "mm"
+    },
+    {
+      "id": "R07",
+      "key": "load",
+      "text": "The plate is horizontal. The sensor box is mounted on the vertical (upright) leg, and its weight acts downward.",
+      "source": "USER_ANSWER",
+      "answer_id": "M01",
+      "quote": "The plate is horizontal; the sensor box is mounted on the vertical leg and its weight acts downward."
+    },
+    {
+      "id": "R08",
+      "key": "load_factors",
+      "text": "Dynamic factor 3; safety factor 2 on yield.",
+      "source": "USER_ANSWER",
+      "answer_id": "M01",
+      "quote": "Use a dynamic factor of 3 and a safety factor of 2 on yield.",
+      "value": {
+        "dynamic_factor": 3,
+        "safety_factor_yield": 2
+      }
+    },
+    {
+      "id": "R09",
+      "key": "load_com",
+      "text": "The sensor box centre of mass is 40 mm from the upright mounting face.",
+      "source": "USER_ANSWER",
+      "answer_id": "M01",
+      "quote": "The centre of mass is 40 mm from the mounting face.",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "id": "R10",
+      "key": "envelope",
+      "text": "The bracket must fit inside 80 mm in every direction.",
+      "source": "USER_ANSWER",
+      "answer_id": "M02",
+      "quote": "The bracket must fit inside 80 mm in every direction.",
+      "value": 80,
+      "unit": "mm"
+    },
+    {
+      "id": "R11",
+      "key": "base_hole_pattern",
+      "text": "The plate is not drilled yet. The base M6 hole pattern can be chosen to suit the bracket, and the plate is drilled to match.",
+      "source": "USER_ANSWER",
+      "answer_id": "M02",
+      "quote": "The plate is not drilled yet; drill it to suit the bracket."
+    },
+    {
+      "id": "R12",
+      "key": "design_load",
+      "text": "Design load case: the sensor box weight acts downward at the centre-of-mass offset from the upright face, multiplied by the dynamic factor. Bracket stresses are checked against 6061-T6 yield with the required safety factor. Python computes the values.",
+      "source": "DERIVED",
+      "derived_from": [
+        "R01",
+        "R03",
+        "R07",
+        "R08",
+        "R09"
+      ]
+    }
+  ],
+  "missing_information": [
+    {
+      "id": "M03",
+      "key": "load_com_position",
+      "topic": "Centre-of-mass position in the plane of the upright face",
+      "why_it_matters": "Only the offset from the mounting face is given (R09). The lateral and vertical position of the centre of mass changes the bending and bolt loads slightly, but the moment arm normal to the face, which governs the design, is known.",
+      "criticality": "MINOR",
+      "resolution": "ASSUME",
+      "assumption_id": "A02"
+    },
+    {
+      "id": "M04",
+      "key": "fastener_hole_type",
+      "topic": "Clearance holes or tapped holes in the bracket",
+      "why_it_matters": "Determines the hole diameters and the minimum leg thickness. It does not change the interface positions.",
+      "criticality": "MINOR",
+      "resolution": "ASSUME",
+      "assumption_id": "A03"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "A01",
+      "text": "Scope: concept-level design with nominal geometry, checked by hand-calculation (no FEA). No claim of structural safety, regulatory compliance or production readiness.",
+      "rationale": "This is a Prototype 1 bench component; the agent workflow verifies geometry and simple checks only.",
+      "impact": "Results are indicative and need engineering review before use.",
+      "affects": [
+        "R12"
+      ]
+    },
+    {
+      "id": "A02",
+      "text": "The sensor box centre of mass lies laterally midway between the two M5 holes, at the height of the hole centres, offset 40 mm from the mounting face as stated in R09.",
+      "rationale": "No in-plane position was given. A symmetric mass centred on the bolt pattern is the natural nominal case.",
+      "impact": "An asymmetric centre of mass would add a small torsional or uneven bolt load. The main bending moment is unchanged.",
+      "affects": [
+        "R09",
+        "R12"
+      ]
+    },
+    {
+      "id": "A03",
+      "text": "All bracket holes are through clearance holes. The M5 and M6 bolts are secured with nuts, or with threads in the mating part, not tapped into the bracket.",
+      "rationale": "This is the simplest machined option and is consistent with the plate being drilled to suit (R11).",
+      "impact": "Sets the hole diameters. Tapped holes would need a re-check of the leg thickness.",
+      "affects": [
+        "R04",
+        "R05"
+      ]
+    },
+    {
+      "id": "A04",
+      "text": "The four M6 base bolts are arranged symmetrically in the base leg, inside the 80 mm envelope. The pattern is chosen by the design plan and given to the user for drilling the plate.",
+      "rationale": "The user allowed the plate to be drilled to suit the bracket (R11).",
+      "impact": "The base hole pattern is a design output, not a fixed interface.",
+      "affects": [
+        "R04",
+        "R10",
+        "R11"
+      ]
+    }
+  ]
+}

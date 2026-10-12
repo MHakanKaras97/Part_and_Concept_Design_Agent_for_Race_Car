@@ -1,0 +1,439 @@
+{
+  "record_type": "part",
+  "id": "WHL-FL",
+  "name": "Wheel front left",
+  "role": "front-left wheel and tyre on the front axle (X=0), +Y side",
+  "version": 2,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "WHL-FL",
+    "name": "Wheel front left",
+    "role": "front-left wheel and tyre on the front axle (X=0), +Y side",
+    "notes": "Axle along the part-local Y axis through the local origin (wheel centre), rotationally symmetric about it. Tyre cylinder radius 360 from local Y -150 to +150 with 40 mm rounded shoulders, near-black. Recessed silver rim face (dia 460, 30 deep) on the outboard (+Y) face. Hub boss on the inboard (-Y) side: radius 90 from local Y -150 to -210; its end face at Y -210 is the suspension contact plane. One connected solid.",
+    "dims": {
+      "diameter": 720.0,
+      "width": 300.0,
+      "shoulder_radius": 40.0,
+      "rim_diameter": 460.0,
+      "rim_recess_depth": 30.0,
+      "hub_boss_radius": 90.0,
+      "hub_boss_length": 60.0,
+      "rim_lip_width": 8.0,
+      "spoke_count": 5.0,
+      "spoke_width": 30.0,
+      "spoke_height": 15.0,
+      "sidewall_drop": 8.0
+    },
+    "position_mm": [
+      0.0,
+      800.0,
+      360.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      -360.0,
+      590.0,
+      0.0
+    ],
+    "envelope_max": [
+      360.0,
+      950.0,
+      720.0
+    ],
+    "fia_refs_used": [],
+    "reuse": false,
+    "mirror_of": null,
+    "mirror_mode": null
+  },
+  "script_body": "import math\nimport adsk.core\nimport adsk.fusion\n\n\ndef build(part):\n    R = part.p[\"diameter\"] / 2.0\n    W = part.p[\"width\"]\n    s = part.p[\"shoulder_radius\"]\n    rr = part.p[\"rim_diameter\"] / 2.0\n    rd = part.p[\"rim_recess_depth\"]\n    hb = part.p[\"hub_boss_radius\"]\n    hl = part.p[\"hub_boss_length\"]\n    lip = part.p.get(\"rim_lip_width\", 8.0)\n    n_sp = int(part.p.get(\"spoke_count\", 5))\n    sw = part.p.get(\"spoke_width\", 30.0)\n    sh = part.p.get(\"spoke_height\", 15.0)\n    drop = part.p.get(\"sidewall_drop\", 8.0)\n    y0, y1 = -W / 2.0, W / 2.0\n    yh = y0 - hl\n    yf = y1 - rd          # recessed rim face (reference depth 30)\n    ys = y1 - drop        # sidewall end / rim lip top\n\n    pts = [(0.0, yh), (hb, yh), (hb, y0), (R - s, y0)]\n    n = 6\n    # inboard shoulder: centre (R-s, y0+s), from angle -90 to 0 (in r,y as x,y)\n    for i in range(1, n):\n        a = -math.pi / 2 + (math.pi / 2) * i / n\n        pts.append((R - s + s * math.cos(a), y0 + s + s * math.sin(a)))\n    pts.append((R, y0 + s))\n    pts.append((R, y1 - s))\n    for i in range(1, n):\n        a = (math.pi / 2) * i / n\n        pts.append((R - s + s * math.cos(a), y1 - s + s * math.sin(a)))\n    pts.append((R - s, y1))\n    # outboard sidewall: smooth curve from tread shoulder (tangent) down to rim lip\n    m = 8\n    for i in range(1, m + 1):\n        t = i / float(m)\n        r = (R - s) - ((R - s) - rr) * t\n        y = y1 - drop * (1.0 - math.cos(math.pi * t / 2.0))\n        pts.append((r, y))\n    # rim lip ring (radial width ~8 mm) at the outer edge of the rim face\n    pts.append((rr - lip, ys))\n    pts.append((rr - lip, yf))\n    pts.append((0.0, yf))\n\n    sk = part.sketch(part.plane(\"z\", 0), \"SK_wheel_section\")\n    part.polygon(sk, [(r, y, 0.0) for (r, y) in pts])\n    prof = part.profile(sk)\n\n    comp = part.comp\n    revs = comp.features.revolveFeatures\n    inp = revs.createInput(prof, comp.yConstructionAxis,\n                           adsk.fusion.FeatureOperations.NewBodyFeatureOperation)\n    inp.setAngleExtent(False, adsk.core.ValueInput.createByString(\"360 deg\"))\n    rev = revs.add(inp)\n    rev.name = \"RV_wheel\"\n\n    # five raised spoke ribs on the rim face, from hub area into the rim lip\n    r_in = 50.0\n    r_out = rr - lip + 2.0\n    rib_plane = part.plane(\"y\", yf, \"PL_rim_face\")\n    for k in range(n_sp):\n        a = 2.0 * math.pi * k / n_sp + math.pi / 2.0\n        cx, cz = math.cos(a), math.sin(a)\n        nx, nz = -cz, cx\n        h = sw / 2.0\n        quad = [\n            (r_in * cx - h * nx, yf, r_in * cz - h * nz),\n            (r_out * cx - h * nx, yf, r_out * cz - h * nz),\n            (r_out * cx + h * nx, yf, r_out * cz + h * nz),\n            (r_in * cx + h * nx, yf, r_in * cz + h * nz),\n        ]\n        skr = part.sketch(rib_plane, \"SK_spoke_%d\" % (k + 1))\n        part.polygon(skr, quad)\n        part.extrude(part.profile(skr), 2.0 * sh, \"EX_spoke_%d\" % (k + 1),\n                     op=\"join\", symmetric=True)\n",
+  "script_sha256": "8efb3f86945c08d85ffb0a83564044c246a96dbb2ddd245734799c272d91145d",
+  "params": {
+    "diameter": 720.0,
+    "width": 300.0,
+    "shoulder_radius": 40.0,
+    "rim_diameter": 460.0,
+    "rim_recess_depth": 30.0,
+    "hub_boss_radius": 90.0,
+    "hub_boss_length": 60.0,
+    "rim_lip_width": 8.0,
+    "spoke_count": 5.0,
+    "spoke_width": 30.0,
+    "spoke_height": 15.0,
+    "sidewall_drop": 8.0
+  },
+  "pose": {
+    "position": [
+      0.0,
+      800.0,
+      360.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      -360.0,
+      590.0,
+      0.0
+    ],
+    [
+      360.0,
+      950.0,
+      720.0
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 117326571.7
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 12,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          -360.0,
+          590.0,
+          0.0
+        ],
+        [
+          360.0,
+          950.0,
+          720.0
+        ]
+      ],
+      "limit": {
+        "min": [
+          -360.0,
+          590.0,
+          0.0
+        ],
+        "max": [
+          360.0,
+          950.0,
+          720.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FRAME",
+      "title": "Geometry in the part-local frame",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part's local bbox (built at identity) lies in the planned envelope taken back into the part frame by the inverse pose.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bbox_local": [
+          [
+            -360.0,
+            -210.0,
+            -360.0
+          ],
+          [
+            360.0,
+            150.0,
+            360.0
+          ]
+        ]
+      },
+      "limit": {
+        "expected_local": [
+          [
+            -360.0,
+            -210.0,
+            -360.0
+          ],
+          [
+            360.0,
+            150.0,
+            360.0
+          ]
+        ],
+        "world_envelope": [
+          [
+            -360.0,
+            590.0,
+            0.0
+          ],
+          [
+            360.0,
+            950.0,
+            720.0
+          ]
+        ],
+        "tol_mm": 5.0,
+        "frame_mode": "part_local"
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          0.0,
+          800.0,
+          360.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "diameter": 720.0,
+        "width": 300.0,
+        "shoulder_radius": 40.0,
+        "rim_diameter": 460.0,
+        "rim_recess_depth": 30.0,
+        "hub_boss_radius": 90.0,
+        "hub_boss_length": 60.0,
+        "rim_lip_width": 8.0,
+        "spoke_count": 5.0,
+        "spoke_width": 30.0,
+        "spoke_height": 15.0,
+        "sidewall_drop": 8.0
+      },
+      "limit": {
+        "diameter": 720.0,
+        "width": 300.0,
+        "shoulder_radius": 40.0,
+        "rim_diameter": 460.0,
+        "rim_recess_depth": 30.0,
+        "hub_boss_radius": 90.0,
+        "hub_boss_length": 60.0,
+        "rim_lip_width": 8.0,
+        "spoke_count": 5.0,
+        "spoke_width": 30.0,
+        "spoke_height": 15.0,
+        "sidewall_drop": 8.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 WHL-FL Wheel front left",
+    "param_prefix": "mf1_whlfl",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-11T10:52:21+00:00"
+  },
+  "run_id": "20261011-134100-rebuild-assembly-of-20261011-125",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T19:26:38+00:00",
+      "run_id": "20261010-222202-extend-the-existing-mini-f1-asse",
+      "script_sha256": "678e6604f505d80d4b47877d91e42100f892728e23c5271637ca537e2cd31d0f",
+      "summary": "built by fast mode",
+      "kind": "",
+      "instruction": ""
+    },
+    {
+      "version": 2,
+      "date": "2026-10-11T10:52:21+00:00",
+      "run_id": "20261011-134100-rebuild-assembly-of-20261011-125",
+      "script_sha256": "8efb3f86945c08d85ffb0a83564044c246a96dbb2ddd245734799c272d91145d",
+      "summary": "Smooth curved outboard sidewall, 8 mm rim lip ring, five raised spoke ribs (15 mm) on the 30 mm recessed rim face; outer dims, hub boss, axle unchanged",
+      "kind": "revise",
+      "instruction": "Refine the wheel detail without changing any contact or outer dimension. Keep exactly as is: tyre diameter, width, shoulder radii, the hub boss on the inboard side (radius 90, length 60), the axle axis and the wheel centre. On the recessed rim face add five raised spoke ribs from the hub area to a rim lip, and a rim lip ring of about 8 mm at the outer edge of the rim face; keep the recess depth of 30 mm as the reference. Make the sidewall a smooth curve between the tread shoulder and the rim. One connected solid."
+    }
+  ],
+  "revision": {
+    "revision_id": "R03",
+    "run_id": "20261011-134100-rebuild-assembly-of-20261011-125",
+    "kind": "revise",
+    "instruction": "Refine the wheel detail without changing any contact or outer dimension. Keep exactly as is: tyre diameter, width, shoulder radii, the hub boss on the inboard side (radius 90, length 60), the axle axis and the wheel centre. On the recessed rim face add five raised spoke ribs from the hub area to a rim lip, and a rim lip ring of about 8 mm at the outer edge of the rim face; keep the recess depth of 30 mm as the reference. Make the sidewall a smooth curve between the tread shoulder and the rim. One connected solid.",
+    "change_summary": "Smooth curved outboard sidewall, 8 mm rim lip ring, five raised spoke ribs (15 mm) on the 30 mm recessed rim face; outer dims, hub boss, axle unchanged",
+    "assumptions": [
+      "Sidewall curve applies to the outboard face only: a tangent cosine curve from the tread shoulder (Y 150) dropping 8 mm to the rim lip at r 230; the inboard side and hub boss are unchanged.",
+      "Rim lip: radial width 8 mm (r 222-230), top at local Y 142; rim face stays at Y 120 (30 mm recess).",
+      "Spokes: 5 ribs, 30 mm wide, from r 50 to r 224 (overlapping the lip), raised 15 mm above the rim face (top at Y 135, inside the envelope); they are joined into one solid by a symmetric extrude."
+    ],
+    "spec_delta": {
+      "dims": {
+        "rim_lip_width": 8.0,
+        "spoke_count": 5.0,
+        "spoke_width": 30.0,
+        "spoke_height": 15.0,
+        "sidewall_drop": 8.0
+      }
+    },
+    "base_version": 1,
+    "neighbour_pose_changes": [],
+    "reason": null,
+    "mates": [
+      {
+        "check_id": "MATE-SUF-L-WHL-FL",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "touching",
+          "gap_mm": 0.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-FLR-001-WHL-FL",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 161.782,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-FWG-001-WHL-FL",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 195.81,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-WHL-FL-WHL-FR",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 1180.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      }
+    ],
+    "frame_mode": "part_local",
+    "frame_validation": {
+      "status": "VERIFIED",
+      "message": ""
+    }
+  },
+  "derived": {},
+  "geometry": {
+    "volume_mm3": 117326571.696829,
+    "solids": 1,
+    "lumps": 1,
+    "bbox_local": [
+      [
+        -360.0,
+        -210.0,
+        -360.0
+      ],
+      [
+        360.0,
+        150.0,
+        360.0
+      ]
+    ],
+    "bbox_world": [
+      [
+        -360.0,
+        590.0,
+        0.0
+      ],
+      [
+        360.0,
+        950.0,
+        720.0
+      ]
+    ]
+  }
+}

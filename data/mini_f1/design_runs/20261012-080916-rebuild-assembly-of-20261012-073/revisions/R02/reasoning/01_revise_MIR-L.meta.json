@@ -1,0 +1,14 @@
+{
+  "name": "revise_MIR-L",
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "duration_s": 46.3,
+  "num_turns": 3,
+  "input_tokens": 4,
+  "output_tokens": 4397,
+  "cache_read_input_tokens": 12069,
+  "cache_creation_input_tokens": 6794,
+  "reported_cost_usd": 0.1447218,
+  "system_prompt": "system_04df1ee4531f.md"
+}

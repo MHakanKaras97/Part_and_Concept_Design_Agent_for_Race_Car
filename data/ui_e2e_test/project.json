@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "id": "ui_e2e_test",
+  "name": "Prototype bench",
+  "kind": "bench",
+  "description": "Stand-alone components used to develop and prove the agent workflow (Prototype 1+).",
+  "coordinate_system": "VCS: +X front, +Y left, +Z up, mm (see docs/architecture.md)",
+  "regulation": null,
+  "fusion_namespace": "uie2etest",
+  "policy": {
+    "critical_missing_info_must_be_asked": true,
+    "allow_suggested_values_in_questions": false,
+    "max_revision_loops": 3
+  },
+  "created": "2026-10-05T19:00:55+00:00"
+}

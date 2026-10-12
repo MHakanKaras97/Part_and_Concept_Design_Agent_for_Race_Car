@@ -1,0 +1,14 @@
+{
+  "name": "revise_MON-001",
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "duration_s": 226.3,
+  "num_turns": 2,
+  "input_tokens": 2,
+  "output_tokens": 21835,
+  "cache_read_input_tokens": 4294,
+  "cache_creation_input_tokens": 6517,
+  "reported_cost_usd": 0.4897028,
+  "system_prompt": "system_04df1ee4531f.md"
+}

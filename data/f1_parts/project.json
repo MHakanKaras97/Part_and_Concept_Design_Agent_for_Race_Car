@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "id": "f1_parts",
+  "name": "F1 parts",
+  "kind": "bench",
+  "description": "F1-inspired engineering components (concept-level demonstrators, not FIA-homologated parts), each designed with its own local frame and placed by pose. prototype_bench stays for test/diagnostic/regression work.",
+  "coordinate_system": "VCS: +X front, +Y left, +Z up, mm (see docs/architecture.md)",
+  "regulation": null,
+  "fusion_namespace": "f1parts",
+  "policy": {
+    "critical_missing_info_must_be_asked": true,
+    "allow_suggested_values_in_questions": false,
+    "max_revision_loops": 3
+  },
+  "created": "2026-10-06T20:20:09+00:00"
+}

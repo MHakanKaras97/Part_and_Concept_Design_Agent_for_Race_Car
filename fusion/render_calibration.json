@@ -1,0 +1,98 @@
+{
+  "calibration_version": 1,
+  "description": "Measured render framing calibration. field_scale per axis = planned fill / measured fill, averaged over the listed renders. The render camera keeps the eye distance of a true focal-length view and narrows its perspective angle (half-angle tangent / k, k from field_scale and the true-lens fill), so the measured fill reaches the planned one with the perspective of that lens. The planned fill comes from the corners of the parts' measured world bboxes, which overstate the car's silhouette, so the factor includes that looseness for the measured view. Measured fill: PIL bounding box of pixels whose summed RGB difference from the background (mean of the four image corners) exceeds 70 (most of the ground shadow excluded), on the image as rendered. Entries are keyed by camera type, image aspect ratio AND the Fusion viewport size during the measured renders. With another viewport size the factor may not apply: the render records a note and re-scales the factor by a screenshot measurement (screenshot_scale now / at calibration), flagged as unverified.",
+  "entries": [
+    {
+      "id": "perspective-3:2-2705.1.30",
+      "camera": "perspective",
+      "aspect": 1.5,
+      "fusion_version": "2705.1.30",
+      "measured_on": "2026-10-11",
+      "focal_mm": 50.0,
+      "views_measured": [
+        "iso"
+      ],
+      "derived_from": [
+        {
+          "run": "20261011-201406-rebuild-assembly-of-20261011-185",
+          "render": "RD04",
+          "environment": "Soft Light",
+          "image": [
+            1280,
+            853
+          ],
+          "planned_fill": [
+            0.7807,
+            0.8
+          ],
+          "measured_fill": [
+            0.3344,
+            0.3587
+          ]
+        },
+        {
+          "run": "20261011-201406-rebuild-assembly-of-20261011-185",
+          "render": "RD05",
+          "environment": "Photobooth",
+          "image": [
+            1280,
+            853
+          ],
+          "planned_fill": [
+            0.7807,
+            0.8
+          ],
+          "measured_fill": [
+            0.3359,
+            0.354
+          ]
+        },
+        {
+          "run": "20261011-201406-rebuild-assembly-of-20261011-185",
+          "render": "RD06",
+          "environment": "Skylight",
+          "image": [
+            1280,
+            853
+          ],
+          "planned_fill": [
+            0.7807,
+            0.8
+          ],
+          "measured_fill": [
+            0.3359,
+            0.3517
+          ]
+        }
+      ],
+      "evidence_not_used": [
+        {
+          "what": "MCP viewport screenshot of the same camera after RD06 (bright car pixels > 150, orbit overlay excluded)",
+          "image": [
+            1280,
+            853
+          ],
+          "planned_fill": [
+            0.7807,
+            0.8
+          ],
+          "measured_fill": [
+            0.5109,
+            0.5252
+          ],
+          "note": "the viewport field is ~1.5x the planned one; screenshots are not calibrated"
+        }
+      ],
+      "viewport": [
+        1920,
+        841
+      ],
+      "viewport_source": "RD04-RD06 did not record the viewport; the read-only camera probe after RD06 and the RD07 frame record both read 1920x841 and the window was not resized in between",
+      "screenshot_scale": [
+        1.5281,
+        1.5232
+      ],
+      "screenshot_source": "evidence_not_used[0]: MCP viewport screenshot 1280x853 of the RD06 camera, measured as bright pixels > 150 (an orbit overlay was on screen); a re-calibration measures with fusion/render_measure.py (background difference > 70)"
+    }
+  ]
+}

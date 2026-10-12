@@ -1,0 +1,416 @@
+{
+  "record_type": "part",
+  "id": "MIR-R",
+  "name": "Mirror right",
+  "role": "right rear-view mirror housing on its stalk beside the cockpit",
+  "version": 2,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "MIR-R",
+    "name": "Mirror right",
+    "role": "right rear-view mirror housing on its stalk beside the cockpit",
+    "notes": "Black single solid. Stalk 30x30 along +Y from local Y 385 (embedded ~10, max 15, into monocoque side wall at |Y|~395) to Y 480, centred X 0, Z 0. Housing box 40 (X) x 160 (Y) x 80 (Z) centred at (0,560,0), small edge fillets. Keep >=20 mm from halo and sidepod.",
+    "dims": {
+      "housing_length": 40.0,
+      "housing_width": 160.0,
+      "housing_height": 80.0,
+      "housing_center_y": 560.0,
+      "stalk_size": 30.0,
+      "stalk_start_y": 392.0
+    },
+    "position_mm": [
+      -1700.0,
+      0.0,
+      540.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      -1720.0,
+      -640.0,
+      500.0
+    ],
+    "envelope_max": [
+      -1680.0,
+      -392.0,
+      580.0
+    ],
+    "fia_refs_used": [
+      "C2.3.1"
+    ],
+    "reuse": false,
+    "mirror_of": "MIR-L",
+    "mirror_mode": "mirror"
+  },
+  "script_body": "import adsk.core\nimport adsk.fusion\n\ndef build(part):\n    hl = part.p[\"housing_length\"]\n    hw = part.p[\"housing_width\"]\n    hh = part.p[\"housing_height\"]\n    cy = part.p[\"housing_center_y\"]\n    s = part.p[\"stalk_size\"]\n    y0 = part.p[\"stalk_start_y\"]\n    comp = part.comp\n\n    # Housing box, symmetric about its centre plane y = cy\n    skh = part.sketch(part.plane(\"y\", cy, \"PL_housing_mid\"), \"SK_housing\")\n    part.polygon(skh, [(-hl / 2, cy, -hh / 2), (hl / 2, cy, -hh / 2),\n                       (hl / 2, cy, hh / 2), (-hl / 2, cy, hh / 2)])\n    part.extrude(part.profile(skh), \"housing_width\", \"EX_housing\", symmetric=True)\n\n    # Small edge fillets on housing\n    body = part.body(0)\n    edges = adsk.core.ObjectCollection.create()\n    for e in body.edges:\n        edges.add(e)\n    fi = comp.features.filletFeatures.createInput()\n    fi.edgeSetInputs.addConstantRadiusEdgeSet(edges, val(4.0), True)\n    f = comp.features.filletFeatures.add(fi)\n    f.name = \"FIL_housing\"\n\n    # Stalk from y0 into the housing (10 mm overlap for a solid join)\n    y1 = cy - hw / 2 + 10.0\n    ym = (y0 + y1) / 2\n    sks = part.sketch(part.plane(\"y\", ym, \"PL_stalk_mid\"), \"SK_stalk\")\n    part.polygon(sks, [(-s / 2, ym, -s / 2), (s / 2, ym, -s / 2),\n                       (s / 2, ym, s / 2), (-s / 2, ym, s / 2)])\n    part.extrude(part.profile(sks), y1 - y0, \"EX_stalk\", op=\"join\", symmetric=True)\n",
+  "script_sha256": "43813b4cfd006d9d9dc32ab4811e5fb80dc557a345dca9988d1add5630320017",
+  "params": {
+    "housing_length": 40.0,
+    "housing_width": 160.0,
+    "housing_height": 80.0,
+    "housing_center_y": 560.0,
+    "stalk_size": 30.0,
+    "stalk_start_y": 392.0
+  },
+  "pose": {
+    "position": [
+      -1700.0,
+      0.0,
+      540.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      -1720.0,
+      -640.0,
+      500.0
+    ],
+    [
+      -1680.0,
+      -392.0,
+      580.0
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 587440.0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 7,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          -1720.0,
+          -640.0,
+          500.0
+        ],
+        [
+          -1680.0,
+          -392.0,
+          580.0
+        ]
+      ],
+      "limit": {
+        "min": [
+          -1720.0,
+          -640.0,
+          500.0
+        ],
+        "max": [
+          -1680.0,
+          -392.0,
+          580.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FRAME",
+      "title": "Geometry in the part-local frame",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part's local bbox (built at identity) lies in the planned envelope taken back into the part frame by the inverse pose.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bbox_local": [
+          [
+            -20.0,
+            -640.0,
+            -40.0
+          ],
+          [
+            20.0,
+            -392.0,
+            40.0
+          ]
+        ]
+      },
+      "limit": {
+        "expected_local": [
+          [
+            -20.0,
+            -640.0,
+            -40.0
+          ],
+          [
+            20.0,
+            -392.0,
+            40.0
+          ]
+        ],
+        "world_envelope": [
+          [
+            -1720.0,
+            -640.0,
+            500.0
+          ],
+          [
+            -1680.0,
+            -392.0,
+            580.0
+          ]
+        ],
+        "tol_mm": 5.0,
+        "frame_mode": "part_local"
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          -1700.0,
+          0.0,
+          540.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "housing_length": 40.0,
+        "housing_width": 160.0,
+        "housing_height": 80.0,
+        "housing_center_y": 560.0,
+        "stalk_size": 30.0,
+        "stalk_start_y": 392.0
+      },
+      "limit": {
+        "housing_length": 40.0,
+        "housing_width": 160.0,
+        "housing_height": 80.0,
+        "housing_center_y": 560.0,
+        "stalk_size": 30.0,
+        "stalk_start_y": 392.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-DERIVED",
+      "title": "Derived from MIR-L (mirror)",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "Same volume and body structure as the source; local bbox mirrored (mirror) or equal (yaw180); world bbox = the source's mirrored about Y = 0.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "volume_mm3": 587440.046082,
+        "volume_rel_dev": 0.0,
+        "solids": 1,
+        "lumps": 1,
+        "bbox_local_dev_mm": 0.0,
+        "bbox_world_dev_mm": 0.0
+      },
+      "limit": {
+        "volume_rel": 1e-06,
+        "bbox_local_tol_mm": 0.01,
+        "bbox_world_tol_mm": 0.5,
+        "source": {
+          "volume_mm3": 587440.046082,
+          "solids": 1,
+          "lumps": 1,
+          "bbox_local": [
+            [
+              -20.0,
+              392.0,
+              -40.0
+            ],
+            [
+              20.0,
+              640.0,
+              40.0
+            ]
+          ],
+          "bbox_world": [
+            [
+              -1720.0,
+              392.0,
+              500.0
+            ],
+            [
+              -1680.0,
+              640.0,
+              580.0
+            ]
+          ]
+        }
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [
+    {
+      "article": "C2.3.1",
+      "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+      "page": 10,
+      "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+      "status": "VERIFIED",
+      "note": "measured max |Y| = 640.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+    }
+  ],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 MIR-R Mirror right",
+    "param_prefix": "mf1_mirr",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-11T09:30:56+00:00"
+  },
+  "run_id": "20261011-122504-rebuild-assembly-of-20261010-230",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T19:29:22+00:00",
+      "run_id": "20261010-222202-extend-the-existing-mini-f1-asse",
+      "script_sha256": "43813b4cfd006d9d9dc32ab4811e5fb80dc557a345dca9988d1add5630320017",
+      "summary": "derived from MIR-L v1 (mirror)",
+      "kind": "",
+      "instruction": ""
+    },
+    {
+      "version": 2,
+      "date": "2026-10-11T09:30:56+00:00",
+      "run_id": "20261011-122504-rebuild-assembly-of-20261010-230",
+      "script_sha256": "43813b4cfd006d9d9dc32ab4811e5fb80dc557a345dca9988d1add5630320017",
+      "summary": "derived from MIR-L v2 (mirror)",
+      "kind": "",
+      "instruction": ""
+    }
+  ],
+  "revision": {},
+  "derived": {
+    "source_id": "MIR-L",
+    "source_version": 2,
+    "mode": "mirror",
+    "note": "derived from MIR-L v2 (mirror)"
+  },
+  "geometry": {
+    "volume_mm3": 587440.046082,
+    "solids": 1,
+    "lumps": 1,
+    "bbox_local": [
+      [
+        -20.0,
+        -640.0,
+        -40.0
+      ],
+      [
+        20.0,
+        -392.0,
+        40.0
+      ]
+    ],
+    "bbox_world": [
+      [
+        -1720.0,
+        -640.0,
+        500.0
+      ],
+      [
+        -1680.0,
+        -392.0,
+        580.0
+      ]
+    ]
+  }
+}

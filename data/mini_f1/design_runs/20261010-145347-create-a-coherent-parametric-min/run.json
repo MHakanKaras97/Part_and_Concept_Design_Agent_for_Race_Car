@@ -1,0 +1,1508 @@
+{
+  "run_id": "20261010-145347-create-a-coherent-parametric-min",
+  "mode": "fast",
+  "project": "mini_f1",
+  "namespace": "mf1",
+  "brief": "Create a coherent, parametric Mini F1 concept assembly in Fusion 360 consisting of exactly four main components:\n\n1. **MON-001 — Monocoque:** A tapered central chassis with a raised cockpit rim, an open cockpit, a narrow front nose and a wider rear section.\n2. **FWG-001 — Front Wing:** A multi-element front wing with a main plane, two simplified flaps and endplates, mounted ahead of the monocoque.\n3. **FLR-001 — Floor:** A broad, thin aerodynamic floor beneath the chassis, with simplified side edges and a tapered rear diffuser ramp.\n4. **RWG-001 — Rear Wing:** A raised rear wing with a main plane, one flap, two endplates and simplified supports.\n\nUse millimetres and the project coordinate convention: +X forward, +Y left, +Z upward, with the origin on the front-axle centreline and Z=0 on the reference plane.\n\nDesign the four components as separate, editable Fusion components in one design. Place them in a coherent vehicle layout with no unintended solid intersections. Use named features and meaningful user parameters where practical. Keep the shapes manufacturable-looking and geometrically simple enough to regenerate reliably.\n\nDevelop a dimensioned concept plan first. Use only the FIA rule excerpts supplied by the system; do not invent rule dimensions or claim FIA compliance. Mark unsupported dimensions as assumptions. Prioritise a successful complete assembly, correct component placement, valid solids, and clear front, top and isometric views over excessive geometric detail.\n\nConnections: parts connect by face contact, never by overlap. The front wing mount touches the nose tip, the monocoque sits on the top face of the floor, and the rear wing supports touch the rear of the monocoque (or the floor). Report the measured gap or overlap of every connected pair.\nKeep every part within the overall vehicle width limit given in the supplied rules.\nScale (my own concept assumption, not a regulation value): roughly full-size F1 proportions, overall length about 5.5 m and overall width under 2 m.\n\nDo not add extra main components beyond the four listed. If a critical design decision is missing, ask at most one blocking question; otherwise proceed with explicit assumptions.\n\nAt completion, report the component status, measured bounding boxes, placement and interference/gap checks, applicable FIA verification statuses, assumptions, and any failures. Generate isometric, front and top screenshots.",
+  "entered_via": "ui: web interface",
+  "created": "2026-10-10T11:53:47+00:00",
+  "status": "DONE",
+  "phase": "DONE",
+  "doc_tag": "mf1:20261010-145347-create-a-coherent-parametric-min",
+  "kit": [
+    {
+      "id": "MON-001",
+      "name": "Monocoque",
+      "role": "survival cell / chassis tub with nose and cockpit opening"
+    },
+    {
+      "id": "FWG-001",
+      "name": "Front wing",
+      "role": "front wing: main plane, flap(s), endplates; ahead of the front axle"
+    },
+    {
+      "id": "FLR-001",
+      "name": "Floor",
+      "role": "floor plate under the car with rear diffuser ramp"
+    },
+    {
+      "id": "RWG-001",
+      "name": "Rear wing",
+      "role": "rear wing: main plane, flap, endplates, central support"
+    }
+  ],
+  "visual_review": false,
+  "snippets": {
+    "MON-001": [
+      {
+        "article": "C2.3.1",
+        "title": "Overall width",
+        "page": 10,
+        "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+        "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+        "source": "rules:FIA26-C2.3.1"
+      },
+      {
+        "article": "C13.2",
+        "title": "Survival Cell Frontal Impact Test",
+        "page": 129,
+        "text": "C13.2 Survival Cell Frontal Impact Test A 50mm (±1mm) thick aluminium plate should be attached to the front bulkhead of the Survival Cell through the mounting points of the frontal impact absorbing structure. The plate should: a. Measure 430mm (±1mm) wide x 430mm (±1mm) high. b. Be fitted symmetrically about the plane Y=0. c. Be fitted in a vertical sense in order to ensure force distribution is",
+        "sha256": "27f56abc033f7f7a99ee0aa26d60cceb791f85f942088a99e10d0eaa80df51a7",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C12.2.1",
+        "title": "Cockpit Opening",
+        "page": 118,
+        "text": "C12.2.1 Cockpit Opening In order to ensure that the opening giving the driver access to the Cockpit is of adequate size; with the exception of the steering wheel, steering column, seat and all padding required by Article C12.6.1 (including the forward most fixings), or the Windscreen defined in Article C3.13.1 and its fixings, no part of the Survival Cell or bodywork may lie within",
+        "sha256": "41d5215a601ffa6cf6b1a7c6acfa15a563dc8f3178f214344f3fee1a52af0e7d",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C12.2.2",
+        "title": "Survival Cell Dimensions",
+        "page": 118,
+        "text": "C12.2.2 Survival Cell Dimensions Before the openings and recesses allowed in Articles C12.2.1, C12.2.4 and C12.2.5 are created, a single volume, which is continuous, and has no apertures must be defined in accordance with the conditions laid out in (a)-(d), below. All parts of the Survival Cell in contact with the External Air Stream must comply with C3.2.3. a. No part of the Survival Cell may",
+        "sha256": "a524c54f3e32f73a1fed8ecc7aac9f70d04e83446ffa9e05d2de7d2501bab132",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C13.4.7",
+        "title": "Cockpit Side Test",
+        "page": 135,
+        "text": "C13.4.7 Cockpit Side Test A 225mm diameter pad which conforms to the shape of the Survival Cell at the load application point, must be placed against the outermost sides of the Survival Cell, centred at one of the positions [XC,Z]; i. [-720, 390] ii. [-540, 390] iii. [-360, 390] iv. [-540, 250] The position for the reference Survival Cell will be chosen at random and communicated to the F1 Team 3",
+        "sha256": "df527c13d7fd65d9ef6ddb0856edc7ffbd8f729c435ae12943331e2b5616b185",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C13.4.10",
+        "title": "Forward Survival Cell Test",
+        "page": 137,
+        "text": "C13.4.10 Forward Survival Cell Test A pad measuring 100mm in X and only contacting the surfaces defined in C12.2.2.g, must be placed against the outer surface of the Survival Cell. The pad should conform to the shape the Survival Cell. The load axis must lie: a. On the plane Y=0. b. In a position between the front of the Survival Cell and XC=-1600, determined by the technical delegate and",
+        "sha256": "9565e5f3df6dc498f8708d2249bc4773e11d31d5c8a07e63d49bd914f57d2aef",
+        "source": "fia_2026_section_c_iss20.txt"
+      }
+    ],
+    "FWG-001": [
+      {
+        "article": "C2.3.1",
+        "title": "Overall width",
+        "page": 10,
+        "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+        "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+        "source": "rules:FIA26-C2.3.1"
+      },
+      {
+        "article": "C3.10.1",
+        "title": "Front Wing Proﬁles",
+        "page": 30,
+        "text": "C3.10.1 Front Wing Profiles \"Front Wing Profiles\" Bodywork is exempt from C3.2.4 (b) but must: a. lie in its entirety within RV-FW-PROFILES. b. comprise of up to three, non-intersecting, simply connected volumes. c. have up to three sections in any Y-Plane. d. when viewed from above, fully obscure RS-FW-PROFILES. In any Y-Plane: e. the rearmost point of every section must be visible when viewed",
+        "sha256": "e7e56d8e71ac240e04850bd83fa449729214ce5bcfa66aa0bca6e0fc153d2c01",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C3.10.2",
+        "title": "Front Wing Endplate Body",
+        "page": 31,
+        "text": "C3.10.2 Front Wing Endplate Body \"Front Wing Endplate Body\" Bodywork must: a. lie in its entirety within RV-FWEP-BODY. b. have up to two sections in any Y-Plane. Front Wing Endplate Body Aerodynamic Surfaces must contain: c. no convex radius of curvature less than 5mm. d. no concave radius of curvature less than 100mm.",
+        "sha256": "fe81ee681da72f583f0aac7d382861a2f672fb5c1f7769a0d1f53ab240b2b196",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C3.10.5",
+        "title": "Front Wing Endplate Diveplane",
+        "page": 32,
+        "text": "C3.10.5 Front Wing Endplate Diveplane \"Front Wing Endplate Diveplane\" Bodywork must: a. lie in its entirety within: i. an axis aligned cuboid of the following dimensions [X, Y, Z] = [300, 325, 50]. ii. RV-FWEP-DIVEPLANE. Front Wing Endplate Diveplane Aerodynamic Surfaces must contain: b. no convex radius of curvature less than 5mm. c. no concave radius of curvature less than 50mm.",
+        "sha256": "29f85819b2b1b0883e1806ebd207de4986fd62d302ede88476c906b5d3f34c84",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C3.10.6",
+        "title": "Front Wing Endplate",
+        "page": 32,
+        "text": "C3.10.6 Front Wing Endplate \"Front Wing Endplate\" results from the Trim and Combination of the following components: a. Front Wing Endplate Body. b. Front Wing Outboard Footplate. c. Front Wing Inboard Footplate. d. Front Wing Endplate Diveplane, if fitted. Before trimming, any Front Wing Endplate Body remaining below Front Wing Inboard Footplate must be discarded. A Fillet Radius, no greater",
+        "sha256": "68c9798d369763325efe285a2daad2b215768de324397e448a6b0c3a643296e6",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C3.10.9",
+        "title": "Front Wing Assembly",
+        "page": 33,
+        "text": "C3.10.9 Front Wing Assembly \"Front Wing Assembly\" results from the Trim and Combination of the following components: a. Front Wing Profiles. b. Front Wing Endplate. c. Front Wing Pylon. d. Front Wing Strake, if fitted. Before trimming is applied, any Front Wing Profiles remaining outboard of Front Wing Endplate and any Front Wing Pylon remaining below Front Wing Profiles must be discarded. A",
+        "sha256": "0e4df549c73fc4da76a180a618342c3f056cca2c3fd7744ccf3a3af02de6ff8e",
+        "source": "fia_2026_section_c_iss20.txt"
+      }
+    ],
+    "FLR-001": [
+      {
+        "article": "C2.3.1",
+        "title": "Overall width",
+        "page": 10,
+        "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+        "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+        "source": "rules:FIA26-C2.3.1"
+      },
+      {
+        "article": "C3.5.4",
+        "title": "Main Floor",
+        "page": 18,
+        "text": "C3.5.4 Main Floor \"Main Floor\" results from the Trim and Combination of the following components: a. Floor Body. b. Floor Foot. c. Floor Sidewall. A Fillet Radius, no greater than 30 mm, may be applied along the intersections between the remaining component parts. Once fully defined, Main Floor must: d. be a single, simply connected volume, with no overlapping regions. e. be fully visible from",
+        "sha256": "cdd8c0739b7e5bca9cd5363a55e01fe95d7408f1787b9d2ad348fc52c2ef8808",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C3.5.8",
+        "title": "Floor Winglet",
+        "page": 20,
+        "text": "C3.5.8 Floor Winglet \"Floor Winglet\" Bodywork, which is exempt from Article C3.2.4, must be fitted and results from the Trim and Combination of the following components: a. RS-FLOOR-WINGLET. b. \"Winglet Profile\", which must: i. lie in its entirety within RV-FLOOR-WINGLET. ii. contain no more than a single section in any X, Y and Z-Plane. c. A single Hanger, which must: i. when viewed from below,",
+        "sha256": "b64243710e6dc068426e6242242fdbd9b8ba4aea09faa0217d95aa28d792b7cb",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C3.5.11",
+        "title": "Floor Tyre IR Sensor",
+        "page": 21,
+        "text": "C3.5.11 Floor Tyre IR Sensor \"Floor Tyre IR Sensor\" Bodywork must: a. lie in its entirety within a freely positioned instance of RV-FLOOR-TYRE-IR. b. not lie within RV-FLOOR-CORNER. c. be fully obscured by RS-FLOOR-BODY when viewed from above. d. fully enclose an infra-red sensor for measuring tyre temperature. Floor Tyre IR Sensor Aerodynamic Surfaces must: e. contain no radius of curvature less",
+        "sha256": "43c62fa4d5903fb06b003d4ce7cef8cfd99ec85f1aec8b3a62828cfbe9d0d89c",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C3.5.12",
+        "title": "Floor Bodywork Assembly",
+        "page": 21,
+        "text": "C3.5.12 Floor Bodywork Assembly \"Floor Bodywork Assembly\" results from the Trim and Combination of the following components: a. Main Floor. b. Floor Bib. c. Floor Leading Edge Device. d. Floor Fence. e. Floor Board. f. Floor Winglet. g. Floor Corner. h. Floor Tyre IR Sensor, if fitted. Before trimming, the following must be discarded: i. any Floor Fence remaining above Main Floor. j. any Floor",
+        "sha256": "2e1829379eeb7c2076ccce1f76581c514da40445ede496e3e72f8f2be00d0d7e",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C3.5.14",
+        "title": "Floor Auxiliary Components",
+        "page": 22,
+        "text": "C3.5.14 Floor Auxiliary Components Once Floor Bodywork has been fully defined and Final Assembly in Article C3.12 completed, the following \"Floor Auxiliary Components\", which are exempt from Article C3.2.4, may be fitted: a. Up to three \"Floor Body Stays\", which may be designed to only take load in tension, and each of which must: i. have a single inboard attachment location that lies between XF",
+        "sha256": "abe34f421d9a9ee25342acc3948053c241c2978cf967a07230dde743e05442f6",
+        "source": "fia_2026_section_c_iss20.txt"
+      }
+    ],
+    "RWG-001": [
+      {
+        "article": "C2.3.1",
+        "title": "Overall width",
+        "page": 10,
+        "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+        "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+        "source": "rules:FIA26-C2.3.1"
+      },
+      {
+        "article": "C3.11.1",
+        "title": "Rear Wing Proﬁles",
+        "page": 37,
+        "text": "C3.11.1 Rear Wing Profiles \"Rear Wing Profiles\" Bodywork must: a. lie in its entirety within RV-RW-PROFILES. b. comprise of up to three, non-intersecting, simply connected volumes. c. when assessing each volume independently, contain no more than two sections in any Z-Plane and a single section in any X and Y -Plane. d. in any Y-Plane, within 40mm of the rearmost point of the forwardmost section,",
+        "sha256": "deeccd613ef6fd6ff63b02f8467d883a89dd02cf4e3bcd89537b0f2ae1d3f0f9",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C3.11.2",
+        "title": "Rear Wing Endplate Body",
+        "page": 38,
+        "text": "C3.11.2 Rear Wing Endplate Body \"Rear Wing Endplate Body\" Bodywork must: a. lie in its entirety within RV-RWEP-BODY. b. have up to two sections in any Y-Plane c. when viewed from the side, fully obscure RS-RWEP. Rear Wing Endplate Body Aerodynamic Surfaces must: d. contain no concave radius of curvature less than 100mm.",
+        "sha256": "b3dcfb6300b86d3c699c733abe3890698e8efeb6cc6b117509199e8858575ef6",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C3.11.4",
+        "title": "Rear Wing Pylon",
+        "page": 39,
+        "text": "C3.11.4 Rear Wing Pylon \"Rear Wing Pylon\" Bodywork must: a. lie in its entirety within RV-RW-PYLON. b. in any Z-Plane: i. have a total area no greater than 5000 mm2, except for regions within 30mm of Exhaust Tailpipe. ii. have a section thickness less than 25mm when measured in the Y direction, except for regions inside of RV-TAILPIPE. Furthermore: c. no part of Rear Wing Profiles may be obscured",
+        "sha256": "2d17e4a866a3950f1690bbc9d251f4d74cf1d1b217e247311f89dd87193e0e87",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C3.11.5",
+        "title": "Rear Wing Assembly",
+        "page": 39,
+        "text": "C3.11.5 Rear Wing Assembly \"Rear Wing Assembly\" results from the Trim and Combination of the following components: a. Rear Wing Profiles. b. Rear Wing Endplate Body. c. Rear Wing Brace. d. Rear Wing Pylon. Before trimming is applied, any Rear Wing Profiles and Rear Wing Brace remaining outboard of Rear Wing Endplate Body must be discarded. A Fillet Radius, no greater than 10mm, may be applied",
+        "sha256": "285abc1a1248bf2b0056f25c8aa9df683953e8662ec985282e86f91441d48b3b",
+        "source": "fia_2026_section_c_iss20.txt"
+      },
+      {
+        "article": "C3.11.7",
+        "title": "Rear Wing Auxiliary Components",
+        "page": 40,
+        "text": "C3.11.7 Rear Wing Auxiliary Components Once Rear Wing Assembly has been fully defined, the following \"Rear Wing Auxiliary Components\", which are exempt from Article C3.2.4, may be fitted: a. When RW Flap has two volumes, up to four Hangers, each of which must: i. intersect both volumes of RW Flap. ii. be no closer than 140mm to any other Hanger. b. However, between three and five pairs of \"Rear",
+        "sha256": "568cb51401dba3fcdbd0521da42866d17381c3371a3c55294170a2b96bbd2156",
+        "source": "fia_2026_section_c_iss20.txt"
+      }
+    ]
+  },
+  "question": null,
+  "answer": null,
+  "plan": {
+    "parts": [
+      {
+        "id": "MON-001",
+        "name": "Monocoque",
+        "role": "survival cell / chassis tub with nose and cockpit opening",
+        "notes": "Tapered loft from wide rear section (X=-3700, 900 wide x 700 high, Z 30-730) to narrow nose tip (X=+550, 200 wide x 200 high, Z 30-230, flat vertical tip face that the front wing mount touches). Flat bottom at Z=30 sits on floor top face. Open cockpit cut from top, approx X -2300 to -1500, 500 wide, with raised rim 60 mm high around opening. Flat vertical rear face at X=-3700 for rear wing supports. Half-width 450 is well inside the 950 mm limit.",
+        "dims": {
+          "length": 4250.0,
+          "rear_width": 900.0,
+          "nose_tip_width": 200.0,
+          "rear_height": 700.0,
+          "nose_tip_height": 200.0,
+          "cockpit_rim_height": 60.0,
+          "cockpit_opening_length": 800.0,
+          "cockpit_opening_width": 500.0
+        },
+        "position_mm": [
+          0.0,
+          0.0,
+          30.0
+        ],
+        "rotation_deg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "envelope_min": [
+          -3700.0,
+          -450.0,
+          30.0
+        ],
+        "envelope_max": [
+          550.0,
+          450.0,
+          790.0
+        ],
+        "fia_refs_used": [
+          "C2.3.1"
+        ],
+        "reuse": false
+      },
+      {
+        "id": "FWG-001",
+        "name": "Front wing",
+        "role": "front wing: main plane, flap(s), endplates; ahead of the front axle",
+        "notes": "Main plane (chord 350, 30 thick) spanning 1800 at low Z (~70-100) at front X 800-1150; two flaps chord 180 stacked rearward/upward with small slot gaps, giving up to three sections per Y-plane. Two vertical endplates (20 thick, 280 high, Z 50-330) at Y=±880..±900. Central mount/pylon block Y ±60, from flap/main plane rearward to X=550, Z 100-230, its rear face touching the monocoque nose tip face (no overlap).",
+        "dims": {
+          "span": 1800.0,
+          "main_plane_chord": 350.0,
+          "flap_chord": 180.0,
+          "element_thickness": 30.0,
+          "endplate_height": 280.0,
+          "endplate_thickness": 20.0,
+          "mount_width": 120.0,
+          "mount_length": 150.0
+        },
+        "position_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation_deg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "envelope_min": [
+          550.0,
+          -900.0,
+          50.0
+        ],
+        "envelope_max": [
+          1150.0,
+          900.0,
+          330.0
+        ],
+        "fia_refs_used": [
+          "C2.3.1",
+          "C3.10.1"
+        ],
+        "reuse": false
+      },
+      {
+        "id": "FLR-001",
+        "name": "Floor",
+        "role": "floor plate under the car with rear diffuser ramp",
+        "notes": "Thin flat plate X -4300 to -400, Y ±800, Z 0-30; top face Z=30 carries the monocoque. Simplified side edges: chamfered/tapered outer edges and slightly tapered front corners in plan. Rear diffuser ramp: wedge X -3700 to -4300, Y ±500, rising from Z=30 at X=-3700 to Z=230 at rear edge, behind the monocoque rear face so no intersection. Single solid body.",
+        "dims": {
+          "length": 3900.0,
+          "width": 1600.0,
+          "thickness": 30.0,
+          "diffuser_length": 600.0,
+          "diffuser_width": 1000.0,
+          "diffuser_exit_height": 230.0,
+          "edge_chamfer": 20.0
+        },
+        "position_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation_deg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "envelope_min": [
+          -4300.0,
+          -800.0,
+          0.0
+        ],
+        "envelope_max": [
+          -400.0,
+          800.0,
+          230.0
+        ],
+        "fia_refs_used": [
+          "C2.3.1",
+          "C3.5.4"
+        ],
+        "reuse": false
+      },
+      {
+        "id": "RWG-001",
+        "name": "Rear wing",
+        "role": "rear wing: main plane, flap, endplates, central support",
+        "notes": "Main plane chord 350 at Z ~870-905, X -4400 to -4050, span 1000 between endplates; one flap chord 200 above/behind with slot gap (Z ~930-1000). Two endplates 20 thick, Z 700-1100, X -4450 to -3950 at Y ±500..±520. Two simplified support plates (20 thick in Y, centred Y=±100) from front face at X=-3700 (touching monocoque rear face, Z 400-730 region) sweeping rearward up to the main plane underside. Clear of floor diffuser (max Z 230).",
+        "dims": {
+          "span": 1040.0,
+          "main_plane_chord": 350.0,
+          "flap_chord": 200.0,
+          "element_thickness": 35.0,
+          "endplate_height": 400.0,
+          "endplate_thickness": 20.0,
+          "support_spacing": 200.0,
+          "support_thickness": 20.0
+        },
+        "position_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation_deg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "envelope_min": [
+          -4450.0,
+          -520.0,
+          400.0
+        ],
+        "envelope_max": [
+          -3700.0,
+          520.0,
+          1100.0
+        ],
+        "fia_refs_used": [
+          "C2.3.1",
+          "C3.11.1",
+          "C3.11.4"
+        ],
+        "reuse": false
+      }
+    ],
+    "mates": [
+      {
+        "a": "FWG-001",
+        "b": "MON-001",
+        "expect": "touching",
+        "value_mm": 0.0
+      },
+      {
+        "a": "MON-001",
+        "b": "FLR-001",
+        "expect": "touching",
+        "value_mm": 0.0
+      },
+      {
+        "a": "RWG-001",
+        "b": "MON-001",
+        "expect": "touching",
+        "value_mm": 0.0
+      }
+    ],
+    "assumptions": [
+      {
+        "id": "A01",
+        "text": "Overall length ~5600 mm, from front wing leading edge X=+1150 to rear wing endplate trailing edge X=-4450.",
+        "flag": "ASSUMPTION"
+      },
+      {
+        "id": "A02",
+        "text": "Max part half-width set to 900 mm (front wing), inside the 950 mm limit of C2.3.1.",
+        "flag": "ASSUMPTION"
+      },
+      {
+        "id": "A03",
+        "text": "Floor is 30 mm thick with its top face at Z=30; the monocoque has a flat bottom at Z=30.",
+        "flag": "ASSUMPTION"
+      },
+      {
+        "id": "A04",
+        "text": "Monocoque runs from X=+550 (nose tip) to X=-3700 (rear face); the nose has a flat bottom with no raised-nose geometry.",
+        "flag": "ASSUMPTION"
+      },
+      {
+        "id": "A05",
+        "text": "Front wing mount is a central pylon block whose rear face touches the 200x200 nose tip face at X=550.",
+        "flag": "ASSUMPTION"
+      },
+      {
+        "id": "A06",
+        "text": "Rear wing uses two support plates at Y=±100 that touch the monocoque rear face at X=-3700, not a single pylon.",
+        "flag": "ASSUMPTION"
+      },
+      {
+        "id": "A07",
+        "text": "Diffuser ramp rises from 30 mm to 230 mm over the last 600 mm of the floor and is 1000 mm wide.",
+        "flag": "ASSUMPTION"
+      },
+      {
+        "id": "A08",
+        "text": "Wing profiles are simplified as constant-thickness cambered or flat plates; no RV/RS reference volumes are modelled.",
+        "flag": "ASSUMPTION"
+      }
+    ],
+    "ignored_question": null
+  },
+  "parts": {
+    "MON-001": {
+      "state": "done",
+      "attempts": [
+        {
+          "kind": "part",
+          "body_file": "parts/MON-001/attempt_1.py",
+          "ok": true,
+          "passed": true,
+          "stage": "done",
+          "script_calls": 1,
+          "repairable": false,
+          "error": null,
+          "failed_checks": []
+        }
+      ],
+      "reuse": false,
+      "version": 1,
+      "bbox": [
+        [
+          -3700.0,
+          -450.1972,
+          60.0
+        ],
+        [
+          550.0,
+          450.1972,
+          770.0
+        ]
+      ],
+      "checks": [
+        {
+          "check_id": "PART-BUILD",
+          "title": "Part script ran",
+          "category": "PROCESS",
+          "scope": "CAD_BUILD",
+          "claim": "The part script built a body without error.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": null,
+          "limit": null,
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-SOLID",
+          "title": "Solid body exists",
+          "category": "GEOMETRY",
+          "scope": "GEOMETRY",
+          "claim": "The part has at least one closed solid body.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": {
+            "bodies": 1,
+            "solids": 1,
+            "volume_mm3": 1498228445.1
+          },
+          "limit": null,
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-FEATURES",
+          "title": "Features healthy",
+          "category": "GEOMETRY",
+          "scope": "GEOMETRY",
+          "claim": "No feature of the part is in an error state.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": {
+            "features": 10,
+            "errors": 0,
+            "warnings": 0
+          },
+          "limit": null,
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-BBOX",
+          "title": "World bounding box within the planned envelope",
+          "category": "GEOMETRY",
+          "scope": "GEOMETRY",
+          "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": [
+            [
+              -3700.0,
+              -450.1972,
+              60.0
+            ],
+            [
+              550.0,
+              450.1972,
+              770.0
+            ]
+          ],
+          "limit": {
+            "min": [
+              -3700.0,
+              -450.0,
+              30.0
+            ],
+            "max": [
+              550.0,
+              450.0,
+              790.0
+            ],
+            "tol_mm": 5.0
+          },
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-PLACEMENT",
+          "title": "Placed at the planned pose (read-back)",
+          "category": "GEOMETRY",
+          "scope": "PLACEMENT",
+          "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": {
+            "position_mm": [
+              0.0,
+              0.0,
+              30.0
+            ],
+            "translation_dev_mm": 0.0,
+            "rotation_dev_deg": 0.0
+          },
+          "limit": {
+            "tol_mm": 0.001,
+            "tol_deg": 0.0001
+          },
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-PARAMS",
+          "title": "Key parameters equal the plan",
+          "category": "GEOMETRY",
+          "scope": "PARAMETERS",
+          "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "PARAMETER_CHECK",
+          "measured": {
+            "length": 4250.0,
+            "rear_width": 900.0,
+            "nose_tip_width": 200.0,
+            "rear_height": 700.0,
+            "nose_tip_height": 200.0,
+            "cockpit_rim_height": 60.0,
+            "cockpit_opening_length": 800.0,
+            "cockpit_opening_width": 500.0
+          },
+          "limit": {
+            "length": 4250.0,
+            "rear_width": 900.0,
+            "nose_tip_width": 200.0,
+            "rear_height": 700.0,
+            "nose_tip_height": 200.0,
+            "cockpit_rim_height": 60.0,
+            "cockpit_opening_length": 800.0,
+            "cockpit_opening_width": 500.0
+          },
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        }
+      ],
+      "fia": [
+        {
+          "article": "C2.3.1",
+          "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+          "page": 10,
+          "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+          "status": "VERIFIED",
+          "note": "measured max |Y| = 450.2 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+        }
+      ],
+      "document": "Untitled"
+    },
+    "FWG-001": {
+      "state": "done",
+      "attempts": [
+        {
+          "kind": "part",
+          "body_file": "parts/FWG-001/attempt_1.py",
+          "ok": true,
+          "passed": true,
+          "stage": "done",
+          "script_calls": 1,
+          "repairable": false,
+          "error": null,
+          "failed_checks": []
+        }
+      ],
+      "reuse": false,
+      "version": 1,
+      "bbox": [
+        [
+          550.0,
+          -900.0,
+          50.0
+        ],
+        [
+          1150.0,
+          900.0,
+          330.0
+        ]
+      ],
+      "checks": [
+        {
+          "check_id": "PART-BUILD",
+          "title": "Part script ran",
+          "category": "PROCESS",
+          "scope": "CAD_BUILD",
+          "claim": "The part script built a body without error.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": null,
+          "limit": null,
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-SOLID",
+          "title": "Solid body exists",
+          "category": "GEOMETRY",
+          "scope": "GEOMETRY",
+          "claim": "The part has at least one closed solid body.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": {
+            "bodies": 1,
+            "solids": 1,
+            "volume_mm3": 36374566.7
+          },
+          "limit": null,
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-FEATURES",
+          "title": "Features healthy",
+          "category": "GEOMETRY",
+          "scope": "GEOMETRY",
+          "claim": "No feature of the part is in an error state.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": {
+            "features": 12,
+            "errors": 0,
+            "warnings": 0
+          },
+          "limit": null,
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-BBOX",
+          "title": "World bounding box within the planned envelope",
+          "category": "GEOMETRY",
+          "scope": "GEOMETRY",
+          "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": [
+            [
+              550.0,
+              -900.0,
+              50.0
+            ],
+            [
+              1150.0,
+              900.0,
+              330.0
+            ]
+          ],
+          "limit": {
+            "min": [
+              550.0,
+              -900.0,
+              50.0
+            ],
+            "max": [
+              1150.0,
+              900.0,
+              330.0
+            ],
+            "tol_mm": 5.0
+          },
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-PLACEMENT",
+          "title": "Placed at the planned pose (read-back)",
+          "category": "GEOMETRY",
+          "scope": "PLACEMENT",
+          "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": {
+            "position_mm": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "translation_dev_mm": 0.0,
+            "rotation_dev_deg": 0.0
+          },
+          "limit": {
+            "tol_mm": 0.001,
+            "tol_deg": 0.0001
+          },
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-PARAMS",
+          "title": "Key parameters equal the plan",
+          "category": "GEOMETRY",
+          "scope": "PARAMETERS",
+          "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "PARAMETER_CHECK",
+          "measured": {
+            "span": 1800.0,
+            "main_plane_chord": 350.0,
+            "flap_chord": 180.0,
+            "element_thickness": 30.0,
+            "endplate_height": 280.0,
+            "endplate_thickness": 20.0,
+            "mount_width": 120.0,
+            "mount_length": 150.0
+          },
+          "limit": {
+            "span": 1800.0,
+            "main_plane_chord": 350.0,
+            "flap_chord": 180.0,
+            "element_thickness": 30.0,
+            "endplate_height": 280.0,
+            "endplate_thickness": 20.0,
+            "mount_width": 120.0,
+            "mount_length": 150.0
+          },
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        }
+      ],
+      "fia": [
+        {
+          "article": "C2.3.1",
+          "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+          "page": 10,
+          "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+          "status": "VERIFIED",
+          "note": "measured max |Y| = 900.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+        },
+        {
+          "article": "C3.10.1",
+          "text": "C3.10.1 Front Wing Profiles \"Front Wing Profiles\" Bodywork is exempt from C3.2.4 (b) but must: a. lie in its entirety within RV-FW-PROFILES. b. comprise of up to three, non-intersecting, simply connected volumes. c. have up to three sections in any Y-Plane. d. when viewed from above, fully obscure RS-FW-PROFILES. In any Y-Plane: e. the rearmost point of every section must be visible when viewed",
+          "page": 30,
+          "sha256": "e7e56d8e71ac240e04850bd83fa449729214ce5bcfa66aa0bca6e0fc153d2c01",
+          "status": "NOT_VERIFIED",
+          "note": "no automated check for this article at concept level"
+        }
+      ],
+      "document": "Untitled"
+    },
+    "FLR-001": {
+      "state": "done",
+      "attempts": [
+        {
+          "kind": "part",
+          "body_file": "parts/FLR-001/attempt_1.py",
+          "ok": true,
+          "passed": true,
+          "stage": "done",
+          "script_calls": 1,
+          "repairable": false,
+          "error": null,
+          "failed_checks": []
+        }
+      ],
+      "reuse": false,
+      "version": 1,
+      "bbox": [
+        [
+          -4300.0,
+          -800.0,
+          0.0
+        ],
+        [
+          -400.0,
+          800.0,
+          230.0
+        ]
+      ],
+      "checks": [
+        {
+          "check_id": "PART-BUILD",
+          "title": "Part script ran",
+          "category": "PROCESS",
+          "scope": "CAD_BUILD",
+          "claim": "The part script built a body without error.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": null,
+          "limit": null,
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-SOLID",
+          "title": "Solid body exists",
+          "category": "GEOMETRY",
+          "scope": "GEOMETRY",
+          "claim": "The part has at least one closed solid body.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": {
+            "bodies": 1,
+            "solids": 1,
+            "volume_mm3": 244527722.4
+          },
+          "limit": null,
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-FEATURES",
+          "title": "Features healthy",
+          "category": "GEOMETRY",
+          "scope": "GEOMETRY",
+          "claim": "No feature of the part is in an error state.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": {
+            "features": 8,
+            "errors": 0,
+            "warnings": 0
+          },
+          "limit": null,
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-BBOX",
+          "title": "World bounding box within the planned envelope",
+          "category": "GEOMETRY",
+          "scope": "GEOMETRY",
+          "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": [
+            [
+              -4300.0,
+              -800.0,
+              0.0
+            ],
+            [
+              -400.0,
+              800.0,
+              230.0
+            ]
+          ],
+          "limit": {
+            "min": [
+              -4300.0,
+              -800.0,
+              0.0
+            ],
+            "max": [
+              -400.0,
+              800.0,
+              230.0
+            ],
+            "tol_mm": 5.0
+          },
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-PLACEMENT",
+          "title": "Placed at the planned pose (read-back)",
+          "category": "GEOMETRY",
+          "scope": "PLACEMENT",
+          "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": {
+            "position_mm": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "translation_dev_mm": 0.0,
+            "rotation_dev_deg": 0.0
+          },
+          "limit": {
+            "tol_mm": 0.001,
+            "tol_deg": 0.0001
+          },
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-PARAMS",
+          "title": "Key parameters equal the plan",
+          "category": "GEOMETRY",
+          "scope": "PARAMETERS",
+          "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "PARAMETER_CHECK",
+          "measured": {
+            "length": 3900.0,
+            "width": 1600.0,
+            "thickness": 30.0,
+            "diffuser_length": 600.0,
+            "diffuser_width": 1000.0,
+            "diffuser_exit_height": 230.0,
+            "edge_chamfer": 20.0
+          },
+          "limit": {
+            "length": 3900.0,
+            "width": 1600.0,
+            "thickness": 30.0,
+            "diffuser_length": 600.0,
+            "diffuser_width": 1000.0,
+            "diffuser_exit_height": 230.0,
+            "edge_chamfer": 20.0
+          },
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        }
+      ],
+      "fia": [
+        {
+          "article": "C2.3.1",
+          "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+          "page": 10,
+          "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+          "status": "VERIFIED",
+          "note": "measured max |Y| = 800.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+        },
+        {
+          "article": "C3.5.4",
+          "text": "C3.5.4 Main Floor \"Main Floor\" results from the Trim and Combination of the following components: a. Floor Body. b. Floor Foot. c. Floor Sidewall. A Fillet Radius, no greater than 30 mm, may be applied along the intersections between the remaining component parts. Once fully defined, Main Floor must: d. be a single, simply connected volume, with no overlapping regions. e. be fully visible from",
+          "page": 18,
+          "sha256": "cdd8c0739b7e5bca9cd5363a55e01fe95d7408f1787b9d2ad348fc52c2ef8808",
+          "status": "NOT_VERIFIED",
+          "note": "no automated check for this article at concept level"
+        }
+      ],
+      "document": "Untitled"
+    },
+    "RWG-001": {
+      "state": "done",
+      "attempts": [
+        {
+          "kind": "part",
+          "body_file": "parts/RWG-001/attempt_1.py",
+          "ok": true,
+          "passed": true,
+          "stage": "done",
+          "script_calls": 1,
+          "repairable": false,
+          "error": null,
+          "failed_checks": []
+        }
+      ],
+      "reuse": false,
+      "version": 1,
+      "bbox": [
+        [
+          -4450.0,
+          -520.0,
+          400.0
+        ],
+        [
+          -3700.0,
+          520.0,
+          1100.0
+        ]
+      ],
+      "checks": [
+        {
+          "check_id": "PART-BUILD",
+          "title": "Part script ran",
+          "category": "PROCESS",
+          "scope": "CAD_BUILD",
+          "claim": "The part script built a body without error.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": null,
+          "limit": null,
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-SOLID",
+          "title": "Solid body exists",
+          "category": "GEOMETRY",
+          "scope": "GEOMETRY",
+          "claim": "The part has at least one closed solid body.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": {
+            "bodies": 1,
+            "solids": 1,
+            "volume_mm3": 25064048.3
+          },
+          "limit": null,
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-FEATURES",
+          "title": "Features healthy",
+          "category": "GEOMETRY",
+          "scope": "GEOMETRY",
+          "claim": "No feature of the part is in an error state.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": {
+            "features": 12,
+            "errors": 0,
+            "warnings": 0
+          },
+          "limit": null,
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-BBOX",
+          "title": "World bounding box within the planned envelope",
+          "category": "GEOMETRY",
+          "scope": "GEOMETRY",
+          "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": [
+            [
+              -4450.0,
+              -520.0,
+              400.0
+            ],
+            [
+              -3700.0,
+              520.0,
+              1100.0
+            ]
+          ],
+          "limit": {
+            "min": [
+              -4450.0,
+              -520.0,
+              400.0
+            ],
+            "max": [
+              -3700.0,
+              520.0,
+              1100.0
+            ],
+            "tol_mm": 5.0
+          },
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-PLACEMENT",
+          "title": "Placed at the planned pose (read-back)",
+          "category": "GEOMETRY",
+          "scope": "PLACEMENT",
+          "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "FUSION_MEASUREMENT",
+          "measured": {
+            "position_mm": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "translation_dev_mm": 0.0,
+            "rotation_dev_deg": 0.0
+          },
+          "limit": {
+            "tol_mm": 0.001,
+            "tol_deg": 0.0001
+          },
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        },
+        {
+          "check_id": "PART-PARAMS",
+          "title": "Key parameters equal the plan",
+          "category": "GEOMETRY",
+          "scope": "PARAMETERS",
+          "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+          "status": "VERIFIED",
+          "severity": "BLOCKING",
+          "method": "PARAMETER_CHECK",
+          "measured": {
+            "span": 1040.0,
+            "main_plane_chord": 350.0,
+            "flap_chord": 200.0,
+            "element_thickness": 35.0,
+            "endplate_height": 400.0,
+            "endplate_thickness": 20.0,
+            "support_spacing": 200.0,
+            "support_thickness": 20.0
+          },
+          "limit": {
+            "span": 1040.0,
+            "main_plane_chord": 350.0,
+            "flap_chord": 200.0,
+            "element_thickness": 35.0,
+            "endplate_height": 400.0,
+            "endplate_thickness": 20.0,
+            "support_spacing": 200.0,
+            "support_thickness": 20.0
+          },
+          "unit": null,
+          "rule_id": null,
+          "message": ""
+        }
+      ],
+      "fia": [
+        {
+          "article": "C2.3.1",
+          "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+          "page": 10,
+          "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+          "status": "VERIFIED",
+          "note": "measured max |Y| = 520.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+        },
+        {
+          "article": "C3.11.1",
+          "text": "C3.11.1 Rear Wing Profiles \"Rear Wing Profiles\" Bodywork must: a. lie in its entirety within RV-RW-PROFILES. b. comprise of up to three, non-intersecting, simply connected volumes. c. when assessing each volume independently, contain no more than two sections in any Z-Plane and a single section in any X and Y -Plane. d. in any Y-Plane, within 40mm of the rearmost point of the forwardmost section,",
+          "page": 37,
+          "sha256": "deeccd613ef6fd6ff63b02f8467d883a89dd02cf4e3bcd89537b0f2ae1d3f0f9",
+          "status": "NOT_VERIFIED",
+          "note": "no automated check for this article at concept level"
+        },
+        {
+          "article": "C3.11.4",
+          "text": "C3.11.4 Rear Wing Pylon \"Rear Wing Pylon\" Bodywork must: a. lie in its entirety within RV-RW-PYLON. b. in any Z-Plane: i. have a total area no greater than 5000 mm2, except for regions within 30mm of Exhaust Tailpipe. ii. have a section thickness less than 25mm when measured in the Y direction, except for regions inside of RV-TAILPIPE. Furthermore: c. no part of Rear Wing Profiles may be obscured",
+          "page": 39,
+          "sha256": "2d17e4a866a3950f1690bbc9d251f4d74cf1d1b217e247311f89dd87193e0e87",
+          "status": "NOT_VERIFIED",
+          "note": "no automated check for this article at concept level"
+        }
+      ],
+      "document": "Untitled"
+    }
+  },
+  "assembly": {
+    "measured": {
+      "ok": true,
+      "depth": 6,
+      "pairs": [
+        {
+          "a": "FLR-001",
+          "b": "FWG-001",
+          "min_distance_mm": 952.5755,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        },
+        {
+          "a": "FLR-001",
+          "b": "MON-001",
+          "min_distance_mm": 28.4605,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        },
+        {
+          "a": "FLR-001",
+          "b": "RWG-001",
+          "min_distance_mm": 319.39,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        },
+        {
+          "a": "FWG-001",
+          "b": "MON-001",
+          "min_distance_mm": 0.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        },
+        {
+          "a": "FWG-001",
+          "b": "RWG-001",
+          "min_distance_mm": 4253.5044,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        },
+        {
+          "a": "MON-001",
+          "b": "RWG-001",
+          "min_distance_mm": 0.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      ],
+      "joints": [
+        [
+          "FWG-001",
+          "MON-001"
+        ],
+        [
+          "MON-001",
+          "FLR-001"
+        ],
+        [
+          "RWG-001",
+          "MON-001"
+        ]
+      ],
+      "missing": []
+    },
+    "results": [
+      {
+        "check_id": "MATE-FWG-001-MON-001",
+        "title": "FWG-001 / MON-001 touching",
+        "category": "INTERFACE",
+        "scope": "MATING_INTERFACE",
+        "claim": "Measured in Fusion: minimum distance and interference of the two placed parts.",
+        "status": "VERIFIED",
+        "severity": "BLOCKING",
+        "method": "FUSION_MEASUREMENT",
+        "measured": {
+          "state": "touching",
+          "gap_mm": 0.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        },
+        "limit": {
+          "expect": "touching",
+          "value_mm": 0.0,
+          "tol_mm": 0.5
+        },
+        "unit": null,
+        "rule_id": null,
+        "message": ""
+      },
+      {
+        "check_id": "MATE-FLR-001-MON-001",
+        "title": "MON-001 / FLR-001 touching",
+        "category": "INTERFACE",
+        "scope": "MATING_INTERFACE",
+        "claim": "Measured in Fusion: minimum distance and interference of the two placed parts.",
+        "status": "NON_COMPLIANT",
+        "severity": "BLOCKING",
+        "method": "FUSION_MEASUREMENT",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 28.46,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        },
+        "limit": {
+          "expect": "touching",
+          "value_mm": 0.0,
+          "tol_mm": 0.5
+        },
+        "unit": null,
+        "rule_id": null,
+        "message": "measured gap (gap 28.46 mm, overlap depth 0.00 mm)"
+      },
+      {
+        "check_id": "MATE-MON-001-RWG-001",
+        "title": "RWG-001 / MON-001 touching",
+        "category": "INTERFACE",
+        "scope": "MATING_INTERFACE",
+        "claim": "Measured in Fusion: minimum distance and interference of the two placed parts.",
+        "status": "VERIFIED",
+        "severity": "BLOCKING",
+        "method": "FUSION_MEASUREMENT",
+        "measured": {
+          "state": "touching",
+          "gap_mm": 0.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        },
+        "limit": {
+          "expect": "touching",
+          "value_mm": 0.0,
+          "tol_mm": 0.5
+        },
+        "unit": null,
+        "rule_id": null,
+        "message": ""
+      }
+    ],
+    "skipped_mates": [],
+    "method": "placement-based assembly (each part placed by its pose) + as-built rigid joints for planned mates; contact measured, not constrained"
+  },
+  "screenshots": {
+    "iso": "screenshots/iso.png",
+    "front": "screenshots/front.png",
+    "top": "screenshots/top.png"
+  },
+  "counters": {
+    "script_calls": 8,
+    "claude_calls": 5,
+    "depth_first": 2,
+    "depth_last": 6
+  },
+  "attachments": [],
+  "events": [
+    {
+      "t": "2026-10-10T11:53:47+00:00",
+      "msg": "Run created"
+    },
+    {
+      "t": "2026-10-10T11:53:47+00:00",
+      "msg": "Planning (Claude)"
+    },
+    {
+      "t": "2026-10-10T11:54:31+00:00",
+      "msg": "Plan accepted: 4 parts, 3 mates"
+    },
+    {
+      "t": "2026-10-10T11:54:31+00:00",
+      "msg": "MON-001: writing script (Claude)"
+    },
+    {
+      "t": "2026-10-10T11:55:00+00:00",
+      "msg": "MON-001: part -> all checks pass"
+    },
+    {
+      "t": "2026-10-10T11:55:00+00:00",
+      "msg": "MON-001: registered v1"
+    },
+    {
+      "t": "2026-10-10T11:55:00+00:00",
+      "msg": "FWG-001: writing script (Claude)"
+    },
+    {
+      "t": "2026-10-10T11:55:25+00:00",
+      "msg": "FWG-001: part -> all checks pass"
+    },
+    {
+      "t": "2026-10-10T11:55:25+00:00",
+      "msg": "FWG-001: registered v1"
+    },
+    {
+      "t": "2026-10-10T11:55:25+00:00",
+      "msg": "FLR-001: writing script (Claude)"
+    },
+    {
+      "t": "2026-10-10T11:55:50+00:00",
+      "msg": "FLR-001: part -> all checks pass"
+    },
+    {
+      "t": "2026-10-10T11:55:50+00:00",
+      "msg": "FLR-001: registered v1"
+    },
+    {
+      "t": "2026-10-10T11:55:50+00:00",
+      "msg": "RWG-001: writing script (Claude)"
+    },
+    {
+      "t": "2026-10-10T11:56:17+00:00",
+      "msg": "RWG-001: part -> all checks pass"
+    },
+    {
+      "t": "2026-10-10T11:56:17+00:00",
+      "msg": "RWG-001: registered v1"
+    },
+    {
+      "t": "2026-10-10T11:56:17+00:00",
+      "msg": "Assembly measured (6 pairs, 3 rigid joints)"
+    },
+    {
+      "t": "2026-10-10T11:56:17+00:00",
+      "msg": "Checks: 2/3 assembly results verified"
+    },
+    {
+      "t": "2026-10-10T11:56:22+00:00",
+      "msg": "Screenshots: front, iso, top"
+    },
+    {
+      "t": "2026-10-10T11:56:22+00:00",
+      "msg": "Done"
+    }
+  ],
+  "error": null,
+  "banner": null,
+  "fia_source_sha256": "d14efafa00bd33b67ca173cf6a44eb1d182525d5a3b028d9ece121155615ea7c",
+  "finished": "2026-10-10T11:56:22+00:00"
+}

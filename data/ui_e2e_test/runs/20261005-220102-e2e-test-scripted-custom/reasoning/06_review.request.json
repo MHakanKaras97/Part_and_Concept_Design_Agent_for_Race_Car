@@ -1,0 +1,767 @@
+{
+  "run_id": "20261005-220102-e2e-test-scripted-custom",
+  "seq": 6,
+  "kind": "review",
+  "instructions": "# Role\n\nYou are the reasoning component of an AI Engineering Agent. You do not draw CAD and you do not\ncompute checks yourself: Python performs calculations, rule checks and registration, and Fusion 360\nbuilds and measures geometry. Your job is engineering judgement: interpret, identify gaps, state\nassumptions, plan, and decide on revisions.\n\nRules that always apply:\n- Answer with ONE JSON object that validates against the response schema. No prose outside it.\n- Never invent requirements, regulations or rule values. Only rules listed in the context exist.\n- Never claim FIA compliance, structural safety, race-readiness or production readiness.\n- Do not silently invent critical information. Anything not stated by the user is either a\n  missing-information item (ASK) or an explicit assumption (A-id) - never a hidden default.\n- Every numeric design value must trace to requirement ids (R..), assumption ids (A..),\n  user answers (M..) or rule ids. Units: mm, deg, N, kg.\n- Keep the layers distinct: the user's words (authoritative) -> your interpretation (requirements,\n  labelled as AI interpretation) -> your engineering decisions (assumptions, parameters, traced).\n  Never present an interpretation or an assumption as something the user said.\n- Be concise and specific; write for an engineer reviewing your reasoning later.\n\n\n# Task: design review after CAD + validation\n\ncontext.validation lists every check result (status, severity, measured, limit, message).\ncontext.blocking_failures lists the results that prevent acceptance.\n\nDecide:\n- ACCEPT  - only if there are no blocking failures (Python enforces this) and the result meets the\n            requirements. Advisory findings may remain; mention them in the rationale.\n- REVISE  - give `parameter_changes` (only changed parameters, full PlannedParam entries) that fix\n            the findings. Python re-checks and rebuilds. Revision loops are limited (context.loops).\n- STOP    - the request cannot be met with this generator/inputs; explain why.\n\nDo not accept a design to \"finish the task\". An honest STOP is better than an unjustified ACCEPT.\n",
+  "context": {
+    "request": "E2E TEST (scripted customer answers): Design a machined aluminium L-bracket to mount a 2 kg sensor box to a flat plate with four M6 bolts. The sensor-box side is shown in the attached sketch.",
+    "plan": {
+      "generator": "l_bracket",
+      "component_name": "sensor_box_l_bracket",
+      "steps": [
+        "Fix the interfaces: upright gets 1 row x 2 cols of M5 clearance holes at 40 mm pitch, 35 mm above the base bottom face (R05, R06). Base gets 2x2 M6 clearance holes in a symmetric rectangular pattern (R04, A02).",
+        "Size the envelope inside 80 mm (R11): base leg 70 mm, upright 50 mm, width 64 mm.",
+        "Choose thickness 6 mm and inner bend radius 4 mm to meet DFM-MACH-WALL-MIN, DFM-MACH-INNER-RADIUS-MIN and DFM-DFMEA-FATIGUE-FILLET.",
+        "Set the hole diameters from STD-ISO273-MEDIUM. Check every hole-to-edge distance against GL-HOLE-EDGE-DISTANCE (>= 1.5 x d).",
+        "Place the first base row clear of the bend and the upright so M6 heads and tools have access.",
+        "Define the load case: 2 kg x 9.81 x 3 = 58.86 N downward. Lever arm 43 mm to the upright root mid-plane. SF 2 on 6061-T6 yield (R07-R10, A04, A05).",
+        "Python checks feasibility, rules and the root bending hand calculation. Fusion builds the model and measures the geometry."
+      ],
+      "parameters": {
+        "leg_base_length": {
+          "value": 70.0,
+          "unit": "mm",
+          "source": "ASSUMPTION",
+          "trace": [
+            "A02",
+            "R11",
+            "GL-HOLE-EDGE-DISTANCE"
+          ],
+          "rationale": "Room for 2 rows of M6 holes (x = 22 and 58). The end edge distance is 12 mm, which is at least 9.9 mm. Total length stays under the 80 mm envelope."
+        },
+        "leg_upright_height": {
+          "value": 50.0,
+          "unit": "mm",
+          "source": "DERIVED",
+          "trace": [
+            "R05",
+            "R11",
+            "GL-HOLE-EDGE-DISTANCE"
+          ],
+          "rationale": "With the M5 holes at z = 35, the top edge distance is 15 mm, which is at least 8.25 mm. Height stays under 80 mm."
+        },
+        "bracket_width": {
+          "value": 64.0,
+          "unit": "mm",
+          "source": "DERIVED",
+          "trace": [
+            "R05",
+            "R06",
+            "A02",
+            "R11",
+            "GL-HOLE-EDGE-DISTANCE"
+          ],
+          "rationale": "With 40 mm hole pitch, the side edge distance is 12 mm. That is at least 8.25 mm for M5 and at least 9.9 mm for M6. Width stays under 80 mm."
+        },
+        "bracket_thickness": {
+          "value": 6.0,
+          "unit": "mm",
+          "source": "ASSUMPTION",
+          "trace": [
+            "A04",
+            "A05",
+            "DFM-MACH-WALL-MIN"
+          ],
+          "rationale": "6 mm is at least the 2 mm minimum wall. Root bending is about 2.53 N·m on a 64x6 section, roughly 6.6 MPa against the 138 MPa allowable. The extra thickness is for stiffness and thread/clamp seating."
+        },
+        "bend_inner_radius": {
+          "value": 4.0,
+          "unit": "mm",
+          "source": "RULE",
+          "trace": [
+            "DFM-MACH-INNER-RADIUS-MIN",
+            "DFM-DFMEA-FATIGUE-FILLET"
+          ],
+          "rationale": "4 mm is at least 3 mm for end-mill access. Ratio 4/6 = 0.67, which is at least 0.2 for the fatigue fillet rule."
+        },
+        "base_hole_diameter": {
+          "value": 6.6,
+          "unit": "mm",
+          "source": "RULE",
+          "trace": [
+            "R04",
+            "STD-ISO273-MEDIUM"
+          ],
+          "rationale": "ISO 273 medium clearance hole for M6."
+        },
+        "base_hole_x0": {
+          "value": 22.0,
+          "unit": "mm",
+          "source": "ASSUMPTION",
+          "trace": [
+            "A02",
+            "R12"
+          ],
+          "rationale": "The bend ends at x = 10. 22 mm leaves at least 7 mm between the hole edge and the fillet, so an M6 head (about 10 mm across) clears the upright."
+        },
+        "base_hole_pitch_x": {
+          "value": 36.0,
+          "unit": "mm",
+          "source": "ASSUMPTION",
+          "trace": [
+            "A02",
+            "R12"
+          ],
+          "rationale": "Second row at x = 58 gives 12 mm end edge distance. A wide pitch improves the bolt couple under the root moment."
+        },
+        "base_hole_pitch_y": {
+          "value": 40.0,
+          "unit": "mm",
+          "source": "ASSUMPTION",
+          "trace": [
+            "A02",
+            "R12"
+          ],
+          "rationale": "Symmetric rectangular pattern (A02) with 12 mm side edge distance. The plate is drilled to suit (R12)."
+        },
+        "upright_hole_diameter": {
+          "value": 5.5,
+          "unit": "mm",
+          "source": "RULE",
+          "trace": [
+            "R05",
+            "STD-ISO273-MEDIUM"
+          ],
+          "rationale": "ISO 273 medium clearance hole for M5."
+        },
+        "upright_hole_z0": {
+          "value": 35.0,
+          "unit": "mm",
+          "source": "USER",
+          "trace": [
+            "R05"
+          ],
+          "rationale": "User-stated hole-centre height above the flat plate, i.e. above the base bottom face z = 0. Previously traced to M01, which the plan gate rejected. It now traces to requirement R05."
+        },
+        "upright_hole_pitch_z": {
+          "value": 0.0,
+          "unit": "mm",
+          "source": "DERIVED",
+          "trace": [
+            "R05"
+          ],
+          "rationale": "Ignored because there is a single row (R05: two bolts side by side horizontally)."
+        },
+        "upright_hole_pitch_y": {
+          "value": 40.0,
+          "unit": "mm",
+          "source": "USER",
+          "trace": [
+            "R05",
+            "R06"
+          ],
+          "rationale": "40 mm horizontal spacing stated by the user (R05) and confirmed by the IMG-01 sketch (R06). Trace changed from M01 to R05/R06 per the gate feedback."
+        },
+        "base_hole_rows": {
+          "value": 2.0,
+          "unit": "count",
+          "source": "ASSUMPTION",
+          "trace": [
+            "R04",
+            "A02"
+          ],
+          "rationale": "Four M6 bolts in a 2x2 rectangular pattern."
+        },
+        "base_hole_cols": {
+          "value": 2.0,
+          "unit": "count",
+          "source": "ASSUMPTION",
+          "trace": [
+            "R04",
+            "A02"
+          ],
+          "rationale": "Four M6 bolts in a 2x2 rectangular pattern."
+        },
+        "upright_hole_rows": {
+          "value": 1.0,
+          "unit": "count",
+          "source": "USER",
+          "trace": [
+            "R05"
+          ],
+          "rationale": "Two bolts at a single height of 35 mm (R05). Trace changed from M01 to R05."
+        },
+        "upright_hole_cols": {
+          "value": 2.0,
+          "unit": "count",
+          "source": "USER",
+          "trace": [
+            "R05",
+            "R06"
+          ],
+          "rationale": "Two M5 bolts side by side horizontally (R05, IMG-01 via R06). Trace changed from M01 to R05/R06."
+        }
+      },
+      "design_inputs": {
+        "base_fastener": "M6",
+        "upright_fastener": "M5",
+        "base_mates_with": "flat horizontal plate (undrilled; drilled to the bracket's 36 x 40 mm M6 pattern, R12)",
+        "upright_mates_with": "sensor box side face (2x M5 at 40 mm horizontal pitch, 35 mm above the plate, R05/R06)"
+      },
+      "manufacturing": {
+        "process": "machined",
+        "material": "AL6061-T6"
+      },
+      "load_case": {
+        "description": "Sensor box weight x dynamic factor, acting downward at the box centre of mass. The centre of mass is 40 mm out from the upright outer face, centred between the M5 holes at z = 35 (A03). It bends the upright root about the Y axis. F = 2 kg x 9.81 x 3 = 58.86 N. Lever arm is 40 mm plus half the 6 mm thickness = 43 mm to the root mid-plane (A05). Required SF is 2 on yield (276 MPa, NOT_VERIFIED handbook value).",
+        "force_n": 58.86,
+        "lever_arm_mm": 43.0,
+        "required_safety_factor": 2.0,
+        "trace": [
+          "R07",
+          "R08",
+          "R09",
+          "R10",
+          "A03",
+          "A04",
+          "A05"
+        ]
+      },
+      "new_assumptions": [
+        {
+          "id": "A05",
+          "text": "The bending lever arm for the upright-root hand calculation is measured from the centre-of-mass line to the mid-plane of the upright: 40 mm (R09) + bracket_thickness/2 (3 mm) = 43 mm. Hole-section reduction and bolt prying are not modelled.",
+          "rationale": "The user gave the offset from the mounting face (outer face x = 0). The section mid-plane is the right reference for beam bending, and adding t/2 is slightly conservative.",
+          "impact": "The root moment is about 7.5% higher than with 40 mm. If the thickness changes, the lever arm must be updated.",
+          "affects": [
+            "R09",
+            "R10"
+          ]
+        }
+      ],
+      "verification_plan": [
+        "Fusion measurement: overall bounding box 70 x 64 x 50 mm, all within 80 mm (R11). Thickness 6 mm, inner fillet 4 mm, outer fillet 10 mm.",
+        "Fusion measurement: hole diameters 6.6 mm (x4) and 5.5 mm (x2). Hole centres at base x = 22/58, y = ±20, and upright z = 35, y = ±20.",
+        "Rule check DFM-MACH-WALL-MIN: 6 mm >= 2 mm.",
+        "Rule check DFM-MACH-INNER-RADIUS-MIN: 4 mm >= 3 mm. Rule check DFM-DFMEA-FATIGUE-FILLET: 4/6 = 0.67 >= 0.2.",
+        "Rule check STD-ISO273-MEDIUM: M6 -> 6.6 mm, M5 -> 5.5 mm.",
+        "Rule check GL-HOLE-EDGE-DISTANCE: minimum edge distance 12 mm (base, ratio 1.82) and 12 mm (upright side) / 15 mm (upright top) vs 8.25 mm.",
+        "Hand calc (Python): sigma = F x L / (b x t^2 / 6) at the upright root. Compare with 276/2 = 138 MPa. Report the achieved SF as indicative only (A01).",
+        "Check that the base row 1 M6 head clears the bend/upright: x0 - d/2 = 18.7 mm vs bend end at 10 mm."
+      ]
+    },
+    "assumptions": [
+      {
+        "id": "A01",
+        "text": "Scope: concept-level design with nominal geometry. Strength is checked with hand calculations only: no FEA, fatigue or tolerance analysis. No claim of structural safety, regulatory compliance or production readiness.",
+        "rationale": "The project is a prototype bench with no regulation, and this generator supports concept-level checks only.",
+        "impact": "The results are indicative. Detailed verification is needed before use.",
+        "affects": [
+          "R10",
+          "R07"
+        ]
+      },
+      {
+        "id": "A02",
+        "text": "The four M6 base holes are placed symmetrically in a rectangular pattern within the 80 mm envelope. Hole positions and edge distances are chosen by the design and documented as parameters.",
+        "rationale": "The user said the plate will be drilled to suit the bracket (R12) but gave no pattern.",
+        "impact": "The plate must be drilled to the pattern the bracket defines.",
+        "affects": [
+          "R04",
+          "R11",
+          "R12"
+        ]
+      },
+      {
+        "id": "A03",
+        "text": "The sensor box centre of mass is assumed to sit centred horizontally between the two M5 holes and at the hole-centre height of 35 mm above the plate. Its stated 40 mm offset from the mounting face is used as given.",
+        "rationale": "The user gave only the offset from the mounting face. A centred position is the neutral choice and adds no torsion.",
+        "impact": "If the centre of mass is offset sideways or higher up, root bending and bolt loads increase. The checks should be re-run if this is known.",
+        "affects": [
+          "R05",
+          "R09"
+        ]
+      },
+      {
+        "id": "A04",
+        "text": "Design load = mass x 9.81 m/s^2 x dynamic factor, acting downward. Allowable stress = 6061-T6 yield strength / safety factor.",
+        "rationale": "This applies the user-given factors (R10) in the standard way. The 6061-T6 yield value comes from the material database, not from the user.",
+        "impact": "Sets the design force and allowable stress for the checks.",
+        "affects": [
+          "R07",
+          "R08",
+          "R10",
+          "R02"
+        ]
+      },
+      {
+        "id": "A05",
+        "text": "The bending lever arm for the upright-root hand calculation is measured from the centre-of-mass line to the mid-plane of the upright: 40 mm (R09) + bracket_thickness/2 (3 mm) = 43 mm. Hole-section reduction and bolt prying are not modelled.",
+        "rationale": "The user gave the offset from the mounting face (outer face x = 0). The section mid-plane is the right reference for beam bending, and adding t/2 is slightly conservative.",
+        "impact": "The root moment is about 7.5% higher than with 40 mm. If the thickness changes, the lever arm must be updated.",
+        "affects": [
+          "R09",
+          "R10"
+        ]
+      }
+    ],
+    "cad": {
+      "ok": true,
+      "result": {
+        "component_name": "uie2etest BRK-001 sensor_box_l_bracket",
+        "body_name": "BRK-001_body",
+        "document": "Untitled",
+        "created_document": false,
+        "fusion_version": "2705.1.11",
+        "material": "Aluminum 6061",
+        "warnings": []
+      },
+      "script": "scripts/01_build.py"
+    },
+    "cad_error_output": null,
+    "validation": [
+      {
+        "check_id": "PROC-CAD-BUILD",
+        "title": "Fusion CAD build completed",
+        "category": "PROCESS",
+        "scope": "CAD_BUILD",
+        "claim": "The generated Fusion script ran to completion without error.",
+        "status": "VERIFIED",
+        "severity": "BLOCKING",
+        "method": "FUSION_MEASUREMENT",
+        "measured": null,
+        "limit": null,
+        "unit": null,
+        "rule_id": null,
+        "message": ""
+      },
+      {
+        "check_id": "GEO-BODY-COUNT",
+        "title": "Expected number of solid bodies",
+        "category": "GEOMETRY",
+        "scope": "GEOMETRY",
+        "claim": "Fusion reports the designed number of bodies, all solid.",
+        "status": "VERIFIED",
+        "severity": "BLOCKING",
+        "method": "FUSION_MEASUREMENT",
+        "measured": 1,
+        "limit": 1,
+        "unit": null,
+        "rule_id": null,
+        "message": ""
+      },
+      {
+        "check_id": "GEO-FEATURE-HEALTH",
+        "title": "All timeline features healthy",
+        "category": "GEOMETRY",
+        "scope": "GEOMETRY",
+        "claim": "Every Fusion timeline feature of the component computed without warning or error.",
+        "status": "VERIFIED",
+        "severity": "BLOCKING",
+        "method": "FUSION_MEASUREMENT",
+        "measured": "8/8 healthy",
+        "limit": null,
+        "unit": null,
+        "rule_id": null,
+        "message": ""
+      },
+      {
+        "check_id": "GEO-SKETCH-CONSTRAINED",
+        "title": "All sketches fully constrained",
+        "category": "GEOMETRY",
+        "scope": "GEOMETRY",
+        "claim": "Every sketch is fully constrained (geometry fully driven by dimensions/constraints).",
+        "status": "VERIFIED",
+        "severity": "ADVISORY",
+        "method": "FUSION_MEASUREMENT",
+        "measured": "3/3",
+        "limit": null,
+        "unit": null,
+        "rule_id": null,
+        "message": ""
+      },
+      {
+        "check_id": "GEO-BBOX",
+        "title": "Bounding box matches design (VCS)",
+        "category": "GEOMETRY",
+        "scope": "GEOMETRY",
+        "claim": "Fusion-measured overall extents equal the designed extents (overall size only).",
+        "status": "VERIFIED",
+        "severity": "BLOCKING",
+        "method": "FUSION_MEASUREMENT",
+        "measured": {
+          "min": [
+            0.0,
+            -32.0,
+            0.0
+          ],
+          "max": [
+            70.0,
+            32.0,
+            50.0
+          ]
+        },
+        "limit": {
+          "min": [
+            0.0,
+            -32.0,
+            0.0
+          ],
+          "max": [
+            70.0,
+            32.0,
+            50.0
+          ],
+          "tol_mm": 0.001
+        },
+        "unit": "mm",
+        "rule_id": null,
+        "message": "max deviation 0.00e+00 mm"
+      },
+      {
+        "check_id": "GEO-VOLUME",
+        "title": "Volume matches analytic model",
+        "category": "GEOMETRY",
+        "scope": "GEOMETRY",
+        "claim": "Fusion-measured volume equals the generator's analytic volume (consistency with design intent).",
+        "status": "VERIFIED",
+        "severity": "BLOCKING",
+        "method": "FUSION_MEASUREMENT",
+        "measured": 41516.114,
+        "limit": "41516.114 ± 1e-04 rel",
+        "unit": "mm3",
+        "rule_id": null,
+        "message": "relative deviation 1.05e-15"
+      },
+      {
+        "check_id": "GEO-PARAM-SYNC",
+        "title": "Fusion user parameters equal the component record",
+        "category": "GEOMETRY",
+        "scope": "PARAMETERS",
+        "claim": "Fusion holds the parameter values of the record (does not by itself prove the geometry follows them).",
+        "status": "VERIFIED",
+        "severity": "BLOCKING",
+        "method": "FUSION_MEASUREMENT",
+        "measured": "14/14",
+        "limit": null,
+        "unit": null,
+        "rule_id": null,
+        "message": ""
+      },
+      {
+        "check_id": "IFC-HOLE-GEOMETRY",
+        "title": "Own mounting holes: diameter, axis and position as designed",
+        "category": "INTERFACE",
+        "scope": "HOLE_GEOMETRY",
+        "claim": "This component's own mounting holes exist in Fusion with the designed diameter, axis and position. Says nothing about the mating part.",
+        "status": "VERIFIED",
+        "severity": "BLOCKING",
+        "method": "FUSION_MEASUREMENT",
+        "measured": "6/6 holes matched",
+        "limit": "position/diameter tol 0.001 mm",
+        "unit": "mm",
+        "rule_id": null,
+        "message": "All own mounting holes found in Fusion geometry."
+      },
+      {
+        "check_id": "IFC-MATING@IF-BASE",
+        "title": "Mating fit of IF-BASE with flat horizontal plate (undrilled; drilled to the bracket's 36 x 40 mm M6 pattern, R12)",
+        "category": "INTERFACE",
+        "scope": "MATING_INTERFACE",
+        "claim": "Whether the mating part's holes/faces coincide with this interface. Not checked: the mating part is not modelled in the project.",
+        "status": "NOT_VERIFIED",
+        "severity": "ADVISORY",
+        "method": "NOT_RUN",
+        "measured": null,
+        "limit": null,
+        "unit": null,
+        "rule_id": null,
+        "message": "Mating part geometry not available; fit, hole alignment and clearance are not verified."
+      },
+      {
+        "check_id": "IFC-MATING@IF-UPRIGHT",
+        "title": "Mating fit of IF-UPRIGHT with sensor box side face (2x M5 at 40 mm horizontal pitch, 35 mm above the plate, R05/R06)",
+        "category": "INTERFACE",
+        "scope": "MATING_INTERFACE",
+        "claim": "Whether the mating part's holes/faces coincide with this interface. Not checked: the mating part is not modelled in the project.",
+        "status": "NOT_VERIFIED",
+        "severity": "ADVISORY",
+        "method": "NOT_RUN",
+        "measured": null,
+        "limit": null,
+        "unit": null,
+        "rule_id": null,
+        "message": "Mating part geometry not available; fit, hole alignment and clearance are not verified."
+      },
+      {
+        "check_id": "DFM-MACH-WALL-MIN",
+        "title": "Minimum machinable wall thickness",
+        "category": "MANUFACTURING",
+        "scope": "MANUFACTURING_RULE",
+        "claim": "Design value of 'wall_thickness' satisfies rule DFM-MACH-WALL-MIN as transcribed (transcription NOT_VERIFIED).",
+        "status": "ASSUMPTION",
+        "severity": "BLOCKING",
+        "method": "PARAMETER_CHECK",
+        "measured": 6.0,
+        "limit": ">= 2.0",
+        "unit": "mm",
+        "rule_id": "DFM-MACH-WALL-MIN",
+        "message": "Passes; rule transcription not yet human-verified."
+      },
+      {
+        "check_id": "DFM-MACH-INNER-RADIUS-MIN",
+        "title": "Minimum internal corner radius (end-mill access)",
+        "category": "MANUFACTURING",
+        "scope": "MANUFACTURING_RULE",
+        "claim": "Design value of 'internal_corner_radius' satisfies rule DFM-MACH-INNER-RADIUS-MIN as transcribed (transcription NOT_VERIFIED).",
+        "status": "ASSUMPTION",
+        "severity": "BLOCKING",
+        "method": "PARAMETER_CHECK",
+        "measured": 4.0,
+        "limit": ">= 3.0",
+        "unit": "mm",
+        "rule_id": "DFM-MACH-INNER-RADIUS-MIN",
+        "message": "Passes; rule transcription not yet human-verified."
+      },
+      {
+        "check_id": "DFM-DFMEA-FATIGUE-FILLET",
+        "title": "Fatigue - internal fillet radius relative to wall thickness",
+        "category": "MANUFACTURING",
+        "scope": "MANUFACTURING_RULE",
+        "claim": "Design value of 'fillet_to_thickness_ratio' satisfies rule DFM-DFMEA-FATIGUE-FILLET as transcribed (transcription NOT_VERIFIED).",
+        "status": "ASSUMPTION",
+        "severity": "ADVISORY",
+        "method": "PARAMETER_CHECK",
+        "measured": 0.6667,
+        "limit": ">= 0.2",
+        "unit": null,
+        "rule_id": "DFM-DFMEA-FATIGUE-FILLET",
+        "message": "Passes; rule transcription not yet human-verified."
+      },
+      {
+        "check_id": "STD-ISO273-MEDIUM",
+        "title": "Clearance hole diameter for metric bolts (ISO 273, medium series)",
+        "category": "MANUFACTURING",
+        "scope": "MANUFACTURING_RULE",
+        "claim": "Design value of 'clearance_holes' satisfies rule STD-ISO273-MEDIUM as transcribed (transcription NOT_VERIFIED).",
+        "status": "ASSUMPTION",
+        "severity": "ADVISORY",
+        "method": "PARAMETER_CHECK",
+        "measured": [
+          {
+            "item": "M6",
+            "value": 6.6
+          },
+          {
+            "item": "M5",
+            "value": 5.5
+          }
+        ],
+        "limit": {
+          "M3": 3.4,
+          "M4": 4.5,
+          "M5": 5.5,
+          "M6": 6.6,
+          "M8": 9.0,
+          "M10": 11.0,
+          "M12": 13.5
+        },
+        "unit": "mm",
+        "rule_id": "STD-ISO273-MEDIUM",
+        "message": "All items match the table."
+      },
+      {
+        "check_id": "GL-HOLE-EDGE-DISTANCE",
+        "title": "Bolt hole centre to free edge distance",
+        "category": "MANUFACTURING",
+        "scope": "MANUFACTURING_RULE",
+        "claim": "Design value of 'hole_edge_distance_ratio' satisfies rule GL-HOLE-EDGE-DISTANCE as transcribed (transcription NOT_VERIFIED).",
+        "status": "ASSUMPTION",
+        "severity": "BLOCKING",
+        "method": "PARAMETER_CHECK",
+        "measured": 1.8182,
+        "limit": ">= 1.5",
+        "unit": null,
+        "rule_id": "GL-HOLE-EDGE-DISTANCE",
+        "message": "Passes; rule transcription not yet human-verified."
+      },
+      {
+        "check_id": "STR-PLATE-BENDING",
+        "title": "Hand calc: leg bending stress vs yield",
+        "category": "STRUCTURAL",
+        "scope": "STRUCTURAL_CHECK",
+        "claim": "One simplified hand calculation (plate bending at the critical section vs yield) meets the required safety factor. Not a structural-adequacy statement.",
+        "status": "ASSUMPTION",
+        "severity": "BLOCKING",
+        "method": "HAND_CALC",
+        "measured": {
+          "moment_Nmm": 2531.0,
+          "stress_MPa": 7.96,
+          "safety_factor": 34.68
+        },
+        "limit": "SF >= 2.0",
+        "unit": "MPa",
+        "rule_id": null,
+        "message": "Upright leg as a plate under constant moment M = F*e (payload weight F at CG offset e from the upright face); critical net section through the upright hole row (W - 2 x hole). Material AL6061-T6 yield 276.0 MPa (NOT_VERIFIED). Stress concentration at holes/fillet and fatigue NOT included."
+      },
+      {
+        "check_id": "STR-ADEQUACY",
+        "title": "Overall structural adequacy",
+        "category": "STRUCTURAL",
+        "scope": "STRUCTURAL_ADEQUACY",
+        "claim": "Whether the part is structurally adequate in service. Not established: only one simplified hand calculation was run.",
+        "status": "NOT_VERIFIED",
+        "severity": "ADVISORY",
+        "method": "NOT_RUN",
+        "measured": null,
+        "limit": null,
+        "unit": null,
+        "rule_id": null,
+        "message": "Not analysed: bolt loads/prying, base-leg bending, fatigue, stress concentration, FEA."
+      },
+      {
+        "check_id": "FIA-APPLICABILITY",
+        "title": "FIA rules for this component",
+        "category": "FIA",
+        "scope": "FIA",
+        "claim": "None of the structured FIA rules in the project targets this component type. No FIA compliance statement of any kind.",
+        "status": "NOT_APPLICABLE",
+        "severity": "ADVISORY",
+        "method": "NOT_RUN",
+        "measured": "6 structured FIA rules loaded; 0 apply to 'l_bracket'",
+        "limit": null,
+        "unit": null,
+        "rule_id": null,
+        "message": "No structured FIA rule applies to this component type; no FIA claim is made."
+      }
+    ],
+    "blocking_failures": [],
+    "loops": {
+      "used": 1,
+      "max": 3
+    }
+  },
+  "response_schema": {
+    "$defs": {
+      "Assumption": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "pattern": "^A\\d{2,3}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "impact": {
+            "default": "",
+            "title": "Impact",
+            "type": "string"
+          },
+          "affects": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Affects",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "rationale"
+        ],
+        "title": "Assumption",
+        "type": "object"
+      },
+      "ParamSource": {
+        "enum": [
+          "REQUIREMENT",
+          "ASSUMPTION",
+          "RULE",
+          "DERIVED",
+          "USER",
+          "IMAGE_EVIDENCE"
+        ],
+        "title": "ParamSource",
+        "type": "string"
+      },
+      "PlannedParam": {
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "title": "Value",
+            "type": "number"
+          },
+          "unit": {
+            "enum": [
+              "mm",
+              "deg",
+              "N",
+              "kg",
+              "count",
+              ""
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/$defs/ParamSource"
+          },
+          "trace": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Trace",
+            "type": "array"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          }
+        },
+        "required": [
+          "value",
+          "unit",
+          "source",
+          "rationale"
+        ],
+        "title": "PlannedParam",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "decision": {
+        "enum": [
+          "ACCEPT",
+          "REVISE",
+          "STOP"
+        ],
+        "title": "Decision",
+        "type": "string"
+      },
+      "rationale": {
+        "title": "Rationale",
+        "type": "string"
+      },
+      "parameter_changes": {
+        "additionalProperties": {
+          "$ref": "#/$defs/PlannedParam"
+        },
+        "title": "Parameter Changes",
+        "type": "object"
+      },
+      "new_assumptions": {
+        "items": {
+          "$ref": "#/$defs/Assumption"
+        },
+        "title": "New Assumptions",
+        "type": "array"
+      }
+    },
+    "required": [
+      "decision",
+      "rationale"
+    ],
+    "title": "ReviewResponse",
+    "type": "object"
+  },
+  "attachments": []
+}

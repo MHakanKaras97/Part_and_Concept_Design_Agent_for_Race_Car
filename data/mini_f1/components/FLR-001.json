@@ -1,0 +1,496 @@
+{
+  "record_type": "part",
+  "id": "FLR-001",
+  "name": "Floor",
+  "role": "floor plate under the car with rear diffuser ramp",
+  "version": 3,
+  "lifecycle": "CONCEPT",
+  "frame_mode": "part_local",
+  "frame_note": "",
+  "spec": {
+    "id": "FLR-001",
+    "name": "Floor",
+    "role": "floor plate under the car with rear diffuser ramp",
+    "notes": "Thin flat plate X -4300 to -400, Y ±800, Z 0-30; top face Z=30 carries the monocoque. Simplified side edges: chamfered/tapered outer edges and slightly tapered front corners in plan. Rear diffuser ramp: wedge X -3700 to -4300, Y ±500, rising from Z=30 at X=-3700 to Z=230 at rear edge, behind the monocoque rear face so no intersection. Single solid body.",
+    "dims": {
+      "length": 3900.0,
+      "width": 1600.0,
+      "thickness": 30.0,
+      "diffuser_length": 600.0,
+      "diffuser_width": 1000.0,
+      "diffuser_exit_height": 230.0,
+      "edge_chamfer": 20.0,
+      "rear_taper_start": 2000.0,
+      "rear_taper_end": 2630.0,
+      "rear_half_width": 520.0,
+      "front_corner_radius": 250.0,
+      "edge_fillet": 8.0
+    },
+    "position_mm": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "envelope_min": [
+      -4300.0,
+      -800.0,
+      0.0
+    ],
+    "envelope_max": [
+      -400.0,
+      800.0,
+      230.0
+    ],
+    "fia_refs_used": [
+      "C2.3.1",
+      "C3.5.4"
+    ],
+    "reuse": false,
+    "mirror_of": null,
+    "mirror_mode": null
+  },
+  "script_body": "import math\nimport adsk.core\nimport adsk.fusion\n\n\ndef build(part):\n    L = part.p[\"length\"]\n    W = part.p[\"width\"]\n    T = part.p[\"thickness\"]\n    DL = part.p[\"diffuser_length\"]\n    DH = part.p[\"diffuser_exit_height\"]\n    D1 = part.p.get(\"rear_taper_start\", 2000.0)\n    D2 = part.p.get(\"rear_taper_end\", 2630.0)\n    RHW = part.p.get(\"rear_half_width\", 520.0)\n    R = part.p.get(\"front_corner_radius\", 250.0)\n    FR = part.p.get(\"edge_fillet\", 8.0)\n    xf = -400.0\n    xr = xf - L\n    hw = W / 2\n    # Smooth plan outline: rounded front corners, tangent double-arc S-curve taper\n    sk = part.sketch(part.plane(\"z\", 0), \"SK_floor_outline\")\n    lines = sk.sketchCurves.sketchLines\n    arcs = sk.sketchCurves.sketchArcs\n\n    def P(x, y):\n        return sk.modelToSketchSpace(pt(x, y, 0))\n\n    def arc_pt(cx, cy, r, a):\n        return (cx + r * math.cos(a), cy + r * math.sin(a))\n\n    xa = xf - D1\n    xb = xf - D2\n    dx = (D2 - D1) / 2\n    dy = (hw - RHW) / 2\n    rs = (dx * dx + dy * dy) / (2 * dy)\n    mx, my = xa - dx, hw - dy\n    c1 = (xa, hw - rs)\n    a1e = math.atan2(my - c1[1], mx - c1[0])\n    m1 = arc_pt(c1[0], c1[1], rs, (math.pi / 2 + a1e) / 2)\n    c2 = (xb, RHW + rs)\n    a2s = math.atan2(my - c2[1], mx - c2[0])\n    m2 = arc_pt(c2[0], c2[1], rs, (a2s - math.pi / 2) / 2)\n    mc = arc_pt(xf - R, hw - R, R, math.pi / 4)\n    for s in (1, -1):\n        arcs.addByThreePoints(P(xf, s * (hw - R)), P(mc[0], s * mc[1]), P(xf - R, s * hw))\n        lines.addByTwoPoints(P(xf - R, s * hw), P(xa, s * hw))\n        arcs.addByThreePoints(P(xa, s * hw), P(m1[0], s * m1[1]), P(mx, s * my))\n        arcs.addByThreePoints(P(mx, s * my), P(m2[0], s * m2[1]), P(xb, s * RHW))\n        lines.addByTwoPoints(P(xb, s * RHW), P(xr, s * RHW))\n    lines.addByTwoPoints(P(xf, -(hw - R)), P(xf, hw - R))\n    lines.addByTwoPoints(P(xr, -RHW), P(xr, RHW))\n    part.extrude(part.profile(sk), \"thickness\", \"EX_floor_plate\")\n    # Consistent rounded top edge along the whole outline\n    body = part.body(0)\n    top = None\n    best = 0.0\n    for f in body.faces:\n        bb = f.boundingBox\n        if bb.minPoint.z > mm(T) - 0.001 and f.area > best:\n            best = f.area\n            top = f\n    edges = adsk.core.ObjectCollection.create()\n    for e in top.edges:\n        edges.add(e)\n    fillets = part.comp.features.filletFeatures\n    finp = fillets.createInput()\n    finp.edgeSetInputs.addConstantRadiusEdgeSet(edges, val(FR), True)\n    fil = fillets.add(finp)\n    fil.name = \"FIL_top_edge\"\n    # Rear diffuser ramp wedge\n    xd = xr + DL\n    skd = part.sketch(part.plane(\"y\", 0), \"SK_diffuser\")\n    part.polygon(skd, [(xd, 0, T - 10), (xr, 0, T - 10), (xr, 0, DH), (xd, 0, T)])\n    part.extrude(part.profile(skd), \"diffuser_width\", \"EX_diffuser\", op=\"join\", symmetric=True)\n",
+  "script_sha256": "eea3a9d74e860838fdcf7351adcc4c682c7c13548791488766cd3885e6a74b5b",
+  "params": {
+    "length": 3900.0,
+    "width": 1600.0,
+    "thickness": 30.0,
+    "diffuser_length": 600.0,
+    "diffuser_width": 1000.0,
+    "diffuser_exit_height": 230.0,
+    "edge_chamfer": 20.0,
+    "rear_taper_start": 2000.0,
+    "rear_taper_end": 2630.0,
+    "rear_half_width": 520.0,
+    "front_corner_radius": 250.0,
+    "edge_fillet": 8.0
+  },
+  "pose": {
+    "position": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "bbox_world": [
+    [
+      -4300.0,
+      -800.0,
+      0.0
+    ],
+    [
+      -400.0,
+      800.0,
+      230.0
+    ]
+  ],
+  "checks": [
+    {
+      "check_id": "PART-BUILD",
+      "title": "Part script ran",
+      "category": "PROCESS",
+      "scope": "CAD_BUILD",
+      "claim": "The part script built a body without error.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": null,
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-SOLID",
+      "title": "Solid body exists",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part has at least one closed solid body.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bodies": 1,
+        "solids": 1,
+        "volume_mm3": 219638516.2
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FEATURES",
+      "title": "Features healthy",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "No feature of the part is in an error state.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "features": 5,
+        "errors": 0,
+        "warnings": 0
+      },
+      "limit": null,
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-BBOX",
+      "title": "World bounding box within the planned envelope",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The measured world bbox lies inside the planned envelope (+5 mm per side).",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": [
+        [
+          -4300.0,
+          -800.0,
+          0.0
+        ],
+        [
+          -400.0,
+          800.0,
+          230.0
+        ]
+      ],
+      "limit": {
+        "min": [
+          -4300.0,
+          -800.0,
+          0.0
+        ],
+        "max": [
+          -400.0,
+          800.0,
+          230.0
+        ],
+        "tol_mm": 5.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-FRAME",
+      "title": "Geometry in the part-local frame",
+      "category": "GEOMETRY",
+      "scope": "GEOMETRY",
+      "claim": "The part's local bbox (built at identity) lies in the planned envelope taken back into the part frame by the inverse pose.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "bbox_local": [
+          [
+            -4300.0,
+            -800.0,
+            0.0
+          ],
+          [
+            -400.0,
+            800.0,
+            230.0
+          ]
+        ]
+      },
+      "limit": {
+        "expected_local": [
+          [
+            -4300.0,
+            -800.0,
+            0.0
+          ],
+          [
+            -400.0,
+            800.0,
+            230.0
+          ]
+        ],
+        "world_envelope": [
+          [
+            -4300.0,
+            -800.0,
+            0.0
+          ],
+          [
+            -400.0,
+            800.0,
+            230.0
+          ]
+        ],
+        "tol_mm": 5.0,
+        "frame_mode": "part_local"
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PLACEMENT",
+      "title": "Placed at the planned pose (read-back)",
+      "category": "GEOMETRY",
+      "scope": "PLACEMENT",
+      "claim": "Fusion's occurrence transform read back equals the planned pose; nothing is pending.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "FUSION_MEASUREMENT",
+      "measured": {
+        "position_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation_dev_mm": 0.0,
+        "rotation_dev_deg": 0.0
+      },
+      "limit": {
+        "tol_mm": 0.001,
+        "tol_deg": 0.0001
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    },
+    {
+      "check_id": "PART-PARAMS",
+      "title": "Key parameters equal the plan",
+      "category": "GEOMETRY",
+      "scope": "PARAMETERS",
+      "claim": "Every key dimension exists as a Fusion user parameter with the planned value.",
+      "status": "VERIFIED",
+      "severity": "BLOCKING",
+      "method": "PARAMETER_CHECK",
+      "measured": {
+        "length": 3900.0,
+        "width": 1600.0,
+        "thickness": 30.0,
+        "diffuser_length": 600.0,
+        "diffuser_width": 1000.0,
+        "diffuser_exit_height": 230.0,
+        "edge_chamfer": 20.0,
+        "rear_taper_start": 2000.0,
+        "rear_taper_end": 2630.0,
+        "rear_half_width": 520.0,
+        "front_corner_radius": 250.0,
+        "edge_fillet": 8.0
+      },
+      "limit": {
+        "length": 3900.0,
+        "width": 1600.0,
+        "thickness": 30.0,
+        "diffuser_length": 600.0,
+        "diffuser_width": 1000.0,
+        "diffuser_exit_height": 230.0,
+        "edge_chamfer": 20.0,
+        "rear_taper_start": 2000.0,
+        "rear_taper_end": 2630.0,
+        "rear_half_width": 520.0,
+        "front_corner_radius": 250.0,
+        "edge_fillet": 8.0
+      },
+      "unit": null,
+      "rule_id": null,
+      "message": ""
+    }
+  ],
+  "fia": [
+    {
+      "article": "C2.3.1",
+      "text": "Except for the tyres, the Wheel Rims, and parts attached to the Wheel Rims as defined in Article C10.7.6, no part of the car may lie more than 950mm from the plane Y=0 at Legality Setup.",
+      "page": 10,
+      "sha256": "0dbcb0c36b8199ca0e8863063ba55afbf0be73005df5fca551e52d5628189973",
+      "status": "VERIFIED",
+      "note": "measured max |Y| = 800.0 mm vs limit 950 mm (no part of the car may lie more than 950mm from the plane Y=0 (wheels excepted)); rule transcription not human-verified; checks this part's extent only"
+    },
+    {
+      "article": "C3.5.4",
+      "text": "C3.5.4 Main Floor \"Main Floor\" results from the Trim and Combination of the following components: a. Floor Body. b. Floor Foot. c. Floor Sidewall. A Fillet Radius, no greater than 30 mm, may be applied along the intersections between the remaining component parts. Once fully defined, Main Floor must: d. be a single, simply connected volume, with no overlapping regions. e. be fully visible from",
+      "page": 18,
+      "sha256": "cdd8c0739b7e5bca9cd5363a55e01fe95d7408f1787b9d2ad348fc52c2ef8808",
+      "status": "NOT_VERIFIED",
+      "note": "no automated check for this article at concept level"
+    }
+  ],
+  "fusion": {
+    "document": "Untitled",
+    "component": "mf1 FLR-001 Floor",
+    "param_prefix": "mf1_flr001",
+    "fusion_version": "2705.1.30",
+    "built_at": "2026-10-12T05:17:55+00:00"
+  },
+  "run_id": "20261012-080916-rebuild-assembly-of-20261012-073",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-10-10T11:55:50+00:00",
+      "run_id": "20261010-145347-create-a-coherent-parametric-min",
+      "script_sha256": "74affcc78f778b3f7739a059290b7aa27b9e693c9b7173ad02f5653fdd5e550d",
+      "summary": "built by fast mode",
+      "kind": "",
+      "instruction": ""
+    },
+    {
+      "version": 2,
+      "date": "2026-10-10T19:18:10+00:00",
+      "run_id": "20261010-220755-rebuild-assembly-of-20261010-194",
+      "script_sha256": "037a7249b2d9faf270da707a7e831937e5ffd25a951971d698420a52b7048c33",
+      "summary": "Rear floor narrowed in plan: half-width 800 for first 2000 mm from the front edge, linear taper to 520 at 2630 mm, then 520 to the rear end (3900 mm)",
+      "kind": "revise",
+      "instruction": "Narrow the floor in the rear section. Express every new dimension as a POSITIVE length measured from the floor's front edge (X=-400) towards the rear, never as a negative coordinate: keep the half-width at 800 mm for the first 2000 mm from the front edge, taper it linearly to 520 mm at 2630 mm from the front edge, and keep 520 mm to the rear end (3900 mm from the front edge, X=-4300). Keep the top face at Z=30, the bottom at Z=0, the diffuser ramp over the last 600 mm and its 1000 mm width, and the flat contact with the monocoque underside. Change nothing else."
+    },
+    {
+      "version": 3,
+      "date": "2026-10-12T05:17:55+00:00",
+      "run_id": "20261012-080916-rebuild-assembly-of-20261012-073",
+      "script_sha256": "eea3a9d74e860838fdcf7351adcc4c682c7c13548791488766cd3885e6a74b5b",
+      "summary": "Plan outline rebuilt with R250 front corners and a tangent double-arc S-curve taper; 8 mm top-edge fillet replaces chamfer; lip skipped",
+      "kind": "revise",
+      "instruction": "Soften the floor outline and edges. Use the current registered version as the base. Keep exactly as is: top face Z=30, bottom Z=0, the X range, the narrowed rear section, the diffuser ramp, the flat contact with the monocoque underside, and at least 20 mm clearance from the rear wheels. One connected solid.\nChange only: (1) plan outline: replace straight lines and corners with smooth curves: rounded front corners (radius about 250 mm) and one continuous S-curve for the taper from the wide section to the rear half-width, no kinks; (2) a consistent rounded top edge of about 8 mm along the whole outline, including the tapered and rear sections; (3) optional, only if robust: a low continuous lip along the outer edge of the front half (about 10 mm thick, 25 mm tall) fading out at the taper. Skip the lip if it creates thin or unreliable geometry."
+    }
+  ],
+  "revision": {
+    "revision_id": "R01",
+    "run_id": "20261012-080916-rebuild-assembly-of-20261012-073",
+    "kind": "revise",
+    "instruction": "Soften the floor outline and edges. Use the current registered version as the base. Keep exactly as is: top face Z=30, bottom Z=0, the X range, the narrowed rear section, the diffuser ramp, the flat contact with the monocoque underside, and at least 20 mm clearance from the rear wheels. One connected solid.\nChange only: (1) plan outline: replace straight lines and corners with smooth curves: rounded front corners (radius about 250 mm) and one continuous S-curve for the taper from the wide section to the rear half-width, no kinks; (2) a consistent rounded top edge of about 8 mm along the whole outline, including the tapered and rear sections; (3) optional, only if robust: a low continuous lip along the outer edge of the front half (about 10 mm thick, 25 mm tall) fading out at the taper. Skip the lip if it creates thin or unreliable geometry.",
+    "change_summary": "Plan outline rebuilt with R250 front corners and a tangent double-arc S-curve taper; 8 mm top-edge fillet replaces chamfer; lip skipped",
+    "assumptions": [
+      "The S-curve uses two tangent arcs (radius about 424 mm) between X=-2400/Y=800 and X=-3030/Y=520. It lies inside the old linear taper near the rear wheels, so wheel clearance can only increase.",
+      "The 8 mm fillet replaces the 20 mm chamfer on the top outer edges and runs around the whole outline, including the rear edge. edge_chamfer is no longer used.",
+      "The optional 10x25 mm lip was skipped because a fade-out lip combined with the fillet risks thin or unreliable geometry.",
+      "At X=-2950 the floor is about 28 mm narrower than the old linear taper. Sidepod contact still relies on the flat top face at Z=30."
+    ],
+    "spec_delta": {
+      "dims": {
+        "front_corner_radius": 250.0,
+        "edge_fillet": 8.0
+      }
+    },
+    "base_version": 2,
+    "neighbour_pose_changes": [],
+    "reason": null,
+    "mates": [
+      {
+        "check_id": "MATE-FLR-001-MON-001",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "touching",
+          "gap_mm": 0.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-FLR-001-SDP-L",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "touching",
+          "gap_mm": 0.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-FLR-001-WHL-FL",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 180.388,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-FLR-001-WHL-RL",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 51.853,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-FLR-001-SDP-R",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "touching",
+          "gap_mm": 0.0,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-FLR-001-WHL-FR",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 180.388,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      },
+      {
+        "check_id": "MATE-FLR-001-WHL-RR",
+        "status": "VERIFIED",
+        "measured": {
+          "state": "gap",
+          "gap_mm": 51.853,
+          "overlap_mm3": 0.0,
+          "overlap_depth_mm": 0.0
+        }
+      }
+    ],
+    "frame_mode": "part_local",
+    "frame_validation": {
+      "status": "VERIFIED",
+      "message": ""
+    }
+  },
+  "derived": {},
+  "geometry": {
+    "volume_mm3": 219638516.235278,
+    "solids": 1,
+    "lumps": 1,
+    "bbox_local": [
+      [
+        -4300.0,
+        -800.0,
+        0.0
+      ],
+      [
+        -400.0,
+        800.0,
+        230.0
+      ]
+    ],
+    "bbox_world": [
+      [
+        -4300.0,
+        -800.0,
+        0.0
+      ],
+      [
+        -400.0,
+        800.0,
+        230.0
+      ]
+    ]
+  }
+}
