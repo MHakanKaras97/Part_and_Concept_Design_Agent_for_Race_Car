@@ -375,7 +375,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     refresh();
   });
   S.runId = new URLSearchParams(location.search).get("run") || null;   // optional deep link: /?run=<id>
-  refreshStatus();
+  await refreshStatus();
   try { await loadRuns(); } catch (e) { $("toolbar-note").textContent = e.message; }
+  if (document.body.classList.contains("read-only") && !S.runId && $("run-select").options.length > 1) {
+    S.runId = $("run-select").options[1].value; $("run-select").value = S.runId;   // read-only: open the latest run
+  }
   refresh();
 });
