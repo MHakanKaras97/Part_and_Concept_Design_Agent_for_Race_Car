@@ -308,3 +308,46 @@ def test_forced_claude_mode_falls_back_per_task_when_cli_fails(tmp_path):
     run = load_run(svc.store, run_id)
     assert run["status"] == "AWAITING_REASONING"
     assert any("Reasoning backend fallback: claude_code unavailable" in e["message"] for e in run["events"])
+
+
+def _raw(base, method, path, headers, body=b""):
+    """One request with exactly these headers (http.client adds no Host or Origin on its own here)."""
+    import http.client
+    host, port = base.removeprefix("http://").split(":")
+    conn = http.client.HTTPConnection(host, int(port), timeout=10)
+    try:
+        conn.putrequest(method, path, skip_host=True, skip_accept_encoding=True)
+        for k, v in headers.items():
+            conn.putheader(k, v)
+        conn.putheader("Content-Length", str(len(body)))
+        conn.endheaders(body)
+        r = conn.getresponse()
+        return r.status, r.read()
+    finally:
+        conn.close()
+
+
+def test_http_host_origin_and_content_type_are_checked(server):
+    port = server.rsplit(":", 1)[1]
+    body = json.dumps({"request": ""}).encode()
+    for host in (f"127.0.0.1:{port}", f"localhost:{port}", f"LOCALHOST:{port}"):
+        assert _raw(server, "GET", "/api/runs", {"Host": host})[0] == 200
+    for host in ("evil.example", f"evil.example:{port}", "127.0.0.1:1", "localhost", ""):
+        assert _raw(server, "GET", "/api/runs", {"Host": host})[0] == 403
+    assert _raw(server, "GET", "/api/runs", {})[0] == 403                          # no Host at all
+    ok = {"Host": f"127.0.0.1:{port}", "Content-Type": "application/json"}
+    for origin in (f"http://127.0.0.1:{port}", f"http://localhost:{port}"):
+        assert _raw(server, "POST", "/api/runs", {**ok, "Origin": origin}, body)[0] == 400   # passes the guard
+    for origin in ("http://evil.example", f"http://evil.example:{port}", f"https://127.0.0.1:{port}",
+                   "http://127.0.0.1:1", "null"):
+        assert _raw(server, "POST", "/api/runs", {**ok, "Origin": origin}, body)[0] == 403
+        assert _raw(server, "GET", "/api/runs", {"Host": ok["Host"], "Origin": origin})[0] == 403
+    assert _raw(server, "POST", "/api/runs", {**ok, "Content-Type": "application/json; charset=utf-8"}, body)[0] == 400
+    for ctype in ("text/plain", "application/x-www-form-urlencoded", "multipart/form-data; boundary=x", None):
+        h = {"Host": ok["Host"], **({"Content-Type": ctype} if ctype else {})}
+        assert _raw(server, "POST", "/api/runs", h, body)[0] == 415
+    code, _ = _raw(server, "POST", "/api/runs", {"Host": ok["Host"], "Content-Type": "text/plain"},
+                   json.dumps({"request": REQUEST}).encode())
+    assert code == 415
+    assert _call(server + "/api/runs")[0] == 200                                    # nothing was started
+    assert _call(server + "/api/runs")[1] == []

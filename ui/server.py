@@ -29,6 +29,11 @@ Strict mode:
     GET  /api/runs/<id>/attachments/IMG-nn  stored image              GET  /api/runs/<id>       run view model
     POST /api/runs/<id>/answer {"question_id","text"}        POST /api/runs/<id>/advance  continue / retry
     GET  /api/runs/<id>/report          report.md (text)     GET  /api/runs/<id>/screenshot  PNG
+
+Request checks (local UI only, see _guard): every request must carry Host 127.0.0.1:<port> or localhost:<port>, and an
+Origin header, when present, must be http://127.0.0.1:<port> or http://localhost:<port> (403 otherwise; this blocks
+DNS rebinding and cross-site requests from other pages in the same browser). Every POST must be
+Content-Type: application/json (415 otherwise), which a cross-site HTML form cannot send.
 """
 from __future__ import annotations
 
@@ -75,13 +80,50 @@ def make_handler(service: AgentService, design: DesignService | None = None):
             if n > limit:
                 raise ValueError("request body too large")
             raw = self.rfile.read(n) if n else b"{}"
+            self._body_read = True
             data = json.loads(raw.decode("utf-8") or "{}")
             if not isinstance(data, dict):
                 raise ValueError("JSON object expected")
             return data
 
+        def _guard(self, method: str) -> bool:
+            """True when the request may proceed; otherwise the error response has been sent."""
+            port = self.server.server_address[1]
+            hosts = {f"127.0.0.1:{port}", f"localhost:{port}"}
+            if (self.headers.get("Host") or "").lower() not in hosts:
+                self._json(HTTPStatus.FORBIDDEN, {"error": "Host must be 127.0.0.1 or localhost with the server port"})
+                return False
+            origin = self.headers.get("Origin")
+            if origin is not None and origin.lower() not in {f"http://{h}" for h in hosts}:
+                self._json(HTTPStatus.FORBIDDEN, {"error": "cross-origin request refused"})
+                return False
+            ctype = (self.headers.get("Content-Type") or "").split(";", 1)[0].strip().lower()
+            if method == "POST" and ctype != "application/json":
+                self._json(HTTPStatus.UNSUPPORTED_MEDIA_TYPE, {"error": "POST needs Content-Type: application/json"})
+                return False
+            return True
+
         def _route(self, method: str):
+            self._body_read = False
+            try:
+                self._dispatch(method)
+            finally:
+                self._drain()
+
+        def _drain(self) -> None:
+            """Read a request body nobody consumed (a refused or failed POST). Closing the socket with unread data
+            makes Windows send a reset, and the client may then lose the response that was already sent."""
+            try:
+                n = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                return
+            if not self._body_read and 0 < n <= MAX_UPLOAD_BODY:
+                self.rfile.read(n)
+
+        def _dispatch(self, method: str):
             path = self.path.split("?", 1)[0]
+            if not self._guard(method):
+                return
             try:
                 if method == "GET":
                     return self._get(path)
@@ -234,7 +276,7 @@ def make_handler(service: AgentService, design: DesignService | None = None):
 
 def make_server(service: AgentService, port: int = 8765, host: str = "127.0.0.1",
                 design: DesignService | None = None) -> ThreadingHTTPServer:
-    if host not in ("127.0.0.1", "localhost", "::1"):
+    if host not in ("127.0.0.1", "localhost"):
         raise ValueError("the UI server only binds to localhost")
     srv = ThreadingHTTPServer((host, port), make_handler(service, design))
     srv.daemon_threads = True
