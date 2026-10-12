@@ -54,6 +54,7 @@ function renderStatus() {
   const pb = $("pill-backend"), pr = $("pill-reasoner"), pf = $("pill-fusion");
   pb.className = "pill " + (st ? "ok" : "bad");
   pb.lastChild.textContent = st ? `Backend · ${st.project}` : "Backend offline";
+  document.body.classList.toggle("read-only", !!(st && st.read_only));
   if (!st) return;
   const r = st.reasoner;
   pr.className = "pill " + (r.available ? (r.mode === "claude_code" ? "ok" : "warn") : "bad");

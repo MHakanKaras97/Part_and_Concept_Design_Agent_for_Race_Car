@@ -271,3 +271,11 @@ tr.revise-row td { background: #10151c; border-left: 3px solid var(--accent); pa
   text-align: center; }
 .crit { color: var(--fail); font-weight: 700; }
 @media (max-width: 700px) { .pair { grid-template-columns: 1fr; } }
+
+/* read-only server (python -m ui --read-only): browse recorded runs; every action is hidden (the server refuses them) */
+.pill.ro-only { display: none; }
+body.read-only .pill.ro-only { display: inline-flex; }
+body.read-only #brief-form, body.read-only #btn-new, body.read-only .revise-asm, body.read-only .rebuild-row,
+body.read-only .revise-row, body.read-only table.parts td button, body.read-only #qcard textarea,
+body.read-only #btn-answer, body.read-only #btn-continue, body.read-only #composer { display: none; }
+body.read-only table.parts tr.clickable { cursor: default; }

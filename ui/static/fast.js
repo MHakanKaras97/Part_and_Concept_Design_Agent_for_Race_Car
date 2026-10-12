@@ -38,6 +38,7 @@ async function refreshStatus() {
   const pb = $("pill-backend"), pr = $("pill-reasoner"), pf = $("pill-fusion");
   pb.className = "pill " + (st ? "ok" : "bad");
   pb.lastChild.textContent = st ? "Backend" : "Backend offline";
+  document.body.classList.toggle("read-only", !!(st && st.read_only));
   if (st) {
     const claude = st.reasoner && st.reasoner.mode === "claude_code" && st.reasoner.available;
     pr.className = "pill " + (claude ? "ok" : "bad");
@@ -380,7 +381,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (text) { $("q-answer").value = ""; post(`/api/design/${S.runId}/answer`, { text }); }
   });
   S.runId = new URLSearchParams(location.search).get("run") || null;
-  refreshStatus();
+  await refreshStatus();
   try { await loadRuns(); } catch (e) { $("toolbar-note").textContent = e.message; }
+  if (document.body.classList.contains("read-only") && !S.runId && $("run-select").options.length > 1) {
+    S.runId = $("run-select").options[1].value; $("run-select").value = S.runId;   // read-only: open the latest run
+  }
   refresh();
 });

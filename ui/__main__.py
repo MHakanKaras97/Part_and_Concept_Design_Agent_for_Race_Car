@@ -1,4 +1,5 @@
 """Start the web UI:  python -m ui [--port 8765] [--project mini_f1] [--strict-project prototype_bench] [--no-browser]
+                                [--read-only]
 
 Default page = fast mode (one brief -> assembled concept in Fusion). /advanced = the strict 8-stage workflow.
 Claude: the logged-in Claude Code (`claude -p`); env AGENT_MODEL overrides the model.
@@ -24,15 +25,21 @@ def main(argv=None) -> int:
                     help="strict mode only: auto = Claude Code non-interactive if available, else file exchange")
     ap.add_argument("--model", default=None, help="strict mode model (fast mode: env AGENT_MODEL)")
     ap.add_argument("--no-browser", action="store_true")
+    ap.add_argument("--read-only", action="store_true",
+                    help="browse recorded runs only: every POST is refused (no new run, no Claude or Fusion call, "
+                         "nothing written to data/)")
     args = ap.parse_args(argv)
 
     service = AgentService(project=args.strict_project, reasoner=args.reasoner, claude_model=args.model)
     design = DesignService(project=args.project)
-    srv = make_server(service, args.port, design=design)
+    srv = make_server(service, args.port, design=design, read_only=args.read_only)
     url = f"http://127.0.0.1:{args.port}/"
     print(f"AI Engineering Agent UI on {url}   (fast mode: project {args.project}; Advanced: {url}advanced)")
-    print(f"Strict-mode reasoner: {service.reasoner['mode']} - {service.reasoner['detail']}")
-    print("Keep the Fusion window visible: screenshots are taken from its viewport. Ctrl+C to stop.")
+    if args.read_only:
+        print("Read-only: browsing recorded runs; nothing can be started or changed. Ctrl+C to stop.")
+    else:
+        print(f"Strict-mode reasoner: {service.reasoner['mode']} - {service.reasoner['detail']}")
+        print("Keep the Fusion window visible: screenshots are taken from its viewport. Ctrl+C to stop.")
     if not args.no_browser:
         webbrowser.open(url)
     try:

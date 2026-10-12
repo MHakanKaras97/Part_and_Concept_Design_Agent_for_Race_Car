@@ -163,6 +163,39 @@ def test_http_rebuild_assembly_returns_a_new_run(server):
     assert v["counters"]["claude_calls"] == 0
 
 
+def test_http_read_only_browses_recorded_runs_and_refuses_every_post(tmp_path):
+    svc, fake, reasoner = _service(tmp_path, _full())
+    rid = svc.start(BRIEF)                                     # a recorded run, made before the read-only server
+    calls = reasoner.calls
+    strict = AgentService(project="bench", root=tmp_path, fusion=FakeFusion(),
+                          backend_factory=lambda run: ScriptedBackend({}), background=False)
+    srv = make_server(strict, port=0, design=svc, read_only=True)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{srv.server_address[1]}"
+    try:
+        before = sorted(p.relative_to(tmp_path).as_posix() for p in tmp_path.rglob("*"))
+        assert _call(base + "/api/status")[1]["read_only"] is True
+        assert "ro-only" in _call(base + "/")[1]
+        assert _call(base + "/api/design")[1][0]["run_id"] == rid
+        code, v = _call(base + f"/api/design/{rid}")
+        assert code == 200 and v["status"] == "DONE"
+        assert _call(base + v["screenshots"]["iso"])[1].startswith(b"\x89PNG")
+        assert _call(base + f"/api/design/{rid}/summary")[0] == 200
+        for path, body in (("/api/design", {"brief": BRIEF}), (f"/api/design/{rid}/rebuild", {"part_id": "MON-001"}),
+                           (f"/api/design/{rid}/rebuild-assembly", {}), (f"/api/design/{rid}/recolor", {}),
+                           (f"/api/design/{rid}/render", {}), (f"/api/design/{rid}/continue", {}),
+                           (f"/api/design/{rid}/revise", {"target": "FWG-001", "instruction": "x"}),
+                           (f"/api/design/{rid}/revert", {"part_id": "FWG-001", "version": 1}),
+                           ("/api/runs", {"request": "x"})):
+            code, err = _call(base + path, body)
+            assert code == 403 and "read-only" in err["error"], path
+        assert reasoner.calls == calls
+        assert sorted(p.relative_to(tmp_path).as_posix() for p in tmp_path.rglob("*")) == before
+    finally:
+        srv.shutdown()
+        srv.server_close()
+
+
 # ---------------------------------------------------------------- revise / revert API (agent/revise.py)
 @pytest.fixture
 def revise_server(tmp_path):

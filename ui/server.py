@@ -34,6 +34,9 @@ Request checks (local UI only, see _guard): every request must carry Host 127.0.
 Origin header, when present, must be http://127.0.0.1:<port> or http://localhost:<port> (403 otherwise; this blocks
 DNS rebinding and cross-site requests from other pages in the same browser). Every POST must be
 Content-Type: application/json (415 otherwise), which a cross-site HTML form cannot send.
+
+Read-only mode (python -m ui --read-only): every POST is refused with 403, so recorded runs can be browsed without
+starting a run, calling Claude or Fusion, or writing to data/. /api/status reports "read_only".
 """
 from __future__ import annotations
 
@@ -54,7 +57,7 @@ _RUN = r"/api/runs/(?P<run>[0-9]{8}-[0-9]{6}-[a-z0-9-]{0,40})"
 _DRUN = r"/api/design/(?P<run>[0-9]{8}-[0-9]{6}-[a-z0-9-]{0,40})"
 
 
-def make_handler(service: AgentService, design: DesignService | None = None):
+def make_handler(service: AgentService, design: DesignService | None = None, read_only: bool = False):
     class Handler(BaseHTTPRequestHandler):
         server_version = "AIEngineeringAgent/0.1"
 
@@ -101,6 +104,10 @@ def make_handler(service: AgentService, design: DesignService | None = None):
             if method == "POST" and ctype != "application/json":
                 self._json(HTTPStatus.UNSUPPORTED_MEDIA_TYPE, {"error": "POST needs Content-Type: application/json"})
                 return False
+            if method == "POST" and read_only:
+                self._json(HTTPStatus.FORBIDDEN, {"error": "read-only mode: recorded runs can be browsed, "
+                                                           "nothing can be started or changed"})
+                return False
             return True
 
         def _route(self, method: str):
@@ -146,7 +153,7 @@ def make_handler(service: AgentService, design: DesignService | None = None):
             if path.startswith("/static/"):
                 return self._static(path[len("/static/"):])
             if path == "/api/status":
-                return self._json(200, service.system_status())
+                return self._json(200, {**service.system_status(), "read_only": read_only})
             if path == "/api/runs":
                 return self._json(200, service.list_runs())
             m = re.fullmatch(_RUN, path)
@@ -275,9 +282,9 @@ def make_handler(service: AgentService, design: DesignService | None = None):
 
 
 def make_server(service: AgentService, port: int = 8765, host: str = "127.0.0.1",
-                design: DesignService | None = None) -> ThreadingHTTPServer:
+                design: DesignService | None = None, read_only: bool = False) -> ThreadingHTTPServer:
     if host not in ("127.0.0.1", "localhost"):
         raise ValueError("the UI server only binds to localhost")
-    srv = ThreadingHTTPServer((host, port), make_handler(service, design))
+    srv = ThreadingHTTPServer((host, port), make_handler(service, design, read_only))
     srv.daemon_threads = True
     return srv
