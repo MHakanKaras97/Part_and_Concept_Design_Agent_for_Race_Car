@@ -97,6 +97,10 @@ python -m pytest                   # about 540 tests; takes a few minutes. Live 
 python -m ui --read-only           # opens http://127.0.0.1:8765/ and shows the latest recorded run
 ```
 
+If PowerShell refuses to run `activate` ("running scripts is disabled on this system"), run
+`Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned` in that window first, or skip activation and call
+`.venv\Scripts\python -m ...` directly.
+
 In read-only mode the server refuses every action, so nothing can be started, no Claude or Fusion call is made and
 nothing is written. Pick another run in the **Run** list. The Fusion pill shows "offline"; that is expected. The
 Advanced page (`/advanced`) shows the strict-path bracket runs. Stop the server with Ctrl+C.
